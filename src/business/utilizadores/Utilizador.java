@@ -1,3 +1,5 @@
+package business.utilizadores;
+
 public class Utilizador {
     private String nome;
     private String password;
