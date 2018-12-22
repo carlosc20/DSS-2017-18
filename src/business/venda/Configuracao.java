@@ -2,18 +2,24 @@ package business.venda;
 
 import business.produtos.Pacote;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class Configuracao {
-	private List<Integer> _componentes;
-	private List<Integer> _dependentes;
-	public Vector<Pacote> _unnamed_Pacote_ = new Vector<Pacote>();
+	private List<Integer> componentes;
+	private List<Integer> dependentes;
+	public  List<Pacote> pacotes;
 
-	public void adicionarComponente() {
-		throw new UnsupportedOperationException();
+	public Configuracao() {
+		this.componentes = new ArrayList<Integer>();
+		this.dependentes = new ArrayList<Integer>();
+		this.pacotes = new ArrayList<Pacote>();
 	}
 
+	public void adicionarComponente(int idComponente) {
+
+	}
+	private void tratarIncompatibilidades(int idComponente)
 	public void removerComponente() {
 		throw new UnsupportedOperationException();
 	}

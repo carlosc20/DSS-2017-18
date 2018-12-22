@@ -1,12 +1,19 @@
 package business.venda;
 
-import business.venda.Configuracao;
-
 public class Encomenda {
-	private int _id;
-	private String _cliente;
-	private int _nif;
-	private float _valor = 0;
+	private int id;
+	private String cliente;
+	private int nif;
+	private float valor;
+
+	public Encomenda(int _id, String _cliente, int _nif) {
+		this.id = _id;
+		this.cliente = _cliente;
+		this.nif = _nif;
+		this.valor = 0;
+		this.configuracao = new Configuracao();
+	}
+
 	public Configuracao configuracao;
 
 	public void veIncompatibilidades() {
