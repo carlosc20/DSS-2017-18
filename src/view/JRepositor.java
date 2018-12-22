@@ -15,6 +15,8 @@ public class JRepositor {
     private JTable componentesTable;
     private JButton sairButton;
 
+    ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
     public JRepositor() {
         JFrame frame = new JFrame("Repositor");
         frame.setContentPane(mainPanel);
@@ -23,7 +25,7 @@ public class JRepositor {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
 
         // TODO: atualizar as tabelas, getPacotes, getComponentes
 

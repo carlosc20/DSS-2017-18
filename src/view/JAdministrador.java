@@ -7,12 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class JAdministrador {
-    ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
     private JPanel mainPanel;
     private JButton sairButton;
     private JButton criarUtilizadorButton;
     private JButton removerUtilizadorButton;
     private JList utilizadoresList;
+
+    ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
     public JAdministrador() {
         JFrame frame = new JFrame("ConfiguraFácil");
