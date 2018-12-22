@@ -1,23 +1,34 @@
-package business;
+package business;// import Venda.Encomenda;
+// import Diagrama_de_packages.Business.Encomenda;
 
-import business.utilizadores.Utilizador;
-import business.venda.Encomenda;
-import data.*;
-
+import java.io.File;
 import java.util.List;
 
 public class ConfiguraFacil {
-	private Utilizador _utilizadorAtual;
-	private Encomenda _encomendaAtual;
-	public CategoriaDAO _categorias;
-	public EncomendaEmProducaoDAO filaProducao;
-	public ComponenteDAO _todosComponentes;
-	public PacoteDAO _todosPacotes;
-	public EncomendaDAO _encomendas;
-	public UtilizadorDAO utilizadores_;
 
-	public int autenticar(String aNome, String aPassword) {
-		throw new UnsupportedOperationException();
+	private static ConfiguraFacil instancia = new ConfiguraFacil();
+	/*
+	private Utilizador utilizadorAtual;
+	private Venda.Encomenda encomendaAtual;
+	private CategoriaDAO categorias;
+	private EncomendaEmProducaoDAO filaProducao;
+	private ComponenteDAO todosComponentes;
+	private PacoteDAO todosPacotes;
+	private EncomendaDAO encomendas; // nome corrigido
+	private UtilizadorDAO utilizadores;
+	*/
+
+	public static ConfiguraFacil getInstancia() {
+		return instancia;
+	}
+
+	private ConfiguraFacil(){};
+
+	public int autenticar(String nome, String password) throws Exception {
+		if (nome.equals("administrador")) return 1;
+		if (nome.equals("vendedor")) return 2;
+		if (nome.equals("repositor")) return 3;
+		return 0;
 	}
 
 	public void criaEncomenda(String aCliente, int aNif) {
@@ -28,11 +39,7 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void resolveIncompatibilidades(int aId) {
-		throw new UnsupportedOperationException();
-	}
-
-	public void adicionaComponente(int aId) {
+	public List<Integer> adicionaComponente(int aIdComponente) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -40,7 +47,7 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void adicionaPacote(int aId) {
+	public List<Integer> adicionaPacote(int aId) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -56,11 +63,11 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void atualizaStock(String aPath) {
+	public void atualizarStock(File file) { // mudou nome, mudou tipo argumento
 		throw new UnsupportedOperationException();
 	}
 
-	public void criaUtilizador(String aNome, String aPassword, int aTipo) {
+	public void criarUtilizador(String aNome, String aPassword, int aTipo) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -80,7 +87,18 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	private void otimizarPacotes() {
+	private boolean otimizarPacotes() {
 		throw new UnsupportedOperationException();
 	}
+
+	private void formacaoPacote(int aId) {
+		throw new UnsupportedOperationException();
+	}
+
+	// TODO: consultar pacotes e componentes para o repositor; criar/remover utilizador
+	/*
+	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
+		throw new UnsupportedOperationException();
+	}
+	*/
 }
