@@ -224,11 +224,18 @@ public class Configuracao {
 
 	}
 /*
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosIncompatibilidades(Set<Integer> componentes){
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosIncompatibilidades(Set<Integer> idComponentes){
 		HashSet<Integer> incompARemover = new HashSet<>();
 		HashSet<Integer> pacotesARemover = new HashSet<>();
 
 		Set<Integer> incompatibilidades = new HashSet<>();
+
+		Set<Componente>
+		for(Componente c : componentes){
+			int id = c.getId();
+			aux = c.getIncompatibilidades();
+			idIncompativeis.addAll(aux);
+		}
 
 		return
 	}
