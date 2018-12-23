@@ -22,7 +22,7 @@ public class ConfiguraFacil {
 		return instancia;
 	}
 
-	private ConfiguraFacil(){};
+	private ConfiguraFacil(){}
 
 	public int autenticar(String nome, String password) throws Exception {
 		if (nome.equals("administrador")) return 1;
@@ -31,7 +31,7 @@ public class ConfiguraFacil {
 		return 0;
 	}
 
-	public void criaEncomenda(String aCliente, int aNif) {
+	public void criarEncomenda(String cliente, int nif) { //muda nome
 		throw new UnsupportedOperationException();
 	}
 
@@ -59,12 +59,38 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void atualizarStock(File file) { // mudou nome, mudou tipo argumento
+	public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 		throw new UnsupportedOperationException();
 	}
 
-	public void criarUtilizador(String aNome, String aPassword, int aTipo) {
-		throw new UnsupportedOperationException();
+
+	/*
+	 * Cria um utilizador no sistema e adiciona-o à base de dados
+	 * @param String nome, String password, String tipo
+	 */
+
+	public void criarUtilizador(String nome, String password, String tipo) {
+		switch (tipo){
+			case "Vendedor":
+				Utilizador u = new Vendedor(nome, password);
+			case "Administrador":
+				Utilizador u = new Administrador(nome, password);
+			case "Repositor":
+				Utilizador U = new Repositor(nome, password);
+			default:
+				Utilizador U = new Utilizador(nome, password);
+		}
+		utilizadores.put(U.getNome(),U); //utilizadores -> UtilizadorDAO; put(ID,Utilizador)
+	}
+
+	/*
+	 * Remove um utilizador do sistema
+	 * @param String nome
+	 */
+
+	public void removerUtilizador(String nome) {
+		Utilizador u = utilizadores.get(nome); //utilizadores -> UtilizadorDAO;
+		utilizadores.delete(u);
 	}
 
 	public void consultarStock() {
@@ -91,7 +117,9 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	// TODO: consultar pacotes e componentes para o repositor; criar/remover utilizador
+	public List<String> getFuncionarios(){return null;}
+
+	// TODO: consultar pacotes e componentes para o repositor; funcionarios para o admin; criar/remover utilizador
 	/*
 	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
 		throw new UnsupportedOperationException();

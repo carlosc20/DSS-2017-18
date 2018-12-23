@@ -15,15 +15,17 @@ public class JRepositor {
     private JTable componentesTable;
     private JButton sairButton;
 
+    ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
     public JRepositor() {
         JFrame frame = new JFrame("Repositor");
         frame.setContentPane(mainPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // ?
         frame.pack(); // this.setSize(500,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
 
         // TODO: atualizar as tabelas, getPacotes, getComponentes
 
@@ -36,14 +38,20 @@ public class JRepositor {
                         "Ficheiros CSV", "csv");
                 chooser.setFileFilter(filter);
                 int returnVal = chooser.showOpenDialog(frame);
-                if(returnVal == JFileChooser.APPROVE_OPTION)
-                    facade.atualizarStock(chooser.getSelectedFile()); // TODO: testar erros
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        facade.atualizarStock(chooser.getSelectedFile());
+                        JOptionPane.showMessageDialog(frame, "Stock atualizado com sucesso.", "Confirmação", JOptionPane.PLAIN_MESSAGE);
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(frame, "Falha ao atualizar stock.", "Erro", JOptionPane.ERROR_MESSAGE); // TODO: informaçao sobre erro
+                    }
+                }
             }
         });
         sairButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: abrir iniciar?
+                frame.dispose();
             }
         });
     }

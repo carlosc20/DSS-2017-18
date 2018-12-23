@@ -53,7 +53,7 @@ public class Inicial {
                             "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 } finally {
-                    nomeField.requestFocusInWindow(); //??
+                    nomeField.requestFocusInWindow(); // TODO: verificar
                 }
             }
         });
