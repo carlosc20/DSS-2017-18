@@ -63,7 +63,7 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void atualizarStock(File file) { // mudou nome, mudou tipo argumento
+	public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 		throw new UnsupportedOperationException();
 	}
 

@@ -1,22 +1,33 @@
 package business.produtos;
 
-import business.venda.Configuracao;
-
-import java.util.List;
 import java.util.Set;
 
 public class Pacote {
-	private int _id;
-	private String _designacao;
-	private int _desconto;
-	private List<Integer> _componentes;
-	private Configuracao _pacotes;
+	private int id;
+	private String designacao;
+	private int desconto;
+	private Set<Integer> componentes;
 
-	public Set<Componente> getIncompativeis() {
-		throw new UnsupportedOperationException();
+	public Pacote(int id, String designacao, int desconto, Set<Integer> componentes) {
+		this.id = id;
+		this.designacao = designacao;
+		this.desconto = desconto;
+		this.componentes = componentes;
 	}
 
-	public Set<Componente> getDependencias() {
-		throw new UnsupportedOperationException();
+	public Set<Integer> getComponentes() {
+		return componentes;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public String getDesignacao() {
+		return designacao;
+	}
+
+	public int getDesconto() {
+		return desconto;
 	}
 }
