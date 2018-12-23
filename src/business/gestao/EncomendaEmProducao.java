@@ -1,11 +1,13 @@
 package business.gestao;
 
-import java.util.Vector;
 import business.produtos.Componente;
 import business.venda.Encomenda;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class EncomendaEmProducao extends Encomenda {
-	public Vector<Componente> _componentesEmFalta = new Vector<Componente>();
+	public Set<Componente> componentesEmFalta = new HashSet<Componente>();
 
 	public void fornecerComponente(int aId) {
 		throw new UnsupportedOperationException();

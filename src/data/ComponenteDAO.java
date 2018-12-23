@@ -3,6 +3,7 @@ package data;
 import business.produtos.Componente;
 
 import java.util.List;
+import java.util.Set;
 
 public class ComponenteDAO extends DAO {
 
@@ -10,11 +11,11 @@ public class ComponenteDAO extends DAO {
 		throw new UnsupportedOperationException();
 	}
 
-	public List<Componente> list(String aCondition) {
+	public Set<Componente> list(String aCondition) {
 		throw new UnsupportedOperationException();
 	}
 
-	public Componente get(String aId) {
+	public Componente get(int aId) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -25,4 +26,7 @@ public class ComponenteDAO extends DAO {
 	public int size() {
 		throw new UnsupportedOperationException();
 	}
+	public Set<Integer> getIncompatíveis(int idComponente){throw new UnsupportedOperationException();}
+
+	public Set<Integer> getDependentes(int idComponente){throw new UnsupportedOperationException();}
 }
