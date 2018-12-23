@@ -1,8 +1,10 @@
 package data;
 
+import business.produtos.Componente;
 import business.produtos.Pacote;
 
 import java.util.List;
+import java.util.Set;
 
 public class PacoteDAO extends DAO {
 
@@ -14,7 +16,7 @@ public class PacoteDAO extends DAO {
 		throw new UnsupportedOperationException();
 	}
 
-	public Pacote get(String aId) {
+	public Pacote get(int aId) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -25,4 +27,9 @@ public class PacoteDAO extends DAO {
 	public int size() {
 		throw new UnsupportedOperationException();
 	}
+
+	public Set<Pacote> getPacotesComComponente(int idComponente) {
+		throw new UnsupportedOperationException();
+	}
+	public Set<Componente> getComponentesPacote(int idPacote){throw new UnsupportedOperationException();}
 }

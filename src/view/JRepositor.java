@@ -38,13 +38,14 @@ public class JRepositor {
                         "Ficheiros CSV", "csv");
                 chooser.setFileFilter(filter);
                 int returnVal = chooser.showOpenDialog(frame);
-                if(returnVal == JFileChooser.APPROVE_OPTION)
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
                     try {
-                        facade.atualizarStock(chooser.getSelectedFile()); // TODO: testar erros
-                        JOptionPane.showMessageDialog(frame, "Stock atualizado com sucesso.", "Confirmação", JOptionPane.PLAIN_MESSAGE); // TODO: diagrama
+                        facade.atualizarStock(chooser.getSelectedFile());
+                        JOptionPane.showMessageDialog(frame, "Stock atualizado com sucesso.", "Confirmação", JOptionPane.PLAIN_MESSAGE);
                     } catch (Exception e1) {
-                        JOptionPane.showMessageDialog(frame, "Falha ao atualizar stock.", "Erro", JOptionPane.ERROR_MESSAGE); // TODO: diagrama
+                        JOptionPane.showMessageDialog(frame, "Falha ao atualizar stock.", "Erro", JOptionPane.ERROR_MESSAGE); // TODO: informaçao sobre erro
                     }
+                }
             }
         });
         sairButton.addActionListener(new ActionListener() {
