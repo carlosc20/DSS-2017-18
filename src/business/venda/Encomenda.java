@@ -1,9 +1,8 @@
 package business.venda;
 
-
-import business.venda.excecoes.*;
 import data.ComponenteDAO;
 import data.PacoteDAO;
+import javafx.util.Pair;
 
 import java.util.Set;
 
@@ -23,13 +22,12 @@ public class Encomenda {
 		this.valor = 0;
 		this.configuracao = new Configuracao(cDAO, pDAO);
 	}
-/*
-	public Set<Integer> veIncompatibilidades() {
 
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente(int idComponente){
+		return configuracao.getEfeitosSecundariosAdicionarComponente(idComponente);
 	}
-*/
-	public void resolveIncompatibilidades(int aId) {
-		throw new UnsupportedOperationException();
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote){
+		return configuracao.getEfeitosSecundariosAdicionarComponente(idPacote);
 	}
 
 	public void adicionaComponente(int idComponente) throws ComponenteJaExisteNaConfiguracao {

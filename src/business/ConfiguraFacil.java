@@ -35,10 +35,6 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public List<Integer> veIncompatibilidades(int aId) {
-		throw new UnsupportedOperationException();
-	}
-
 	public List<Integer> adicionaComponente(int aIdComponente) {
 		throw new UnsupportedOperationException();
 	}
