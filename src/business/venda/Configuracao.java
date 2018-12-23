@@ -223,7 +223,7 @@ public class Configuracao {
 		return removerComponentes(p.getComponentes());
 
 	}
-
+/*
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosIncompatibilidades(Set<Integer> componentes){
 		HashSet<Integer> incompARemover = new HashSet<>();
 		HashSet<Integer> pacotesARemover = new HashSet<>();
@@ -232,7 +232,7 @@ public class Configuracao {
 
 		return
 	}
-
+*/
 	public void configuracaoOtima() {
 		throw new UnsupportedOperationException();
 	}
