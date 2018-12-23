@@ -31,7 +31,7 @@ public class ConfiguraFacil {
 		return 0;
 	}
 
-	public void criaEncomenda(String aCliente, int aNif) {
+	public void criarEncomenda(String cliente, int nif) { //muda nome
 		throw new UnsupportedOperationException();
 	}
 
@@ -67,7 +67,11 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void criarUtilizador(String aNome, String aPassword, int aTipo) {
+	public void criarUtilizador(String nome, String aPassword, int aTipo) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void removerUtilizador(String nome) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -95,7 +99,9 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	// TODO: consultar pacotes e componentes para o repositor; criar/remover utilizador
+	public List<String> getFuncionarios(){return null;}
+
+	// TODO: consultar pacotes e componentes para o repositor; funcionarios para o admin; criar/remover utilizador
 	/*
 	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
 		throw new UnsupportedOperationException();

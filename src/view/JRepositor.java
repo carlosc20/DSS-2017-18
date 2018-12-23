@@ -20,7 +20,7 @@ public class JRepositor {
     public JRepositor() {
         JFrame frame = new JFrame("Repositor");
         frame.setContentPane(mainPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // ?
         frame.pack(); // this.setSize(500,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -39,13 +39,18 @@ public class JRepositor {
                 chooser.setFileFilter(filter);
                 int returnVal = chooser.showOpenDialog(frame);
                 if(returnVal == JFileChooser.APPROVE_OPTION)
-                    facade.atualizarStock(chooser.getSelectedFile()); // TODO: testar erros
+                    try {
+                        facade.atualizarStock(chooser.getSelectedFile()); // TODO: testar erros
+                        JOptionPane.showMessageDialog(frame, "Stock atualizado com sucesso.", "Confirmação", JOptionPane.PLAIN_MESSAGE); // TODO: diagrama
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(frame, "Falha ao atualizar stock.", "Erro", JOptionPane.ERROR_MESSAGE); // TODO: diagrama
+                    }
             }
         });
         sairButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: abrir iniciar?
+                frame.dispose();
             }
         });
     }

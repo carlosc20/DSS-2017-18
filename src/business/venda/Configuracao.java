@@ -19,7 +19,8 @@ public class Configuracao {
 	public void adicionarComponente(int idComponente) {
 
 	}
-	private void tratarIncompatibilidades(int idComponente)
+	private void tratarIncompatibilidades(int idComponente){}
+
 	public void removerComponente() {
 		throw new UnsupportedOperationException();
 	}

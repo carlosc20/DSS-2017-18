@@ -27,7 +27,7 @@ public class JVendedor {
         sairButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                frame.dispose();
             }
         });
         criarEncomendaButton.addActionListener(new ActionListener() {
@@ -36,22 +36,20 @@ public class JVendedor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
-                JTextField passwordF = new JPasswordField();
-                JTextField tipoF = new JTextField();
+                JTextField nifF = new JTextField();
                 Object[] options = {
                         "Nome:", nomeF,
-                        "Password:", passwordF,
-                        "Tipo", tipoF
+                        "Nif:", nifF,
                 };
 
-                int option = JOptionPane.showConfirmDialog(frame, options, "Criar utilizador", JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(frame, options, "Dados do cliente", JOptionPane.OK_CANCEL_OPTION);
 
                 if (option == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
-                    String password = passwordF.getText();
-                    int tipo = Integer.parseInt(tipoF.getText());
+                    int nif = Integer.parseInt(nifF.getText());
+                    facade.criarEncomenda(nome, nif);
                     // TODO: erros
-                    facade.criarUtilizador(nome, password, tipo);
+                    new JNovaEncomenda();
                 }
             }
         });
