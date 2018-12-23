@@ -22,7 +22,7 @@ public class ConfiguraFacil {
 		return instancia;
 	}
 
-	private ConfiguraFacil(){};
+	private ConfiguraFacil(){}
 
 	public int autenticar(String nome, String password) throws Exception {
 		if (nome.equals("administrador")) return 1;
@@ -67,8 +67,24 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void criarUtilizador(String nome, String aPassword, int aTipo) {
-		throw new UnsupportedOperationException();
+
+	/*
+	 * Cria um utilizador no sistema e adiciona-o à base de dados
+	 * @param String nome, String password, String tipo
+	 */
+
+	public void criarUtilizador(String nome, String password, String tipo) {
+		switch (tipo){
+			case "Vendedor":
+				Utilizador u = new Vendedor(nome, password);
+			case "Administrador":
+				Utilizador u = new Administrador(nome, password);
+			case "Repositor":
+				Utilizador U = new Repositor(nome, password);
+			default:
+				Utilizador U = new Utilizador(nome, password);
+		}
+		utilizadores.put(U.getNome(),U); //utilizadores -> UtilizadorDAO; put(ID,Utilizador)
 	}
 
 	public void removerUtilizador(String nome) {
