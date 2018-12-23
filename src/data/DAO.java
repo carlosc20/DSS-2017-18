@@ -12,6 +12,7 @@ public class DAO {
 	protected String user;
 	protected String password;
 
+	public DAO () {}
 	public DAO (String url, String user, String password) {
 		this.url = url;
 		this.user = user;

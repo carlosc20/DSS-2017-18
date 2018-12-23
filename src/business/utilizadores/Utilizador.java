@@ -20,19 +20,19 @@ public class Utilizador {
         this.password = u.getPassword();
     }
 
-    private String getNome() {
+    public String getNome() {
         return nome;
     }
 
-    private String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    private void setNome(String nome) {
+    public void setNome(String nome) {
         this.nome = nome;
     }
 
-    private void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 }

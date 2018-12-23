@@ -63,7 +63,7 @@ public class UtilizadorDAO extends DAO {
 	}
 
 	public int size()  throws ClassNotFoundException, SQLException {
-		super.size("Utilizador");
+		return super.size("Utilizador");
 	}
 
 	private Utilizador createUtilizador(String nome, String password, String funcao) {
