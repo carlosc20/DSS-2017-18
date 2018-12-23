@@ -3,6 +3,7 @@ package business.venda;
 import business.produtos.ComparaPacotesByDesconto;
 import business.produtos.Componente;
 import business.produtos.Pacote;
+import business.venda.excecoes.*;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
@@ -42,20 +43,19 @@ public class Configuracao {
 
 		//Tratamentos
 		float valorRetirado = tratarIncompatibilidades(componentesAdd);
-		tratarDependencias(componentesAdd);
+		float valorAcrescentado = tratarDependencias(componentesAdd);
 
 		//Adição do componente
 		this.componentes.add(componente);
-		float valorAcrescentado = componente.getPreco();
 
 		//Se foi adicionado um dos dependentes
 		boolean escolha = dependentes.contains(idComponente);
 			if (escolha) dependentes.remove(idComponente);
 
 		//Formação de pacote
-		float descontoFormado = formacaoPacote(idComponente);
+		float descontoAcrescentado = formacaoPacote(idComponente);
 
-		return (valorAcrescentado - valorRetirado - descontoFormado);
+		return (valorAcrescentado - valorRetirado - descontoAcrescentado);
 	}
 
 	/*
@@ -108,14 +108,17 @@ public class Configuracao {
 	/*
 	 *Vais buscar dependencias e adiciona-as a this.dependentes
 	 *@param componentes Componentes cujas dependências terão de ser adicionadas
+	 *@returns val Valor dos componentes que vão ser adicionados a this.componentes ---- para aproveitar o ciclo
  	*/
-	private void tratarDependencias(Set<Componente> componentes){
+	private float tratarDependencias(Set<Componente> componentes){
 		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
 		HashSet aux = new HashSet();					  //Id's dos componentes dependentes de cada um dos componentes do Set fornecido
+		float val = 0;
 
 		//Vai buscar todas as dependências
 		for(Componente c : componentes){
 			int id = c.getId();
+			val += c.getPreco();
 			aux = (HashSet) c.getDepedendencias();
 			idDependentes.addAll(aux);
 		}
@@ -123,6 +126,7 @@ public class Configuracao {
 		if (idDependentes.size() != 0) {
 			this.dependentes.addAll(aux);
 		}
+		return val;
 	}
 
 	/*
@@ -151,6 +155,10 @@ public class Configuracao {
 				valRetirar+=c.getPreco();
 				componentes.remove(c);}
 		}
+		for(Pacote p : pacotes){
+			if(idComponentes.contains(p.getComponentes())) pacotes.remove(p);
+			valRetirar-=p.getDesconto();
+		}
 
 		return valRetirar;
 	}
@@ -158,7 +166,11 @@ public class Configuracao {
 	 *Remove um componente e as dependencias que gerou
 	 *@param idComponente Id componente a ser retirado
 	 */
-	public float removerComponente(int idComponente) {
+	public float removerComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
+		//Isto parece-me desnecessário
+		Componente c = cDAO.get(idComponente);
+		if (!componentes.contains(c)) throw new ComponenteNaoExisteNaConfiguracao("Componentes não existe");
+
 		HashSet<Integer> idComponentes = new HashSet<>();
 		idComponentes.add(idComponente);
 
@@ -170,76 +182,101 @@ public class Configuracao {
 	 *@param idPacote Id do pacote a ser adicionado
 	 *@returns par em que a chave é a quantia a ser descontada na encomenda e o valor é a lista de pacotes que podem ter sido removidos
 	 */
-	public Pair<Float,List<Integer>> adicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracao{
+	public float adicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracao, PacoteGeraConflitos {
 		Pacote p = pDAO.get(idPacote);
 
 		if(pacotes.contains(p)) {
 			throw new PacoteJaExisteNaConfiguracao("Já existe");
 		}
 
-		//tratamentos
 		HashSet<Componente> componentes = (HashSet<Componente>)pDAO.getComponentesPacote(idPacote);
-		float valorRetirar = tratarIncompatibilidades(componentes);
-		tratarDependencias(componentes);
 
-		return adicionaPacoteTrataConflitos(p, componentes, valorRetirar);
-
-
-	}
-	/*
-	 *Resolve os conflitos e adiciona o pacote e os seu componentes.
-	 *Resolver os conflitos é remover os pacotes cujos componentes também pertencem ao adicionado
-	 *@pacote Pacote a adicionar
-	 *@param componentes Componentes desse pacote
-	 *@param valorRetirar Valor que será retornado com outros cálculos intermédios
-	 */
-	private Pair<Float,List<Integer>> adicionaPacoteTrataConflitos(Pacote pacote, Set<Componente> componentes, float valorRetirar){
-		ArrayList<Integer> pacotesRemovidos = new ArrayList<>();  //Pacotes que serão removidos
-		Set<Integer> compIds;									  //Componentes de cada pacote
-		float val = valorRetirar;
-
-		//Por cada pacote da config. verificamos se contém componentes do pacote que está a ser adicionado
-		for(Pacote p : pacotes){
-			compIds = p.getComponentes();
-			val+=removeConflitos(p, componentes, compIds, pacotesRemovidos);
+		if(existeConflito(componentes)) {
+			throw new PacoteGeraConflitos("Já existe um pacote com algum dos componentes do que pretende adicionar");
 		}
-		//Adicção do pacote e desconto formado pelo pacote
-		val-=pacote.getDesconto();
-		pacotes.add(pacote);
 
+		//tratamentos
+		float valorRetirado = tratarIncompatibilidades(componentes);
+		float valorAcrescentado = tratarDependencias(componentes);
+		float descontoAcrescentado = p.getDesconto();
 
-		return new Pair<>(val, pacotesRemovidos);
+		return valorAcrescentado - valorRetirado - descontoAcrescentado;
 	}
 
-	private float removeConflitos (Pacote p, Set<Componente> componentes, Set<Integer> compIds, ArrayList<Integer> pacotesRemovidos){
+	private boolean existeConflito(Set<Componente> componentes) {
 		boolean found = false;
-		Iterator<Componente> it = componentes.iterator();
-		float descontoRetirar = 0;
-		float precoComponente = 0;
+		Iterator<Pacote> it = pacotes.iterator();
+		Set<Integer> compIds;
 
-		while(it.hasNext() && !found){
-			int idC = it.next().getId();
-			found = compIds.contains(idC);
-			precoComponente += it.next().getPreco();
-			if(found){
-				pacotes.remove(p);
-				int idP = p.getId();
-				pacotesRemovidos.add(idP);
-				descontoRetirar += p.getDesconto();
+		while (it.hasNext() && !found) {
+			compIds = it.next().getComponentes();
+			for (Componente c : componentes) {
+				int idC = c.getId();
+				found = compIds.contains(idC);
 			}
 		}
-		return descontoRetirar + precoComponente;
+		return found;
 	}
+	public float removerPacote(int idPacote) throws PacoteNaoExisteNaConfiguracao {
+		Pacote p = pDAO.get(idPacote);
+		if(!pacotes.contains(p)) throw new PacoteNaoExisteNaConfiguracao("Pacote não existe");
+		return removerComponentes(p.getComponentes());
 
-	public void removerPacote() {
-		throw new UnsupportedOperationException();
 	}
+/*
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosIncompatibilidades(Set<Integer> componentes){
+		HashSet<Integer> incompARemover = new HashSet<>();
+		HashSet<Integer> pacotesARemover = new HashSet<>();
 
+		Set<Integer> incompatibilidades = new HashSet<>();
+
+		return
+	}
+*/
 	public void configuracaoOtima() {
 		throw new UnsupportedOperationException();
 	}
-
 	public void otimizarPacotes() {
 		throw new UnsupportedOperationException();
+	}
+
+	public Set<Componente> getComponentes() {
+		return componentes;
+	}
+
+	public Set<Integer> getDependentes() {
+		return dependentes;
+	}
+
+	public Set<Pacote> getPacotes() {
+		return pacotes;
+	}
+
+	public ComponenteDAO getcDAO() {
+		return cDAO;
+	}
+
+	public PacoteDAO getpDAO() {
+		return pDAO;
+	}
+
+	public void setComponentes(Set<Componente> componentes) {
+		this.componentes = componentes;
+	}
+
+	public void setDependentes(Set<Integer> dependentes) {
+		this.dependentes = dependentes;
+	}
+
+	public void setPacotes(Set<Pacote> pacotes) {
+		this.pacotes = pacotes;
+	}
+
+	public void setcDAO(ComponenteDAO cDAO) {
+		this.cDAO = cDAO;
+	}
+
+	public void setpDAO(PacoteDAO pDAO) {
+		this.pDAO = pDAO;
 	}
 }

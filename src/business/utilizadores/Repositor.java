@@ -4,4 +4,11 @@ public class Repositor extends Utilizador {
     public Repositor(){
         super();
     }
+    public Repositor(String nome, String pass){
+        super(nome,pass);
+    }
+
+    public Repositor(Utilizador u){
+        super(u);
+    }
 }
