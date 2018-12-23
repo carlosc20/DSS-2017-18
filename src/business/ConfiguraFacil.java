@@ -87,8 +87,14 @@ public class ConfiguraFacil {
 		utilizadores.put(U.getNome(),U); //utilizadores -> UtilizadorDAO; put(ID,Utilizador)
 	}
 
+	/*
+	 * Remove um utilizador do sistema
+	 * @param String nome
+	 */
+
 	public void removerUtilizador(String nome) {
-		throw new UnsupportedOperationException();
+		Utilizador u = utilizadores.get(nome); //utilizadores -> UtilizadorDAO;
+		utilizadores.delete(u);
 	}
 
 	public void consultarStock() {
