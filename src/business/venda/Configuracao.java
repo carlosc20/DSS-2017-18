@@ -257,11 +257,36 @@ public class Configuracao {
 
 		return new Pair<>(incompARemover, pacotesARemover);
 	}
+	protected void otimizarPacotes() {
+		Set<Pacote> todosPacotes = pDAO.getPacotesCorrespondentes(componentes);
+		Set<Pacote> otimos = calculaOtimos(todosPacotes);
+		boolean reotimizacao = comparaPacotes(otimos);
+		if(reotimizacao) {
+			pacotes.clear();
+			pacotes.addAll(otimos);
+		}
+	}
+	//Por fazer
+	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){throw new UnsupportedOperationException();}
+
+	private boolean comparaPacotes(Set<Pacote> otimos){
+		float valAtual = 0;
+		float valOtimo = 0;
+
+		//Por ser heurística
+		for(Pacote p : otimos) valOtimo+=p.getDesconto();
+		for(Pacote p : pacotes) valAtual+=p.getDesconto();
+
+		if(valOtimo > valAtual) return true;
+
+		return false;
+	}
+
+	public Set<Integer> atualizaStock(){
+		return cDAO.atualizaStock(componentes);
+	}
 
 	public void configuracaoOtima() {
-		throw new UnsupportedOperationException();
-	}
-	public void otimizarPacotes() {
 		throw new UnsupportedOperationException();
 	}
 

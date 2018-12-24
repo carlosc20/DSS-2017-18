@@ -1,9 +1,11 @@
 package business.venda;
 
+import business.produtos.Componente;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public class Encomenda {
@@ -11,6 +13,7 @@ public class Encomenda {
 	private String cliente;
 	private int nif;
 	private float valor;
+	private LocalDate data;
 	private Configuracao configuracao;
 
 	public Encomenda() {}
@@ -45,12 +48,11 @@ public class Encomenda {
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracao {
 		this.valor = configuracao.removerPacote(idPacote);
 	}
-
-	public void configuracaoOtima() {
-		throw new UnsupportedOperationException();
+	public Set<Integer> finalizarEncomenda(){
+		setData(LocalDate.now());
+		return configuracao.atualizaStock();
 	}
-
-	public void otimizaPacotes() {
+	public void configuracaoOtima() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -88,6 +90,10 @@ public class Encomenda {
 
 	public Configuracao getConfiguracao() {
 		return configuracao;
+	}
+
+	public void setData(LocalDate data) {
+		this.data = data;
 	}
 
 	public void setConfiguracao(Configuracao configuracao) {
