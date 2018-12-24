@@ -12,4 +12,8 @@ public class Administrador extends Utilizador {
     public Administrador(Utilizador u){
         super(u);
     }
+
+    public String getFuncao() {
+        return "Administrador";
+    }
 }
