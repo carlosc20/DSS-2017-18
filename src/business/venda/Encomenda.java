@@ -1,10 +1,11 @@
 package business.venda;
 
-
-import business.venda.excecoes.*;
+import business.produtos.Componente;
 import data.ComponenteDAO;
 import data.PacoteDAO;
+import javafx.util.Pair;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public class Encomenda {
@@ -12,6 +13,7 @@ public class Encomenda {
 	private String cliente;
 	private int nif;
 	private float valor;
+	private LocalDate data;
 	private Configuracao configuracao;
 
 	public Encomenda() {}
@@ -23,36 +25,34 @@ public class Encomenda {
 		this.valor = 0;
 		this.configuracao = new Configuracao(cDAO, pDAO);
 	}
-/*
-	public Set<Integer> veIncompatibilidades() {
 
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente(int idComponente){
+		return configuracao.getEfeitosSecundariosAdicionarComponente(idComponente);
 	}
-*/
-	public void resolveIncompatibilidades(int aId) {
-		throw new UnsupportedOperationException();
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote){
+		return configuracao.getEfeitosSecundariosAdicionarComponente(idPacote);
 	}
 
 	public void adicionaComponente(int idComponente) throws ComponenteJaExisteNaConfiguracao {
-		this.valor = configuracao.adicionarComponente(idComponente);
+		this.valor += configuracao.adicionarComponente(idComponente);
 	}
 
 	public void removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
-		this.valor = configuracao.removerComponente(idComponente);
+		this.valor += configuracao.removerComponente(idComponente);
 	}
 
 	public void adicionaPacote(int idPacote) throws PacoteJaExisteNaConfiguracao, PacoteGeraConflitos {
-		this.valor = configuracao.adicionarPacote(idPacote);
+		this.valor += configuracao.adicionarPacote(idPacote);
 	}
 
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracao {
-		this.valor = configuracao.removerPacote(idPacote);
+		this.valor += configuracao.removerPacote(idPacote);
 	}
-
+	public Set<Integer> finalizarEncomenda(){
+		setData(LocalDate.now());
+		return configuracao.atualizaStock();
+	}
 	public void configuracaoOtima() {
-		throw new UnsupportedOperationException();
-	}
-
-	public void otimizaPacotes() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -90,6 +90,10 @@ public class Encomenda {
 
 	public Configuracao getConfiguracao() {
 		return configuracao;
+	}
+
+	public void setData(LocalDate data) {
+		this.data = data;
 	}
 
 	public void setConfiguracao(Configuracao configuracao) {

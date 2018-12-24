@@ -32,4 +32,5 @@ public class PacoteDAO extends DAO {
 		throw new UnsupportedOperationException();
 	}
 	public Set<Componente> getComponentesPacote(int idPacote){throw new UnsupportedOperationException();}
+	public Set<Pacote> getPacotesCorrespondentes(Set<Componente> componentes) {throw new UnsupportedOperationException();}
 }

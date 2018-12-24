@@ -3,7 +3,6 @@ package business.venda;
 import business.produtos.ComparaPacotesByDesconto;
 import business.produtos.Componente;
 import business.produtos.Pacote;
-import business.venda.excecoes.*;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
@@ -50,7 +49,7 @@ public class Configuracao {
 
 		//Se foi adicionado um dos dependentes
 		boolean escolha = dependentes.contains(idComponente);
-			if (escolha) dependentes.remove(idComponente);
+		if (escolha) dependentes.remove(idComponente);
 
 		//Formação de pacote
 		float descontoAcrescentado = formacaoPacote(idComponente);
@@ -109,7 +108,7 @@ public class Configuracao {
 	 *Vais buscar dependencias e adiciona-as a this.dependentes
 	 *@param componentes Componentes cujas dependências terão de ser adicionadas
 	 *@returns val Valor dos componentes que vão ser adicionados a this.componentes ---- para aproveitar o ciclo
- 	*/
+	 */
 	private float tratarDependencias(Set<Componente> componentes){
 		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
 		HashSet aux = new HashSet();					  //Id's dos componentes dependentes de cada um dos componentes do Set fornecido
@@ -223,27 +222,71 @@ public class Configuracao {
 		return removerComponentes(p.getComponentes());
 
 	}
-/*
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosIncompatibilidades(Set<Integer> idComponentes){
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente(int idComponente){
+		Set<Integer> idIncompativeis = cDAO.getIncompatíveis(idComponente);
+
+		return getRemocoes(idIncompativeis);
+	}
+
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote){
+		Pacote pacote = pDAO.get(idPacote);
+		HashSet<Integer> idIncompativeis = new HashSet<>();
+		Set<Integer> componentes = pacote.getComponentes();
+
+		for(int id : componentes)
+			idIncompativeis.addAll(cDAO.getIncompatíveis(id));
+
+		return getRemocoes(idIncompativeis);
+	}
+
+	private Pair<Set<Integer>,Set<Integer>> getRemocoes(Set<Integer> idIncompativeis){
 		HashSet<Integer> incompARemover = new HashSet<>();
 		HashSet<Integer> pacotesARemover = new HashSet<>();
-
-		Set<Integer> incompatibilidades = new HashSet<>();
-
-		Set<Componente>
-		for(Componente c : componentes){
-			int id = c.getId();
-			aux = c.getIncompatibilidades();
-			idIncompativeis.addAll(aux);
+		for(int id : idIncompativeis){
+			for(Componente c : componentes){
+				int idC = c.getId();
+				if(idC == id) incompARemover.add(id);
+			}
 		}
 
-		return
+		for(int id : idIncompativeis){
+			for(Pacote p : pacotes){
+				if(p.getComponentes().contains(id)) pacotesARemover.add(p.getId());
+			}
+		}
+
+		return new Pair<>(incompARemover, pacotesARemover);
 	}
-*/
+	protected void otimizarPacotes() {
+		Set<Pacote> todosPacotes = pDAO.getPacotesCorrespondentes(componentes);
+		Set<Pacote> otimos = calculaOtimos(todosPacotes);
+		boolean reotimizacao = comparaPacotes(otimos);
+		if(reotimizacao) {
+			pacotes.clear();
+			pacotes.addAll(otimos);
+		}
+	}
+	//Por fazer
+	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){throw new UnsupportedOperationException();}
+
+	private boolean comparaPacotes(Set<Pacote> otimos){
+		float valAtual = 0;
+		float valOtimo = 0;
+
+		//Por ser heurística
+		for(Pacote p : otimos) valOtimo+=p.getDesconto();
+		for(Pacote p : pacotes) valAtual+=p.getDesconto();
+
+		if(valOtimo > valAtual) return true;
+
+		return false;
+	}
+
+	public Set<Integer> atualizaStock(){
+		return cDAO.atualizaStock(componentes);
+	}
+
 	public void configuracaoOtima() {
-		throw new UnsupportedOperationException();
-	}
-	public void otimizarPacotes() {
 		throw new UnsupportedOperationException();
 	}
 

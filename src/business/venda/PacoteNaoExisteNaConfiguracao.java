@@ -1,4 +1,4 @@
-package business.venda.excecoes;
+package business.venda;
 
 public class PacoteNaoExisteNaConfiguracao extends Exception{
         public PacoteNaoExisteNaConfiguracao(String message){

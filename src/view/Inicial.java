@@ -12,7 +12,8 @@ public class Inicial {
     private JPasswordField passwordField;
     private JButton entrarButton;
     private JPanel mainPanel;
-    ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
+    private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
     public Inicial() throws HeadlessException {
         JFrame frame = new JFrame("ConfiguraFácil");
@@ -33,12 +34,15 @@ public class Inicial {
                     int cargo = facade.autenticar(nome, password);
                     switch (cargo) {
                         case 1:
+                            frame.dispose();
                             new JAdministrador();
                             break;
                         case 2:
+                            frame.dispose();
                             new JVendedor();
                             break;
                         case 3:
+                            frame.dispose();
                             new JRepositor();
                             break;
                         default:
