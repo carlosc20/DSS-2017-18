@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Inicial {
+
     private JTextField nomeField;
     private JPasswordField passwordField;
     private JButton entrarButton;
@@ -15,7 +16,8 @@ public class Inicial {
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
-    public Inicial() throws HeadlessException {
+    public Inicial() {
+
         JFrame frame = new JFrame("ConfiguraFácil");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,16 +34,17 @@ public class Inicial {
 
                 try {
                     int cargo = facade.autenticar(nome, password);
+                    System.out.println(cargo);
                     switch (cargo) {
-                        case 1:
+                        case 0:
                             frame.dispose();
                             new JAdministrador();
                             break;
-                        case 2:
+                        case 1:
                             frame.dispose();
                             new JVendedor();
                             break;
-                        case 3:
+                        case 2:
                             frame.dispose();
                             new JRepositor();
                             break;
@@ -57,7 +60,7 @@ public class Inicial {
                             "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 } finally {
-                    nomeField.requestFocusInWindow(); // TODO: verificar
+                    nomeField.requestFocusInWindow();
                 }
             }
         });

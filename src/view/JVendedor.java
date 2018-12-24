@@ -13,24 +13,29 @@ public class JVendedor {
     private JButton criarEncomendaButton;
     private JTable filaProducaoTable;
     private JTable registoProduzidasTable;
+
     ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
     public JVendedor() {
-        JFrame frame = new JFrame("Repositor");
+        JFrame frame = new JFrame("Vendedor");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack(); // this.setSize(500,600);
+        frame.setSize(500,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        // TODO: atualizar tabelas
+        // TODO: atualizar tabelas, desativar janela enquanto se cria encomenda
 
+        // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
+                new Inicial();
             }
         });
+
+        // abre janela para inserir dados do cliente e depois janela de nova encomenda
         criarEncomendaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

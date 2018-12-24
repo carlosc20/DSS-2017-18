@@ -37,10 +37,10 @@ public class ConfiguraFacil extends Observable {
     }
 
     public int autenticar(String nome, String password) throws Exception {
-        if (nome.equals("administrador")) return 1;
-        if (nome.equals("vendedor")) return 2;
-        if (nome.equals("repositor")) return 3;
-        return 0;
+        if (nome.equals("administrador")) return 0;
+        if (nome.equals("vendedor")) return 1;
+        if (nome.equals("repositor")) return 2;
+        throw new Exception();
     }
 
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
@@ -71,13 +71,7 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-    public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
-        throw new UnsupportedOperationException();
-    }
 
-    public void consultarStock() {
-        throw new UnsupportedOperationException();
-    }
 
     public void consultarConfiguracao() {
         throw new UnsupportedOperationException();
@@ -91,8 +85,19 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-    private String[] gajosa = {"Ângelo", "Carlos", "Daniel", "Marco"}; // TODO: apagar quando DAO estiver feito
-    private ArrayList<String> gajos = new ArrayList<>(Arrays.asList(gajosa));
+
+
+    public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
+        setChanged();
+        notifyObservers();
+        throw new UnsupportedOperationException();
+    }
+
+    public void consultarStock() { // TODO: separar em componentes e pacotes
+        throw new UnsupportedOperationException();
+    }
+
+
 
     public List<String> getFuncionarios() { // novo
         return gajos;
@@ -102,6 +107,9 @@ public class ConfiguraFacil extends Observable {
         String[] tipos = {"Administrador", "Repositor", "Vendedor"};
         return Arrays.asList(tipos);
     }
+
+    private String[] gajosa = {"Ângelo", "Carlos", "Daniel", "Marco"}; // TODO: apagar quando DAO estiver feito
+    private ArrayList<String> gajos = new ArrayList<>(Arrays.asList(gajosa));
 
     /**
      * Cria um utilizador no sistema e adiciona-o à base de dados
@@ -140,7 +148,6 @@ public class ConfiguraFacil extends Observable {
 		*/
     }
 
-    // TODO: consultar pacotes e componentes para o repositor; criar/remover utilizador
 	/*
 	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
 		throw new UnsupportedOperationException();
