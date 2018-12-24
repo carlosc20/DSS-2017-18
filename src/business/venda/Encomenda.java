@@ -34,19 +34,19 @@ public class Encomenda {
 	}
 
 	public void adicionaComponente(int idComponente) throws ComponenteJaExisteNaConfiguracao {
-		this.valor = configuracao.adicionarComponente(idComponente);
+		this.valor += configuracao.adicionarComponente(idComponente);
 	}
 
 	public void removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
-		this.valor = configuracao.removerComponente(idComponente);
+		this.valor += configuracao.removerComponente(idComponente);
 	}
 
 	public void adicionaPacote(int idPacote) throws PacoteJaExisteNaConfiguracao, PacoteGeraConflitos {
-		this.valor = configuracao.adicionarPacote(idPacote);
+		this.valor += configuracao.adicionarPacote(idPacote);
 	}
 
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracao {
-		this.valor = configuracao.removerPacote(idPacote);
+		this.valor += configuracao.removerPacote(idPacote);
 	}
 	public Set<Integer> finalizarEncomenda(){
 		setData(LocalDate.now());

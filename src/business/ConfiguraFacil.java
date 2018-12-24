@@ -1,6 +1,11 @@
 package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
+import business.utilizadores.Administrador;
+import business.utilizadores.Repositor;
+import business.utilizadores.Utilizador;
+import business.utilizadores.Vendedor;
+
 import java.io.File;
 import java.util.List;
 
@@ -80,7 +85,6 @@ public class ConfiguraFacil {
 			default:
 				Utilizador U = new Utilizador(nome, password);
 		}
-		utilizadores.put(U.getNome(),U); //utilizadores -> UtilizadorDAO; put(ID,Utilizador)
 	}
 
 	/*
