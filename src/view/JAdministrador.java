@@ -8,8 +8,10 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-public class JAdministrador {
+public class JAdministrador implements Observer {
 
     private JPanel mainPanel;
     private JButton sairButton;
@@ -24,35 +26,36 @@ public class JAdministrador {
 
     public JAdministrador() {
 
-        JFrame frame = new JFrame("ConfiguraFácil");
+        JFrame frame = new JFrame("Administrador");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack(); // this.setSize(500,600);
+        frame.setSize(500,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
+        facade.addObserver(this);
+
         model = new DefaultListModel<>();
+        updateModel();
         utilizadoresList.setModel(model);
         utilizadoresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         utilizadoresList.setLayoutOrientation(JList.VERTICAL);
+
 
 
         sairButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
+                new Inicial();
             }
         });
 
         removerUtilizadorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                // TODO: o que faz?
                 int index = utilizadoresList.getSelectedIndex();
-                utilizadoresList.setSelectedIndex(index);
                 utilizadoresList.ensureIndexIsVisible(index);
-
                 facade.removerUtilizador(utilizadores.get(index));
             }
         });
@@ -62,21 +65,32 @@ public class JAdministrador {
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
-                JTextField tipoF = new JTextField(); // TODO: trocar por checkboxes ou slider, fazer getTipos?
+                List<String> list = facade.getTiposFuncionarios();
+                String[] tipos = list.toArray(new String[0]);
+                JComboBox<String> tiposF = new JComboBox<>(tipos);
                 Object[] options = {
                         "Nome:", nomeF,
                         "Password:", passwordF,
-                        "Tipo", tipoF
+                        "Tipo", tiposF
                 };
 
-                int option = JOptionPane.showConfirmDialog(frame, options, "Criar utilizador", JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(frame, options,
+                        "Criar utilizador",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE);
 
                 if (option == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
                     String password = passwordF.getText();
-                    int tipo = Integer.parseInt(tipoF.getText());
-                    // TODO: erros
-                    facade.criarUtilizador(nome, password, tipo);
+                    String tipo = (String) tiposF.getSelectedItem(); //indice do array tipos
+                    try {
+                        facade.criarUtilizador(nome, password, tipo);
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(frame,
+                                "Erro ao criar utilizador.", // TODO: informaçao sobre erro
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });
@@ -94,21 +108,20 @@ public class JAdministrador {
                 }
             }
         });
+
     }
 
-
-    public void update() {
-        this.model.clear();
-
+    private void updateModel() {
         utilizadores = facade.getFuncionarios();
-        // TODO: coisas
-        if(utilizadores.size() < 1) {
-            removerUtilizadorButton.setEnabled(false);
-        } else {
-            for (String u : utilizadores) {
-                model.addElement(u);
-            }
+        for (String u : utilizadores) {
+            model.addElement(u);
         }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        this.model.clear();
+        updateModel();
     }
 
 }

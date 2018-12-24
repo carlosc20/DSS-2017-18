@@ -5,13 +5,19 @@ import business.utilizadores.Administrador;
 import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
+import javafx.collections.ObservableArrayBase;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Observable;
 
-public class ConfiguraFacil {
+public class ConfiguraFacil extends Observable {
 
-	private static ConfiguraFacil instancia = new ConfiguraFacil();
+    private static ConfiguraFacil instancia = new ConfiguraFacil();
 	/*
 	private Utilizador utilizadorAtual;
 	private Venda.Encomenda encomendaAtual;
@@ -23,110 +29,122 @@ public class ConfiguraFacil {
 	private UtilizadorDAO utilizadores;
 	*/
 
-	public static ConfiguraFacil getInstancia() {
-		return instancia;
-	}
+    public static ConfiguraFacil getInstancia() {
+        return instancia;
+    }
 
-	private ConfiguraFacil(){}
+    private ConfiguraFacil() {
+    }
 
-	public int autenticar(String nome, String password) throws Exception {
-		if (nome.equals("administrador")) return 1;
-		if (nome.equals("vendedor")) return 2;
-		if (nome.equals("repositor")) return 3;
-		return 0;
-	}
+    public int autenticar(String nome, String password) throws Exception {
+        if (nome.equals("administrador")) return 1;
+        if (nome.equals("vendedor")) return 2;
+        if (nome.equals("repositor")) return 3;
+        return 0;
+    }
 
-	public void criarEncomenda(String cliente, int nif) { //muda nome
-		throw new UnsupportedOperationException();
-	}
+    public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
+        throw new UnsupportedOperationException();
+    }
 
-	public List<Integer> adicionaComponente(int aIdComponente) {
-		throw new UnsupportedOperationException();
-	}
+    public List<Integer> adicionaComponente(int aIdComponente) {
+        throw new UnsupportedOperationException();
+    }
 
-	public void removeComponente(int aId) {
-		throw new UnsupportedOperationException();
-	}
+    public void removeComponente(int aId) {
+        throw new UnsupportedOperationException();
+    }
 
-	public List<Integer> adicionaPacote(int aId) {
-		throw new UnsupportedOperationException();
-	}
+    public List<Integer> adicionaPacote(int aId) {
+        throw new UnsupportedOperationException();
+    }
 
-	public void removePacote(int aId) {
-		throw new UnsupportedOperationException();
-	}
+    public void removePacote(int aId) {
+        throw new UnsupportedOperationException();
+    }
 
-	public void configuracaoOtima() {
-		throw new UnsupportedOperationException();
-	}
+    public void criarConfiguracaoOtima() { // muda nome
+        throw new UnsupportedOperationException();
+    }
 
-	public float finalizaEncomenda() {
-		throw new UnsupportedOperationException();
-	}
+    public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
+        throw new UnsupportedOperationException();
+    }
 
-	public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
-		throw new UnsupportedOperationException();
-	}
+    public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
+        throw new UnsupportedOperationException();
+    }
 
+    public void consultarStock() {
+        throw new UnsupportedOperationException();
+    }
 
-	/*
-	 * Cria um utilizador no sistema e adiciona-o à base de dados
-	 * @param String nome, String password, String tipo
-	 */
+    public void consultarConfiguracao() {
+        throw new UnsupportedOperationException();
+    }
 
-	public void criarUtilizador(String nome, String password, String tipo) {
-		switch (tipo){
-			case "Vendedor":
-				Utilizador u = new Vendedor(nome, password);
-			case "Administrador":
-				Utilizador u = new Administrador(nome, password);
-			case "Repositor":
-				Utilizador U = new Repositor(nome, password);
-			default:
-				Utilizador U = new Utilizador(nome, password);
-		}
-	}
+    public void consultarRegistoProduzidas() {
+        throw new UnsupportedOperationException();
+    }
 
-	/*
-	 * Remove um utilizador do sistema
-	 * @param String nome
-	 */
+    public void consultarFilaProducao() {
+        throw new UnsupportedOperationException();
+    }
 
-	public void removerUtilizador(String nome) {
+    private String[] gajosa = {"Ângelo", "Carlos", "Daniel", "Marco"}; // TODO: apagar quando DAO estiver feito
+    private ArrayList<String> gajos = new ArrayList<>(Arrays.asList(gajosa));
+
+    public List<String> getFuncionarios() { // novo
+        return gajos;
+    }
+
+    public List<String> getTiposFuncionarios() { // novo
+        String[] tipos = {"Administrador", "Repositor", "Vendedor"};
+        return Arrays.asList(tipos);
+    }
+
+    /**
+     * Cria um utilizador no sistema e adiciona-o à base de dados
+     */
+    public void criarUtilizador(String nome, String password, String tipo) {
+
+        Utilizador u;
+
+        switch (tipo) {
+            case "Vendedor":
+                u = new Vendedor(nome, password);
+            case "Administrador":
+                u = new Administrador(nome, password);
+            case "Repositor":
+                u = new Repositor(nome, password);
+            default:
+                u = new Utilizador(nome, password);
+        }
+
+        gajos.add(nome);
+        setChanged();
+        notifyObservers();
+
+    }
+
+    /**
+     * Remove um utilizador do sistema
+     */
+    public void removerUtilizador(String nome) {
+        gajos.remove(nome);
+        setChanged();
+        notifyObservers();
+	    /*
 		Utilizador u = utilizadores.get(nome); //utilizadores -> UtilizadorDAO;
 		utilizadores.delete(u);
-	}
+		*/
+    }
 
-	public void consultarStock() {
-		throw new UnsupportedOperationException();
-	}
-
-	public void consultarConfiguracao() {
-		throw new UnsupportedOperationException();
-	}
-
-	public void consultarRegistoProduzidas() {
-		throw new UnsupportedOperationException();
-	}
-
-	public void consultarFilaProducao() {
-		throw new UnsupportedOperationException();
-	}
-
-	private boolean otimizarPacotes() {
-		throw new UnsupportedOperationException();
-	}
-
-	private void formacaoPacote(int aId) {
-		throw new UnsupportedOperationException();
-	}
-
-	public List<String> getFuncionarios(){return null;}
-
-	// TODO: consultar pacotes e componentes para o repositor; funcionarios para o admin; criar/remover utilizador
+    // TODO: consultar pacotes e componentes para o repositor; criar/remover utilizador
 	/*
 	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
 		throw new UnsupportedOperationException();
 	}
 	*/
+
 }
