@@ -23,6 +23,7 @@ public class JVendedor {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
+        // TODO: atualizar tabelas
 
         sairButton.addActionListener(new ActionListener() {
             @Override
@@ -31,8 +32,6 @@ public class JVendedor {
             }
         });
         criarEncomendaButton.addActionListener(new ActionListener() {
-            // TODO: acabar
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
@@ -42,13 +41,16 @@ public class JVendedor {
                         "Nif:", nifF,
                 };
 
-                int option = JOptionPane.showConfirmDialog(frame, options, "Dados do cliente", JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(frame, options, "Dados do cliente", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
                 if (option == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
-                    int nif = Integer.parseInt(nifF.getText());
-                    facade.criarEncomenda(nome, nif);
-                    // TODO: erros
+                    try {
+                        int nif = Integer.parseInt(nifF.getText());
+                        facade.criarEncomenda(nome, nif);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                     new JNovaEncomenda();
                 }
             }

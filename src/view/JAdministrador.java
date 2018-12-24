@@ -62,21 +62,27 @@ public class JAdministrador {
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
-                JTextField tipoF = new JTextField(); // TODO: trocar por checkboxes ou slider, fazer getTipos?
+                List<String> list = facade.getFuncionarios();
+                String[] tipos = list.toArray(new String[0]);
+                JComboBox<String> tiposF = new JComboBox<>(tipos);
                 Object[] options = {
                         "Nome:", nomeF,
                         "Password:", passwordF,
-                        "Tipo", tipoF
+                        "Tipo", tiposF
                 };
 
-                int option = JOptionPane.showConfirmDialog(frame, options, "Criar utilizador", JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(frame, options, "Criar utilizador", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
                 if (option == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
                     String password = passwordF.getText();
-                    int tipo = Integer.parseInt(tipoF.getText());
-                    // TODO: erros
-                    facade.criarUtilizador(nome, password, tipo);
+                    String tipo = (String) tiposF.getSelectedItem(); //indice do array tipos
+                    System.out.println(tipo);
+                    try {
+                        facade.criarUtilizador(nome, password, tipo);
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(frame, "Erro ao criar utilizador.", "Erro", JOptionPane.ERROR_MESSAGE); // TODO: informaçao sobre erro
+                    }
                 }
             }
         });

@@ -2,6 +2,8 @@ package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ConfiguraFacil {
@@ -31,7 +33,7 @@ public class ConfiguraFacil {
 		return 0;
 	}
 
-	public void criarEncomenda(String cliente, int nif) { //muda nome
+	public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
 		throw new UnsupportedOperationException();
 	}
 
@@ -55,11 +57,11 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void configuracaoOtima() {
+	public void criarConfiguracaoOtima() { // muda nome
 		throw new UnsupportedOperationException();
 	}
 
-	public float finalizaEncomenda() {
+	public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
 		throw new UnsupportedOperationException();
 	}
 
@@ -67,7 +69,7 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	public void criarUtilizador(String nome, String aPassword, int aTipo) {
+	public void criarUtilizador(String nome, String password, String tipo) throws Exception {
 		throw new UnsupportedOperationException();
 	}
 
@@ -91,17 +93,12 @@ public class ConfiguraFacil {
 		throw new UnsupportedOperationException();
 	}
 
-	private boolean otimizarPacotes() {
-		throw new UnsupportedOperationException();
+	public List<String> getFuncionarios(){ // novo
+		String[] tipos = {"Administrador", "Repositor", "Vendedor"};
+		return Arrays.asList(tipos);
 	}
 
-	private void formacaoPacote(int aId) {
-		throw new UnsupportedOperationException();
-	}
-
-	public List<String> getFuncionarios(){return null;}
-
-	// TODO: consultar pacotes e componentes para o repositor; funcionarios para o admin; criar/remover utilizador
+	// TODO: consultar pacotes e componentes para o repositor; criar/remover utilizador
 	/*
 	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
 		throw new UnsupportedOperationException();
