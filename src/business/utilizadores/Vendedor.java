@@ -14,4 +14,8 @@ public class Vendedor extends Utilizador {
     public Vendedor(Utilizador u){
         super(u);
     }
+
+    public String getFuncao() {
+        return "Vendedor";
+    }
 }

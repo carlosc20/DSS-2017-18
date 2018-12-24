@@ -11,4 +11,8 @@ public class Repositor extends Utilizador {
     public Repositor(Utilizador u){
         super(u);
     }
+
+    public String getFuncao() {
+        return "Repositor";
+    }
 }

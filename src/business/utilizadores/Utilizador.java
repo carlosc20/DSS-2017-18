@@ -1,6 +1,6 @@
 package business.utilizadores;
 
-public class Utilizador {
+public abstract class Utilizador {
     private String nome;
     private String password;
 
@@ -35,4 +35,6 @@ public class Utilizador {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public abstract String getFuncao();
 }
