@@ -59,12 +59,13 @@ public class CategoriaDAO extends DAO {
 			Connect.close(cn);
 			return criarCategoria(designacao, subcategoria, obrigatoria);
 		} else {
+			Connect.close(cn);
 			return null;
 		}
 	}
 
 	public boolean remove(String designacao) throws SQLException {
-		return super.remove("Categoria", "designacao", designacao);
+		return super.removeStringKey("Categoria", "designacao", designacao);
 	}
 
 	public int size() throws SQLException {

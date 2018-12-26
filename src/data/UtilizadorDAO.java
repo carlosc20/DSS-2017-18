@@ -62,12 +62,13 @@ public class UtilizadorDAO extends DAO {
 			Connect.close(cn);
 			return criarUtilizador(nome, password, funcao);
 		} else {
+			Connect.close(cn);
 			return null;
 		}
 	}
 
 	public boolean remove(String nome) throws SQLException {
-		return super.remove("Utilizador", "nome", nome);
+		return super.removeStringKey("Utilizador", "nome", nome);
 	}
 
 	public int size() throws SQLException {
