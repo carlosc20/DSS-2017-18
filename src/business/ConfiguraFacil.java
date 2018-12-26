@@ -117,22 +117,27 @@ public class ConfiguraFacil extends Observable {
         notifyObservers();
     }
 
-    // TODO: 26/12/2018 acabar
-    public Object[][] getComponentes() { //novo
-
-        Object[][] data = {
-                {1, "Motor",
-                        "Opel V6", 1, 100},
-                {2, "Motor",
-                        "BMW X31", 3, 200},
-                {3, "Pneus",
-                        "Goodyear LT235", 2, 400},
-                {4, "Pintura",
-                        "Vermelho gloss", 20, 500},
-                {5, "Jantes",
-                        "Metal XMZ",10, 400}
-        };
-        return data;
+    /**
+     *
+     * @return Object[][] com todos os componentes no formato
+     * {id,Designação da categoria,designacao da componente,quantidade,preço}
+     */
+    // TODO: Precisa de ser testado depois dos DAOs estarem feitos
+    public Object[][] getComponentes() {
+        Set<Componente> componentes = todosComponentes.list();
+        Object[componentes.size()][5] componentesTodas;
+        int i = 0;
+        for(Componente c : componentes){
+            int id = c.getId();
+            String designacao = c.getDesignacao();
+            Categoria cat = c.getCategoria();
+            String catDesignacao = cat.getDesignacao();
+            int qnt = c.getStock();
+            int preco = c.getPreco();
+            componentesTodas[i] = {id,catDesignacao,designacao,qnt,preco};
+            i++;
+        }
+        return componentesTodas;
     }
 
     public String[] getColunasComponentes() {  //novo
@@ -180,9 +185,17 @@ public class ConfiguraFacil extends Observable {
 
     /**
      * Devolve uma lista com os nomes dos funcionários existentes.
+     * @return List<nomes:String>
      */
-    public List<String> getFuncionarios() { // novo
-        return gajos;
+    // TODO: Precisa de ser Testado depois dos DAOs estarem feitos
+    public List<String> getFuncionarios() {
+        List users = utilizadores.list();
+        List<String> nomes = new ArrayList<>();
+        for(Utilizador u: users){
+            String nome = u.getNome();
+            nomes.add(nome);
+        }
+        return nomes;
     }
 
 
