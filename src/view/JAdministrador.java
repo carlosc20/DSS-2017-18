@@ -17,9 +17,9 @@ public class JAdministrador implements Observer {
     private JButton sairButton;
     private JButton criarUtilizadorButton;
     private JButton removerUtilizadorButton;
+
     private JList<String> utilizadoresList;
     private DefaultListModel<String> model;
-
     private List<String> utilizadores;
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
@@ -38,11 +38,8 @@ public class JAdministrador implements Observer {
         model = new DefaultListModel<>();
         updateModel();
         utilizadoresList.setModel(model);
-        utilizadoresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        utilizadoresList.setLayoutOrientation(JList.VERTICAL);
 
-
-
+        // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,13 +57,13 @@ public class JAdministrador implements Observer {
             }
         });
 
+        // abre janela para introduzir dados de utilizador
         criarUtilizadorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
-                List<String> list = facade.getTiposFuncionarios();
-                String[] tipos = list.toArray(new String[0]);
+                String[] tipos = facade.getTiposFuncionarios().toArray(new String[0]);
                 JComboBox<String> tiposF = new JComboBox<>(tipos);
                 Object[] options = {
                         "Nome:", nomeF,

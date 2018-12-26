@@ -24,22 +24,32 @@
           <text value="Criar encomenda"/>
         </properties>
       </component>
-      <component id="ac8db" class="javax.swing.JTable" binding="filaProducaoTable">
+      <scrollpane id="98461">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
-      </component>
-      <component id="69d97" class="javax.swing.JTable" binding="registoProduzidasTable">
+        <border type="none"/>
+        <children>
+          <component id="69d97" class="javax.swing.JTable" binding="registoProduzidasTable">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+      <scrollpane id="d1a04">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
-      </component>
+        <border type="none"/>
+        <children>
+          <component id="ac8db" class="javax.swing.JTable" binding="filaProducaoTable">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>

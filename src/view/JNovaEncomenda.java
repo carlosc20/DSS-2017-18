@@ -3,6 +3,7 @@ package view;
 import business.ConfiguraFacil;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -24,7 +25,7 @@ public class JNovaEncomenda {
 
         JFrame frame = new JFrame("Nova encomenda");
         frame.setContentPane(mainPanel);
-        frame.pack(); // this.setSize(500,600);
+        frame.setSize(500,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -53,7 +54,16 @@ public class JNovaEncomenda {
         adicionarPacoteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                DefaultTableModel model;
+                JTable table = new JTable();
+                int option = JOptionPane.showConfirmDialog(frame,
+                        new JScrollPane(table),
+                        "Dados do cliente",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE);
+                if (option == JOptionPane.OK_OPTION) {
 
+                }
             }
         });
 
