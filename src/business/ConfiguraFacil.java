@@ -151,8 +151,21 @@ public class ConfiguraFacil extends Observable {
         return columnNames;
     }
 
-    public Object[][] getPacotes() {  //novo
-        return null;
+    /**
+     *
+     * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
+     */
+    //Precisa de ser testado depois dos DAOs
+    public Object[][] getPacotes() {
+        List pacotes = todosPacotes.list();
+        Object[pacotes.size()][2] pacotesTodos;
+        int i = 0;
+        for(Pacote p : pacotes){
+            int id = p.getId();
+            String designacao = p.getDesignacao();
+            pacotesTodos[i] = {id,designacao};
+            i++;
+        }
     }
 
     public String[] getColunasPacotes() {  //novo
