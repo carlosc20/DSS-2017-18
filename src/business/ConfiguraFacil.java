@@ -71,10 +71,10 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-
+    //fazer no encomendaDAO
     // TODO: 26/12/2018 acabar
     public Object[][] getRegistoProduzidas() { //novo
-        return null;
+        return encomendas.getRegistoProduzidas();
     }
 
     public String[] getColunasRegistoProduzidas() { //novo
