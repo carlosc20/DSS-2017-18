@@ -17,8 +17,8 @@ public class JAdministrador implements Observer {
     private JButton sairButton;
     private JButton criarUtilizadorButton;
     private JButton removerUtilizadorButton;
-    private JList<String> utilizadoresList;
 
+    private JList<String> utilizadoresList;
     private DefaultListModel<String> model;
     private List<String> utilizadores;
 
@@ -38,8 +38,6 @@ public class JAdministrador implements Observer {
         model = new DefaultListModel<>();
         updateModel();
         utilizadoresList.setModel(model);
-        utilizadoresList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        utilizadoresList.setLayoutOrientation(JList.VERTICAL);
 
         // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {

@@ -36,12 +36,8 @@ public class ConfiguraFacil extends Observable {
     private ConfiguraFacil() {
     }
 
-    public int autenticar(String nome, String password) throws Exception {
-        if (nome.equals("administrador")) return 0;
-        if (nome.equals("vendedor")) return 1;
-        if (nome.equals("repositor")) return 2;
-        throw new Exception();
-    }
+
+    // -------------------------------- Encomenda ------------------------------------------
 
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
         throw new UnsupportedOperationException();
@@ -86,38 +82,101 @@ public class ConfiguraFacil extends Observable {
     }
 
 
+    // -------------------------------- Stock -----------------------------------------------
 
+    /**
+     * Substitui o stock atual pelo fornecido num ficheiro CSV
+     *
+     * @param file ficheiro de formato CSV que contém as informações de stock (componentes e pacotes)
+     */
     public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
+
+
         setChanged();
         notifyObservers();
-        throw new UnsupportedOperationException();
     }
 
-    public void consultarStock() { // TODO: separar em componentes e pacotes
-        throw new UnsupportedOperationException();
+    // TODO: 26/12/2018 acabar
+    public Object[][] getComponentes() { //novo
+
+        Object[][] data = {
+                {1, "Motor",
+                        "Opel V6", 1, 100},
+                {2, "Motor",
+                        "BMW X31", 3, 200},
+                {3, "Pneus",
+                        "Goodyear LT235", 2, 400},
+                {4, "Pintura",
+                        "Vermelho gloss", 20, 500},
+                {5, "Jantes",
+                        "Metal XMZ",10, 400}
+        };
+        return data;
+    }
+
+    public String[] getColunasComponentes() {  //novo
+        String[] columnNames = {"Id",
+                "Categoria",
+                "Designação",
+                "Qtd em stock",
+                "Preço(€)"};
+        return columnNames;
+    }
+
+    public Object[][] getPacotes() {  //novo
+        return null;
+    }
+
+    public String[] getColunasPacotes() {  //novo
+        String[] columnNames = {"Id",
+                "Designação",
+                "Desconto(€)",
+                "Componentes"};
+        return columnNames;
     }
 
 
+    // -------------------------------- Utilizadores ----------------------------------------
 
-    public List<String> getFuncionarios() { // novo
-        return gajos;
-    }
-
-    public List<String> getTiposFuncionarios() { // novo
-        String[] tipos = {"Administrador", "Repositor", "Vendedor"};
-        return Arrays.asList(tipos);
+    /**
+     * Devolve o cargo do funcionário correspondente às credencias fornecidas.
+     *
+     * @return 0 se for administrador, 1 se for vendedor, 2 se for repositor
+     */
+    public int autenticar(String nome, String password) throws Exception {
+        if (nome.equals("administrador")) return 0;
+        if (nome.equals("vendedor")) return 1;
+        if (nome.equals("repositor")) return 2;
+        throw new Exception();
     }
 
     private String[] gajosa = {"Ângelo", "Carlos", "Daniel", "Marco"}; // TODO: apagar quando DAO estiver feito
     private ArrayList<String> gajos = new ArrayList<>(Arrays.asList(gajosa));
 
     /**
+     * Devolve uma lista com os nomes dos funcionários existentes.
+     */
+    public List<String> getFuncionarios() { // novo
+        return gajos;
+    }
+
+
+    /**
+     * Devolve uma lista com os tipos de funcionários existentes.
+     */
+    public List<String> getTiposFuncionarios() { // novo
+        String[] tipos = {"Administrador", "Repositor", "Vendedor"};
+        return Arrays.asList(tipos);
+    }
+
+    /**
      * Cria um utilizador no sistema e adiciona-o à base de dados
      */
     public void criarUtilizador(String nome, String password, String tipo) {
 
+        gajos.add(nome);
+        /*
         Utilizador u;
-
         switch (tipo) {
             case "Vendedor":
                 u = new Vendedor(nome, password);
@@ -125,27 +184,27 @@ public class ConfiguraFacil extends Observable {
                 u = new Administrador(nome, password);
             case "Repositor":
                 u = new Repositor(nome, password);
-            default:
-                u = new Utilizador(nome, password);
         }
-
-        gajos.add(nome);
+        DAO.add(u);
+        */
         setChanged();
         notifyObservers();
-
     }
+
 
     /**
      * Remove um utilizador do sistema
      */
     public void removerUtilizador(String nome) {
+
         gajos.remove(nome);
+        // TODO: n da com chave so no DAO?
+        /*
+		Utilizador u = DAO.get(nome);
+		DAO.remove()
+		*/
         setChanged();
         notifyObservers();
-	    /*
-		Utilizador u = utilizadores.get(nome); //utilizadores -> UtilizadorDAO;
-		utilizadores.delete(u);
-		*/
     }
 
 	/*

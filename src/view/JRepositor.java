@@ -4,6 +4,7 @@ import business.ConfiguraFacil;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
@@ -13,11 +14,18 @@ public class JRepositor implements Observer {
 
     private JPanel mainPanel;
     private JButton atualizarStockButton;
-    private JTable pacotesTable;
-    private JTable componentesTable;
     private JButton sairButton;
 
-    ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+    private JTable componentesTable;
+    private DefaultTableModel modelC; // modelo dos conteúdos da tabela de componentes
+
+    private JTable pacotesTable;
+    private DefaultTableModel modelP; // modelo dos conteúdos da tabela de pacotes
+
+    private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
+    // TODO: 26/12/2018 dar sort?,  ver mais sobre o componente?, ir buscar dados por paginas
+    // modelC.getValueAt(componentesTable.getSelectedRow(), 1);
 
     public JRepositor() {
 
@@ -30,10 +38,23 @@ public class JRepositor implements Observer {
 
         facade.addObserver(this);
 
-        // TODO: atualizar as tabelas, getPacotes, getComponentes
-        updatePacotes();
+        modelC = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        componentesTable.setModel(modelC);
         updateComponentes();
 
+        modelP = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        pacotesTable.setModel(modelP);
+        updatePacotes();
 
         // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {
@@ -75,16 +96,19 @@ public class JRepositor implements Observer {
     }
 
     private void updateComponentes() {
-        //facade.getComponentes();
+        String[] columnNames = facade.getColunasComponentes();
+        Object[][] data = facade.getComponentes();
+        modelC.setDataVector(data, columnNames);
     }
 
     private void updatePacotes() {
-        //facade.getPacotes();
+        String[] columnNames = facade.getColunasPacotes();
+        Object[][] data = facade.getPacotes();
+        modelP.setDataVector(data, columnNames);
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        // TODO: limpar tabelas
         updatePacotes();
         updateComponentes();
     }

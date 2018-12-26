@@ -24,7 +24,7 @@ public class JNovaEncomenda {
 
         JFrame frame = new JFrame("Nova encomenda");
         frame.setContentPane(mainPanel);
-        frame.pack(); // this.setSize(500,600);
+        frame.setSize(500,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -53,7 +53,10 @@ public class JNovaEncomenda {
         adicionarPacoteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                /*
+                JTable table = new JTable(buildTableModel(rs));
+                JOptionPane.showMessageDialog(null, new JScrollPane(table));
+                */
             }
         });
 
