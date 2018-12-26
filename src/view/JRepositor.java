@@ -25,6 +25,8 @@ public class JRepositor implements Observer {
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
     // TODO: 26/12/2018 dar sort?,  ver mais sobre o componente?, ir buscar dados por paginas
+    // https://docs.oracle.com/javase/tutorial/uiswing/examples/components/TableSortDemoProject/src/components/TableSortDemo.java
+    // https://docs.oracle.com/javase/tutorial/uiswing/examples/components/TableFilterDemoProject/src/components/TableFilterDemo.java
     // modelC.getValueAt(componentesTable.getSelectedRow(), 1);
 
     public JRepositor() {
@@ -38,6 +40,7 @@ public class JRepositor implements Observer {
 
         facade.addObserver(this);
 
+        //atualiza tabelas
         modelC = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -55,6 +58,7 @@ public class JRepositor implements Observer {
         };
         pacotesTable.setModel(modelP);
         updatePacotes();
+
 
         // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {
@@ -91,8 +95,6 @@ public class JRepositor implements Observer {
                 }
             }
         });
-
-
     }
 
     private void updateComponentes() {

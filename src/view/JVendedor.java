@@ -3,20 +3,30 @@ package view;
 import business.ConfiguraFacil;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
 
-public class JVendedor {
+public class JVendedor implements Observer {
 
     private JPanel mainPanel;
     private JButton sairButton;
     private JButton criarEncomendaButton;
-    private JTable filaProducaoTable;
-    private JTable registoProduzidasTable;
 
-    ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+    private JTable filaProducaoTable;
+    private DefaultTableModel modelFP; // modelo dos conteúdos da tabela de fila de produção
+
+    private JTable registoProduzidasTable;
+    private DefaultTableModel modelRP; // modelo dos conteúdos da tabela de encomendas produzidas
+
+    private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
+
+    // TODO: atualizar tabelas, desativar janela enquanto se cria encomenda
 
     public JVendedor() {
+
         JFrame frame = new JFrame("Vendedor");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -24,7 +34,27 @@ public class JVendedor {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        // TODO: atualizar tabelas, desativar janela enquanto se cria encomenda
+        facade.addObserver(this);
+
+        //atualiza tabelas
+        modelFP = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        filaProducaoTable.setModel(modelFP);
+        updateFilaProducao();
+
+        modelRP = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        registoProduzidasTable.setModel(modelRP);
+        updateRegistoProduzidas();
+
 
         // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {
@@ -46,19 +76,44 @@ public class JVendedor {
                         "Nif:", nifF,
                 };
 
-                int option = JOptionPane.showConfirmDialog(frame, options, "Dados do cliente", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                int option = JOptionPane.showConfirmDialog(frame,
+                        options,
+                        "Dados do cliente",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE);
 
                 if (option == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
                     try {
                         int nif = Integer.parseInt(nifF.getText());
                         facade.criarEncomenda(nome, nif);
+                        new JNovaEncomenda();
                     } catch (Exception e1) {
-                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(frame,
+                                "Erro", // TODO: informaçao sobre erro
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
                     }
-                    new JNovaEncomenda();
                 }
             }
         });
+    }
+
+    private void updateFilaProducao() {
+        String[] columnNames = facade.getColunasFilaProducao();
+        Object[][] data = facade.getFilaProducao();
+        modelFP.setDataVector(data, columnNames);
+    }
+
+    private void updateRegistoProduzidas() {
+        String[] columnNames = facade.getColunasRegistoProduzidas();
+        Object[][] data = facade.getRegistoProduzidas();
+        modelRP.setDataVector(data, columnNames);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        updateFilaProducao();
+        updateRegistoProduzidas();
     }
 }

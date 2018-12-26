@@ -59,7 +59,6 @@ public class Inicial {
                             "Dados incorretos, tente novamente.",
                             "Erro",
                             JOptionPane.ERROR_MESSAGE);
-                } finally {
                     nomeField.requestFocusInWindow();
                 }
             }

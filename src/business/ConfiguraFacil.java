@@ -40,7 +40,7 @@ public class ConfiguraFacil extends Observable {
     // -------------------------------- Encomenda ------------------------------------------
 
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
-        throw new UnsupportedOperationException();
+
     }
 
     public List<Integer> adicionaComponente(int aIdComponente) {
@@ -67,18 +67,39 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-
-
     public void consultarConfiguracao() {
         throw new UnsupportedOperationException();
     }
 
-    public void consultarRegistoProduzidas() {
-        throw new UnsupportedOperationException();
+
+    // TODO: 26/12/2018 acabar
+    public Object[][] getRegistoProduzidas() { //novo
+        return null;
     }
 
-    public void consultarFilaProducao() {
-        throw new UnsupportedOperationException();
+    public String[] getColunasRegistoProduzidas() { //novo
+        String[] columnNames = {
+                "Id",
+                "Cliente",
+                "Nif",
+                "Preço sem descontos (€)",
+                "Descontos (€)",
+                "Componentes",
+                "Pacotes"
+        };
+        return columnNames;
+    }
+
+    public Object[][] getFilaProducao() { //novo
+        return null;
+    }
+
+    public String[] getColunasFilaProducao() { //novo
+        String[] columnNames = {
+                "Id",
+                "Componentes em falta"
+        };
+        return columnNames;
     }
 
 
@@ -115,11 +136,13 @@ public class ConfiguraFacil extends Observable {
     }
 
     public String[] getColunasComponentes() {  //novo
-        String[] columnNames = {"Id",
+        String[] columnNames = {
+                "Id",
                 "Categoria",
                 "Designação",
                 "Qtd em stock",
-                "Preço(€)"};
+                "Preço(€)"
+        };
         return columnNames;
     }
 
@@ -128,10 +151,12 @@ public class ConfiguraFacil extends Observable {
     }
 
     public String[] getColunasPacotes() {  //novo
-        String[] columnNames = {"Id",
+        String[] columnNames = {
+                "Id",
                 "Designação",
                 "Desconto(€)",
-                "Componentes"};
+                "Componentes"
+        };
         return columnNames;
     }
 
