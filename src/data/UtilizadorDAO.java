@@ -19,7 +19,7 @@ public class UtilizadorDAO extends DAO {
 		System.out.println(udao.add(new Administrador("Daniel", "123456")));
 		System.out.println(udao.list().toString());
 		System.out.println(udao.get("Daniel").getPassword());
-		System.out.println(udao.remove(new Administrador("Daniel", "")));
+		System.out.println(udao.remove("Daniel"));
 		System.out.println(udao.size());
 	}
 
@@ -66,8 +66,8 @@ public class UtilizadorDAO extends DAO {
 		}
 	}
 
-	public boolean remove(Utilizador utilizador) throws SQLException {
-		return super.remove("Utilizador", "nome", utilizador.getNome());
+	public boolean remove(String nome) throws SQLException {
+		return super.remove("Utilizador", "nome", nome);
 	}
 
 	public int size() throws SQLException {
