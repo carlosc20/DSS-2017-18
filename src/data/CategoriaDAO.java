@@ -30,7 +30,7 @@ public class CategoriaDAO extends DAO {
         return numRows == 1;
     }
 
-    public List<Categoria> list() throws SQLException {
+    public List<Categoria> list() throws SQLException, CategoriaNaoExisteException {
         Connection cn = Connect.connect();
         ResultSet res = super.getAll(cn, "Categoria");
         List<Categoria> list = new ArrayList<>();
@@ -42,7 +42,7 @@ public class CategoriaDAO extends DAO {
         return list;
     }
 
-    public Categoria get(String designacao) throws SQLException {
+    public Categoria get(String designacao) throws SQLException, CategoriaNaoExisteException {
         Connection cn = Connect.connect();
         PreparedStatement st = cn.prepareStatement("SELECT 1 FROM Categoria WHERE designacao = ? LIMIT 1");
         st.setString(1, designacao);
