@@ -9,6 +9,7 @@ import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
+import business.venda.categorias.CategoriaNaoExisteException;
 import business.venda.categorias.CategoriaObrigatoria;
 import data.*;
 import business.venda.Encomenda;
@@ -167,6 +168,7 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
+
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
         throw new UnsupportedOperationException();
     }
@@ -189,13 +191,19 @@ public class ConfiguraFacil extends Observable {
         List<Categoria> categ = new ArrayList<>();
         try {
             categ = categorias.list();
-            } catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } catch (CategoriaNaoExisteException categoriaNaoExiste) {
+            try {
+                categorias.remove(categoriaNaoExiste.getMessage());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         Set<Componente> comp = encomendaAtual.getComponentes();
         if (categ.size() == 0) return null;
 
-        Object[][] data = buildCategObirgatorias(categ);
+        Object[][] data = buildCategObrigatorias(categ);
         for(int i = 0; i<data.length; i++)
             for(Componente c : comp) {
                 if (c.getCategoria().getDesignacao().equals(data[i][0])) {
@@ -205,18 +213,18 @@ public class ConfiguraFacil extends Observable {
         return data;
     }
 
-    private Object[][] buildCategObirgatorias (List<Categoria> categ) {
-        Object[][] data = new Object[categ.size()][5];
-        int i = 0;
-        for (Categoria cat : categ) {
-            String des = cat.getDesignacao();
-            if (cat instanceof CategoriaObrigatoria) {
-                data[i] = new Object[]{cat.getDesignacao(), null, null, null, null};
-                i++;
+        private Object[][] buildCategObrigatorias (List<Categoria> categ) {
+            Object[][] data = new Object[categ.size()][5];
+            int i = 0;
+            for (Categoria cat : categ) {
+                String des = cat.getDesignacao();
+                if (cat.getObrigatoria()) {
+                    data[i] = new Object[]{des, null, null, null, null};
+                    i++;
+                }
             }
+            return data;
         }
-        return data;
-    }
 
 
     // -------------------------------- Stock --------------------------------------------------------------------------
@@ -357,9 +365,9 @@ public class ConfiguraFacil extends Observable {
      */
     public String autenticar(String nome, String password) throws Exception {
         // TODO: tirar na versão final
-        if (nome.equals("administrador")) return "administrador";
-        if (nome.equals("vendedor")) return "vendedor";
-        if (nome.equals("repositor")) return "repositor";
+        if (nome.equals("Administrador")) return "Administrador";
+        if (nome.equals("Vendedor")) return "Vendedor";
+        if (nome.equals("Repositor")) return "Repositor";
 
         Utilizador u = utilizadores.get(nome);
         if (u.getPassword().equals(password)) {

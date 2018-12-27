@@ -11,6 +11,10 @@ import java.util.List;
 
 public class FuncaoDAO extends DAO {
 
+    public static void main(String[] args) throws Exception {
+        System.out.println(new FuncaoDAO().list());
+    }
+
     public boolean add(String funcao) throws SQLException {
         Connection cn = Connect.connect();
         PreparedStatement st = cn.prepareStatement("REPLACE INTO Funcao (designacao) VALUES (?)");

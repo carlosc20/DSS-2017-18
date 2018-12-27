@@ -37,15 +37,15 @@ public class Inicial {
                     // new JNovaEncomenda();
                     // TODO: 27/12/2018
                     switch (cargo) {
-                        case "administrador":
+                        case "Administrador":
                             frame.dispose();
                             new JAdministrador();
                             break;
-                        case "vendedor":
+                        case "Vendedor":
                             frame.dispose();
                             new JVendedor();
                             break;
-                        case "repositor":
+                        case "Repositor":
                             frame.dispose();
                             new JRepositor();
                             break;
