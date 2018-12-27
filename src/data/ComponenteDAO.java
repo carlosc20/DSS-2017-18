@@ -72,6 +72,24 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
+	public List<Componente> list(Categoria categoria) throws SQLException {
+		String designacaoCategoria = categoria.getDesignacao();
+		Connection cn = Connect.connect();
+		List<Componente> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement("SELECT id, designacao, preco, stock FROM Componente WHERE categoria = ?");
+		st.setString(1, designacaoCategoria);
+		ResultSet res = st.executeQuery();
+		ComponenteDAO componenteDAO =  new ComponenteDAO();
+		while (res.next()){
+			int id = res.getInt("id");
+			String designacao = res.getString("designacao");
+			int preco = res.getInt("preco");
+			int stock = res.getInt("stock");
+			result.add(new Componente(id, designacao, preco, stock, null, null, categoria));
+		}
+		return result;
+	}
+
 	public Componente get(int id) throws SQLException {
 		Connection cn = Connect.connect();
 		PreparedStatement st = cn.prepareStatement("SELECT designacao, preco, stock, categoria FROM Componente WHERE id = ? LIMIT 1");

@@ -164,6 +164,11 @@ public class Configuracao {
 							pacotes.remove(p);
 							pac.add(p.getId());
 							valorRetirado -= p.getDesconto();
+							// Ver melhor isto !!!!
+							for(int key : pacotesDormentes.keySet()){
+								if(p.getComponentes().contains(key))
+									pacotesDormentes.remove(key);
+							}
 							//PacoteDormente pd = new PacoteDormente(p,0);
 						}
 						//pd.incr();
@@ -382,35 +387,15 @@ public class Configuracao {
 	}
 
 	public Set<Componente> getComponentes() {
-		return componentes;
+		return new HashSet<>(componentes);
 	}
 
 	public Set<Integer> getDependentes() {
-		return dependentes;
+		return new HashSet<>(dependentes);
 	}
 
 	public Set<Pacote> getPacotes() {
-		return pacotes;
-	}
-
-	public ComponenteDAO getcDAO() {
-		return cDAO;
-	}
-
-	public PacoteDAO getpDAO() {
-		return pDAO;
-	}
-
-	public void setComponentes(Set<Componente> componentes) {
-		this.componentes = componentes;
-	}
-
-	public void setDependentes(Set<Integer> dependentes) {
-		this.dependentes = dependentes;
-	}
-
-	public void setPacotes(Set<Pacote> pacotes) {
-		this.pacotes = pacotes;
+		return new HashSet<>(pacotes);
 	}
 
 	public void setcDAO(ComponenteDAO cDAO) {
