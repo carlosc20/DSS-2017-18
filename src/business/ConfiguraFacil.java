@@ -26,10 +26,10 @@ public class ConfiguraFacil extends Observable {
     private static ConfiguraFacil instancia = new ConfiguraFacil();
 	private Utilizador utilizadorAtual;
 	private Encomenda encomendaAtual;
-	private CategoriaDAO categorias;
+	private CategoriaDAO categorias = new CategoriaDAO();
 	private EncomendaEmProducaoDAO filaProducao;
-	private ComponenteDAO todosComponentes;
-	private PacoteDAO todosPacotes;
+	private ComponenteDAO todosComponentes = new ComponenteDAO();
+	private PacoteDAO todosPacotes = new PacoteDAO();
 	private EncomendaDAO encomendas; // nome corrigido
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
@@ -164,8 +164,9 @@ public class ConfiguraFacil extends Observable {
             } catch (SQLException e) {
             e.printStackTrace();
         }
-        Set<Componente> comp = encomendaAtual.getComponentes();
-        if (categ.size() == 0) return null;
+        Set<Componente> comp = new HashSet<>();
+                //encomendaAtual.getComponentes();
+        //if (categ.size() == 0) return null;
 
         Object[][] data = buildCategObirgatorias(categ);
         for(int i = 0; i<data.length; i++)
