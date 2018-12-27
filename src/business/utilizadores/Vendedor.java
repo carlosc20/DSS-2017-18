@@ -16,6 +16,6 @@ public class Vendedor extends Utilizador {
     }
 
     public String getFuncao() {
-        return "vendedor";
+        return "Vendedor";
     }
 }

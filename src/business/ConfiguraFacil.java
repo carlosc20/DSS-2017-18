@@ -8,6 +8,7 @@ import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
+import business.venda.categorias.CategoriaNaoExisteException;
 import business.venda.categorias.CategoriaObrigatoria;
 import data.*;
 import business.venda.Encomenda;
@@ -158,8 +159,14 @@ public class ConfiguraFacil extends Observable {
         List<Categoria> categ = new ArrayList<>();
         try {
             categ = categorias.list();
-            } catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } catch (CategoriaNaoExisteException categoriaNaoExiste) {
+            try {
+                categorias.remove(categoriaNaoExiste.getMessage());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         Set<Componente> comp = encomendaAtual.getComponentes();
         if (categ.size() == 0) return null;
@@ -326,9 +333,9 @@ public class ConfiguraFacil extends Observable {
      */
     public String autenticar(String nome, String password) throws Exception {
         // TODO: tirar na versão final
-        if (nome.equals("administrador")) return "administrador";
-        if (nome.equals("vendedor")) return "vendedor";
-        if (nome.equals("repositor")) return "repositor";
+        if (nome.equals("Administrador")) return "Administrador";
+        if (nome.equals("Vendedor")) return "Vendedor";
+        if (nome.equals("Repositor")) return "Repositor";
 
         Utilizador u = utilizadores.get(nome);
         if (u.getPassword().equals(password)) {
