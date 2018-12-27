@@ -1,6 +1,7 @@
 package data;
 
 import business.produtos.Componente;
+import business.produtos.Pacote;
 import business.venda.categorias.Categoria;
 
 import java.sql.Connection;
@@ -54,6 +55,21 @@ public class ComponenteDAO extends DAO {
 		}
 		Connect.close(cn);
 		return list;
+	}
+
+	public List<Componente> list(Pacote pacote) throws SQLException {
+		int idPacote = pacote.getId();
+		Connection cn = Connect.connect();
+		List<Componente> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement("SELECT id_componente FROM Pacote_Componente WHERE id_pacote = ?");
+		st.setInt(1, idPacote);
+		ResultSet res = st.executeQuery();
+		ComponenteDAO componenteDAO =  new ComponenteDAO();
+		while (res.next()){
+			int id = res.getInt("id_componente");
+			result.add(componenteDAO.get(id));
+		}
+		return result;
 	}
 
 	public Componente get(int id) throws SQLException {
