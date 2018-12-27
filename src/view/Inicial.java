@@ -34,7 +34,6 @@ public class Inicial {
 
                 try {
                     int cargo = facade.autenticar(nome, password);
-                    System.out.println(cargo);
                     switch (cargo) {
                         case 0:
                             frame.dispose();

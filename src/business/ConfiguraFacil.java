@@ -71,6 +71,15 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
+    public List<String> getCategoriasObrigatorias() {
+        String[] tipos = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(tipos);
+    }
+
+    public List<String> getCategoriasOpcionais() {
+        String[] tipos = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(tipos);
+    }
 
     // TODO: 26/12/2018 acabar
     public Object[][] getRegistoProduzidas() { //novo
@@ -131,6 +140,17 @@ public class ConfiguraFacil extends Observable {
                         "Vermelho gloss", 20, 500},
                 {5, "Jantes",
                         "Metal XMZ",10, 400}
+        };
+        return data;
+    }
+
+    public Object[][] getComponentes(String categoria) { //novo
+
+        Object[][] data = {
+                {1, "Motor",
+                        "Opel V6", 1, 100},
+                {2, "Motor",
+                        "BMW X31", 3, 200}
         };
         return data;
     }
