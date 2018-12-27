@@ -6,15 +6,15 @@ import java.sql.SQLException;
 
 public class Connect {
 
-    private static final String URL = "sql7.freemysqlhosting.net";
-    private static final String SCHEMA = "sql7271350";
-    private static final String USERNAME = "sql7271350";
-    private static final String PASSWORD = "h4zuDkhHCa";
+    private static final String URL = "db4free.net:3306";
+    private static final String SCHEMA = "configfacil";
+    private static final String USERNAME = "configfacil";
+    private static final String PASSWORD = "configfacil";
 
     public static Connection connect() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            return DriverManager.getConnection("jdbc:mysql://" + URL + "/" + SCHEMA, USERNAME, PASSWORD);
+            return DriverManager.getConnection("jdbc:mysql://" + URL + "/" + SCHEMA + "?autoReconnect=true&useSSL=false", USERNAME, PASSWORD);
         } catch (Exception e) {
             e.printStackTrace();
         }

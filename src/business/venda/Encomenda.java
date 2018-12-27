@@ -1,10 +1,10 @@
 package business.venda;
 
-import business.produtos.Componente;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -26,29 +26,29 @@ public class Encomenda {
 		this.configuracao = new Configuracao(cDAO, pDAO);
 	}
 
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente(int idComponente){
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
 		return configuracao.getEfeitosSecundariosAdicionarComponente(idComponente);
 	}
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote){
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
 		return configuracao.getEfeitosSecundariosAdicionarComponente(idPacote);
 	}
 
-	public void adicionaComponente(int idComponente) throws ComponenteJaExisteNaConfiguracao {
+	public void adicionaComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
 		this.valor += configuracao.adicionarComponente(idComponente);
 	}
 
-	public void removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
+	public void removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
 		this.valor += configuracao.removerComponente(idComponente);
 	}
 
-	public void adicionaPacote(int idPacote) throws PacoteJaExisteNaConfiguracao, PacoteGeraConflitos {
+	public void adicionaPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException {
 		this.valor += configuracao.adicionarPacote(idPacote);
 	}
 
-	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracao {
+	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
 		this.valor += configuracao.removerPacote(idPacote);
 	}
-	public Set<Integer> finalizarEncomenda(){
+	public Set<Integer> finalizarEncomenda() throws SQLException {
 		setData(LocalDate.now());
 		return configuracao.atualizaStock();
 	}

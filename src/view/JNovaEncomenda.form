@@ -3,29 +3,11 @@
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="11" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="500" height="531"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <component id="ac872" class="javax.swing.JButton" binding="configOtimaButton">
-        <constraints>
-          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-          <text value="Criar configuração ótima"/>
-        </properties>
-      </component>
-      <component id="16c7b" class="javax.swing.JButton" binding="finalizarButton">
-        <constraints>
-          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-          <text value="Finalizar encomenda"/>
-        </properties>
-      </component>
       <scrollpane id="da8ba">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -90,7 +72,7 @@
           </component>
         </children>
       </scrollpane>
-      <component id="c274e" class="javax.swing.JButton" binding="adicionarCategoriaButton" default-binding="true">
+      <component id="c274e" class="javax.swing.JButton" binding="opcionalButton">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -98,12 +80,12 @@
           <text value="Adicionar componente"/>
         </properties>
       </component>
-      <component id="4eeb8" class="javax.swing.JButton" binding="adicionarComponenteButton" default-binding="true">
+      <component id="4eeb8" class="javax.swing.JButton" binding="obrigatorioButton">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
           <text value="Adicionar componente"/>
         </properties>
       </component>
@@ -115,13 +97,39 @@
           <text value="Adicionar pacote"/>
         </properties>
       </component>
-      <component id="3d0e9" class="javax.swing.JButton" binding="adicionarComponenteButton1" default-binding="true">
+      <component id="3d0e9" class="javax.swing.JButton" binding="dependenteButton">
         <constraints>
           <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <enabled value="false"/>
           <text value="Adicionar componente"/>
+        </properties>
+      </component>
+      <component id="5880" class="javax.swing.JButton" binding="cancelarButton" default-binding="true">
+        <constraints>
+          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Cancelar"/>
+        </properties>
+      </component>
+      <component id="16c7b" class="javax.swing.JButton" binding="finalizarButton">
+        <constraints>
+          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Finalizar encomenda"/>
+        </properties>
+      </component>
+      <component id="ac872" class="javax.swing.JButton" binding="configOtimaButton">
+        <constraints>
+          <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Criar configuração ótima"/>
         </properties>
       </component>
     </children>

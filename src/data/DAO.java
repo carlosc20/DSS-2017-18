@@ -7,10 +7,19 @@ import java.sql.SQLException;
 
 public class DAO {
 
-	protected boolean remove(String table, String column, String key) throws SQLException {
+	protected boolean removeStringKey(String table, String column, String key) throws SQLException {
 		Connection cn = Connect.connect();
 		PreparedStatement st = cn.prepareStatement("DELETE FROM " + table + " WHERE " + column + " = ?");
 		st.setString(1, key);
+		int numRows = st.executeUpdate();
+		Connect.close(cn);
+		return numRows == 1;
+	}
+
+	protected boolean removeIntKey(String table, String column, int key) throws SQLException {
+		Connection cn = Connect.connect();
+		PreparedStatement st = cn.prepareStatement("DELETE FROM " + table + " WHERE " + column + " = ?");
+		st.setInt(1, key);
 		int numRows = st.executeUpdate();
 		Connect.close(cn);
 		return numRows == 1;
@@ -29,7 +38,12 @@ public class DAO {
 		return numRows;
 	}
 
+	protected ResultSet getAll(Connection cn, String table, String columns) throws SQLException {
+		return cn.createStatement().executeQuery("SELECT " + columns + " FROM " + table);
+	}
+
 	protected ResultSet getAll(Connection cn, String table) throws SQLException {
 		return cn.createStatement().executeQuery("SELECT * FROM " + table);
 	}
+
 }

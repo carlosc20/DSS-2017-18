@@ -1,9 +1,10 @@
 package view;
 
 import business.ConfiguraFacil;
-import business.venda.categorias.Categoria;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,8 +18,8 @@ public class JNovaEncomenda implements Observer {
     private JButton configOtimaButton;
     private JButton finalizarButton;
     private JButton adicionarPacoteButton;
-    private JButton adicionarCategoriaButton;
-    private JButton adicionarComponenteButton;
+    private JButton opcionalButton;
+    private JButton obrigatorioButton;
 
     private JTable obrigatoriosTable;
     private DefaultTableModel modelObr;
@@ -27,7 +28,8 @@ public class JNovaEncomenda implements Observer {
     private DefaultTableModel modelDep;
 
     private JTable opcionaisTable;
-    private JButton adicionarComponenteButton1;
+    private JButton dependenteButton;
+    private JButton cancelarButton;
     private DefaultTableModel modelOpc;
 
 
@@ -57,6 +59,7 @@ public class JNovaEncomenda implements Observer {
             }
         };
         obrigatoriosTable.setModel(modelObr);
+        // TODO: 27/12/2018 seleciona o primeiro
 
         modelOpc = new DefaultTableModel() {
             @Override
@@ -75,10 +78,17 @@ public class JNovaEncomenda implements Observer {
         dependenciasTable.setModel(modelDep);
 
 
-
         // TODO: dar enable/disable no finalizar e configOtima
 
+        cancelarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // facade.cancelaEncomenda();
+                frame.dispose();
+            }
+        });
 
+        // completa a encomenda e abre uma janela a informar sobre a formação de pacotes se necessário
         finalizarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -89,9 +99,11 @@ public class JNovaEncomenda implements Observer {
                             "A configuração foi otimizada para obter um melhor desconto, formando os pacotes:.",
                             "Configuração otimizada", JOptionPane.INFORMATION_MESSAGE);
                 }
+                frame.dispose();
             }
         });
 
+        // abre janela de configuração ótima
         configOtimaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -100,15 +112,43 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
-        // abre janela de adcionar componente obrigatório da categoria selecionada
-        adicionarComponenteButton.addActionListener(new ActionListener() {
+
+
+        // obrigatorioButton -> botão responsável por adicionar/remover componentes obrigatórios, está sempre ativo
+
+        obrigatorioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String cat = (String) obrigatoriosTable.getValueAt(obrigatoriosTable.getSelectedRow(), 0);
-                adicionaComponente(frame, cat);
+                int row = obrigatoriosTable.getSelectedRow();
+                String cat = (String) obrigatoriosTable.getValueAt(row, 0);
+                Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
+                if(id == null) {    // se o componente dessa categoria não está escolhido abre a janela de adicionar
+                    adicionaComponente(frame, cat);
+                    obrigatorioButton.setText("Remover componente");
+                } else {            // se está escolhido remove-o
+                    facade.removeComponente(id);
+                    obrigatorioButton.setText("Adicionar componente");
+                }
             }
         });
 
+        // Muda o texto do botão entre remover componente e adicionar componente conforme a linha selecionada
+        obrigatoriosTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int row = obrigatoriosTable.getSelectedRow();
+                    Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
+                    if(id == null) {
+                        obrigatorioButton.setText("Remover componente");
+                    } else {
+                        obrigatorioButton.setText("Adicionar componente");
+                    }
+                }
+            }
+        });
+
+
+        // adicionarPacoteButton -> botão responsável por adicionar pacotes, está sempre ativo
         // abre janela para escolher pacote
         adicionarPacoteButton.addActionListener(new ActionListener() {
             @Override
@@ -135,8 +175,9 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
+        //
         // abre janela para escolher categoria, se OK abre janela de adicionar componente
-        adicionarCategoriaButton.addActionListener(new ActionListener() {
+        opcionalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -160,7 +201,15 @@ public class JNovaEncomenda implements Observer {
         });
 
 
+        dependenteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
     }
+
 
     /**
      * Abre janela para adicionar componente da categoria indicada

@@ -11,12 +11,21 @@ import java.util.List;
 
 public class CategoriaDAO extends DAO {
 
+	public static void main(String[] args) throws Exception {
+		CategoriaDAO cdao = new CategoriaDAO();
+		System.out.println(cdao.add(new Pneus("Michelin Primacy 4")));
+		System.out.println(cdao.list().toString());
+		System.out.println(cdao.get("Michelin Primacy 4").getSubcategoria());
+		System.out.println(cdao.remove("Michelin Primacy 4"));
+		System.out.println(cdao.size());
+	}
+
 	public boolean add(Categoria categoria) throws SQLException {
 		Connection cn = Connect.connect();
 		String designacao = categoria.getDesignacao();
 		String subcategoria = categoria.getSubcategoria();
 		boolean obrigatoria = categoria.getObrigatoria();
-		PreparedStatement st = cn.prepareStatement("REPLACE INTO Utilizador (nome, password, funcao) VALUES (?, ?, ?)");
+		PreparedStatement st = cn.prepareStatement("REPLACE INTO Categoria (designacao, subcategoria, obrigatoria) VALUES (?, ?, ?)");
 		st.setString(1, designacao);
 		st.setString(2, subcategoria);
 		st.setBoolean(3, obrigatoria);
@@ -39,24 +48,24 @@ public class CategoriaDAO extends DAO {
 		return list;
 	}
 
-	public Categoria get(String designacao) throws ClassNotFoundException, SQLException {
+	public Categoria get(String designacao) throws SQLException {
 		Connection cn = Connect.connect();
-		PreparedStatement st = cn.prepareStatement("SELECT password, funcao FROM Utilizador LIMIT 1 WHERE nome = ?");
+		PreparedStatement st = cn.prepareStatement("SELECT subcategoria, obrigatoria FROM Categoria WHERE designacao = ? LIMIT 1");
 		st.setString(1, designacao);
 		ResultSet res = st.executeQuery();
-		Connect.close(cn);
 		if(res.first()) {
 			String subcategoria = res.getString("subcategoria");
 			boolean obrigatoria = res.getBoolean("obrigatoria");
 			Connect.close(cn);
 			return criarCategoria(designacao, subcategoria, obrigatoria);
 		} else {
+			Connect.close(cn);
 			return null;
 		}
 	}
 
-	public boolean remove(Categoria categoria) throws SQLException {
-		return super.remove("Categoria", "designacao", categoria.getDesignacao());
+	public boolean remove(String designacao) throws SQLException {
+		return super.removeStringKey("Categoria", "designacao", designacao);
 	}
 
 	public int size() throws SQLException {
@@ -65,6 +74,9 @@ public class CategoriaDAO extends DAO {
 
 	private Categoria criarCategoria(String designacao, String subcategoria, boolean obrigatoria) {
 		if(obrigatoria) {
+			if(subcategoria == null){
+				return new CategoriaObrigatoria(designacao);
+			}
 			switch (subcategoria){
 				case "Carrocaria":
 					return new Carrocaria(designacao);
