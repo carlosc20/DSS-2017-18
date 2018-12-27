@@ -29,11 +29,11 @@ public class ConfiguraFacil extends Observable {
 	private Utilizador utilizadorAtual;
 	private Encomenda encomendaAtual;
 
-	private CategoriaDAO categorias;
 	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
 	private PacoteDAO todosPacotes = new PacoteDAO();
 	private EncomendaDAO encomendas = new EncomendaDAO();
+	private CategoriaDAO categorias = new CategoriaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
 
@@ -285,7 +285,7 @@ public class ConfiguraFacil extends Observable {
             pacotesTodos[i] = new Object[]{id,designacao};
             i++;
         }
-        return null;
+        return pacotesTodos;
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getPacotes()}. */

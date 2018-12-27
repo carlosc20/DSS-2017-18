@@ -2,7 +2,7 @@ package data;
 
 import business.produtos.Componente;
 import business.produtos.Pacote;
-import business.venda.categorias.Categoria;
+import business.venda.categorias.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -50,7 +50,7 @@ public class ComponenteDAO extends DAO {
 			int preco = res.getInt("preco");
 			int stock = res.getInt("stock");
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = new CategoriaDAO().get(categoriaDesignacao);
+			Categoria categoria = criarCategoria(categoriaDesignacao);
 			list.add(new Componente(id, designacao, preco, stock, null, null, categoria));
 		}
 		Connect.close(cn);
@@ -100,7 +100,7 @@ public class ComponenteDAO extends DAO {
 			int preco = res.getInt("preco");
 			int stock = res.getInt("stock");
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = new CategoriaDAO().get(categoriaDesignacao);
+			Categoria categoria = criarCategoria(categoriaDesignacao);
 			Connect.close(cn);
 			return new Componente(id, designacao, preco, stock, null, null, categoria);
 		} else {
@@ -169,5 +169,25 @@ public class ComponenteDAO extends DAO {
 			Connect.close(cn);
 		}
 		return result;
+	}
+
+	private Categoria criarCategoria(String designacao) {
+		if(designacao == null){
+			return null;
+		}
+		switch (designacao){
+			case "Carrocaria":
+				return new Carrocaria();
+			case "Jantes":
+				return new Jantes();
+			case "Motor":
+				return new Motor();
+			case "Pintura":
+				return new Pintura();
+			case "Pneus":
+				return new Pneus();
+			default:
+				return null;
+		}
 	}
 }
