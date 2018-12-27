@@ -2,6 +2,7 @@ package data;
 
 import business.produtos.Componente;
 import business.produtos.Pacote;
+import business.venda.Encomenda;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -57,6 +58,25 @@ public class PacoteDAO extends DAO {
 						"INNER JOIN Pacote_Componente ON Pacote.id = Pacote_Componente.id_pacote" +
 						"WHERE Pacote_Componente.id_componente = ?");
 		st.setInt(1, idComponente);
+		ResultSet res = st.executeQuery();
+		while (res.next()){
+			int id = res.getInt("id");
+			String designacao = res.getString("designacao");
+			int desconto = res.getInt("desconto");
+			result.add(new Pacote(id, designacao, desconto, null));
+		}
+		return result;
+	}
+
+	public List<Pacote> list(Encomenda encomenda) throws SQLException {
+		int idEncomenda = encomenda.getId();
+		Connection cn = Connect.connect();
+		List<Pacote> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement(
+				"SELECT id, designacao, Encomenda_Pacote.desconto AS desconto FROM Encomenda_Pacote" +
+						"INNER JOIN Pacote ON Pacote.id = Encomenda_Pacote.id_pacote" +
+						"WHERE Encomenda_Pacote.id_encomenda = ?");
+		st.setInt(1, idEncomenda);
 		ResultSet res = st.executeQuery();
 		while (res.next()){
 			int id = res.getInt("id");

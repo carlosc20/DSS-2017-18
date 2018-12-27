@@ -2,6 +2,7 @@ package data;
 
 import business.produtos.Componente;
 import business.produtos.Pacote;
+import business.venda.Encomenda;
 import business.venda.categorias.*;
 
 import java.sql.Connection;
@@ -85,6 +86,30 @@ public class ComponenteDAO extends DAO {
 			String designacao = res.getString("designacao");
 			int preco = res.getInt("preco");
 			int stock = res.getInt("stock");
+			result.add(new Componente(id, designacao, preco, stock, null, null, categoria));
+		}
+		return result;
+	}
+
+	public List<Componente> list(Encomenda encomenda) throws SQLException {
+		int idEncomenda = encomenda.getId();
+		Connection cn = Connect.connect();
+		List<Componente> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement(
+				"SELECT id, designacao, Encomenda_Componente.preco AS preco, stock" +
+						"FROM Encomenda_Componente" +
+						"INNER JOIN Componente ON Encomenda_Componente.id_componente = Componente.id" +
+						"WHERE Encomenda_Componente.id_encomenda = ?");
+		st.setInt(1, idEncomenda);
+		ResultSet res = st.executeQuery();
+		ComponenteDAO componenteDAO =  new ComponenteDAO();
+		while (res.next()){
+			int id = res.getInt("id");
+			String designacao = res.getString("designacao");
+			int preco = res.getInt("preco");
+			int stock = res.getInt("stock");
+			String categoriaDesignacao = res.getString("categoria");
+			Categoria categoria = criarCategoria(categoriaDesignacao);
 			result.add(new Componente(id, designacao, preco, stock, null, null, categoria));
 		}
 		return result;
