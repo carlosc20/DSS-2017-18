@@ -1,5 +1,6 @@
 package business.venda;
 
+import business.produtos.Componente;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
@@ -64,6 +65,9 @@ public class Encomenda {
 		throw new UnsupportedOperationException();
 	}
 
+	public Set<Componente> getComponentes(){
+		return configuracao.getComponentes();
+	}
 	public int getId() {
 		return id;
 	}

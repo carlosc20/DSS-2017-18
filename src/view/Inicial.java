@@ -34,7 +34,8 @@ public class Inicial {
 
                 try {
                     int cargo = facade.autenticar(nome, password);
-                    new JNovaEncomenda();// TODO: 27/12/2018
+                    // new JNovaEncomenda();
+                    // TODO: 27/12/2018
                     switch (cargo) {
                         case 0:
                             frame.dispose();
@@ -55,12 +56,12 @@ public class Inicial {
                                     JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception e1) {
-                    new JNovaEncomenda();
                     JOptionPane.showMessageDialog(frame,
                             "Dados incorretos, tente novamente.",
                             "Erro",
                             JOptionPane.ERROR_MESSAGE);
                     nomeField.requestFocusInWindow();
+                    e1.printStackTrace();
                 }
             }
         });
