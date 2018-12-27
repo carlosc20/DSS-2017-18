@@ -21,7 +21,7 @@ public class Inicial {
         JFrame frame = new JFrame("ConfiguraFácil");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack(); // this.setSize(500,600);
+        frame.setSize(300,200);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -34,7 +34,7 @@ public class Inicial {
 
                 try {
                     int cargo = facade.autenticar(nome, password);
-                    System.out.println(cargo);
+                    new JNovaEncomenda();// TODO: 27/12/2018
                     switch (cargo) {
                         case 0:
                             frame.dispose();
@@ -55,6 +55,7 @@ public class Inicial {
                                     JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception e1) {
+                    new JNovaEncomenda();
                     JOptionPane.showMessageDialog(frame,
                             "Dados incorretos, tente novamente.",
                             "Erro",

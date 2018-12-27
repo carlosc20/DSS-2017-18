@@ -23,7 +23,7 @@ public class JVendedor implements Observer {
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
-    // TODO: atualizar tabelas, desativar janela enquanto se cria encomenda
+    // TODO: desativar janela enquanto se cria encomenda, ter as colunas ja guardadas
 
     public JVendedor() {
 
@@ -67,6 +67,8 @@ public class JVendedor implements Observer {
 
         // abre janela para inserir dados do cliente e depois janela de nova encomenda
         criarEncomendaButton.addActionListener(new ActionListener() {
+
+            // TODO: 26/12/2018 da focus na janela se já existir
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
