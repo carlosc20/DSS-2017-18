@@ -182,7 +182,7 @@ public class ConfiguraFacil extends Observable {
             for (Categoria cat : categ) {
                 String des = cat.getDesignacao();
                 if (cat instanceof CategoriaObrigatoria) {
-                    data[i] = new Object[]{cat.getDesignacao(), null, null, null, null};
+                    data[i] = new Object[]{des, null, null, null, null};
                     i++;
                 }
             }
