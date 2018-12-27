@@ -24,21 +24,19 @@ public class ComponenteDAO extends DAO {
 		st.setString(2, designacao);
 		st.setInt(3, preco);
 		st.setInt(4, stock);
-		boolean naoMudou = st.executeUpdate() == 1;
+		int numRows = st.executeUpdate();
 		for (int dependencia:dependencias) {
 			st = cn.prepareStatement("REPLACE INTO Componente_Dependencia (id_componente, id_dependencia) VALUES (?, ?)");
 			st.setInt(1, id);
 			st.setInt(2, dependencia);
-			naoMudou &= st.executeUpdate() == 1;
 		}
 		for (int incompativel:incompatibilidades) {
 			st = cn.prepareStatement("REPLACE INTO Componente_Incompatibilidade (id_componente, id_incompativel) VALUES (?, ?)");
 			st.setInt(1, id);
 			st.setInt(2, incompativel);
-			naoMudou &= st.executeUpdate() == 1;
 		}
 		Connect.close(cn);
-		return naoMudou;
+		return numRows == 1;
 	}
 
 	public List<Componente> list() throws SQLException {
