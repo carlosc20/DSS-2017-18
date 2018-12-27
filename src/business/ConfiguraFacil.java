@@ -8,11 +8,9 @@ import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
-import business.venda.categorias.CategoriaNaoExisteException;
-import business.venda.categorias.CategoriaObrigatoria;
+import business.venda.categorias.*;
 import data.*;
 import business.venda.Encomenda;
-import business.venda.categorias.Categoria;
 import data.*;
 import javafx.collections.ObservableArrayBase;
 import javafx.util.Pair;
@@ -137,6 +135,7 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
+
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
         throw new UnsupportedOperationException();
     }
@@ -171,7 +170,7 @@ public class ConfiguraFacil extends Observable {
         Set<Componente> comp = encomendaAtual.getComponentes();
         if (categ.size() == 0) return null;
 
-        Object[][] data = buildCategObirgatorias(categ);
+        Object[][] data = buildCategObrigatorias(categ);
         for(int i = 0; i<data.length; i++)
             for(Componente c : comp) {
                 if (c.getCategoria().getDesignacao().equals(data[i][0])) {
@@ -181,18 +180,18 @@ public class ConfiguraFacil extends Observable {
         return data;
     }
 
-    private Object[][] buildCategObirgatorias (List<Categoria> categ) {
-        Object[][] data = new Object[categ.size()][5];
-        int i = 0;
-        for (Categoria cat : categ) {
-            String des = cat.getDesignacao();
-            if (cat instanceof CategoriaObrigatoria) {
-                data[i] = new Object[]{cat.getDesignacao(), null, null, null, null};
-                i++;
+        private Object[][] buildCategObrigatorias (List<Categoria> categ) {
+            Object[][] data = new Object[categ.size()][5];
+            int i = 0;
+            for (Categoria cat : categ) {
+                String des = cat.getDesignacao();
+                if (cat.getObrigatoria()) {
+                    data[i] = new Object[]{des, null, null, null, null};
+                    i++;
+                }
             }
+            return data;
         }
-        return data;
-    }
 
 
     // -------------------------------- Stock --------------------------------------------------------------------------
@@ -255,12 +254,48 @@ public class ConfiguraFacil extends Observable {
      * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
      */
     public Object[][] getComponentes(String categoria) { //novo
+        Categoria cat = null;
+        switch (categoria){
+            case "Carrocaria":
+                cat = new Carrocaria();
+                break;
+            case "Jantes":
+                cat = new Jantes();
+                break;
+            case "Motor":
+                cat = new Motor();
+                break;
+            case "Pintura":
+                cat = new Pintura();
+                break;
+            case "Pneus":
+                cat = new Pneus();
+                break;
+            default: return null;
+        }
 
-        Object[][] data = {
-                {"Motor", 1, "Opel V6", 1, 100},
-                {"Motor", 2, "BMW X31", 3, 200}
-        };
-        return data;
+        List<Componente> componentes = new ArrayList<>();
+        try {
+            componentes = todosComponentes.list(cat);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (componentes.size()==0) return null;
+
+        Object[][] componentesTodas = new Object[componentes.size()][5];
+        int i = 0;
+        for(Componente c : componentes){
+            int id = c.getId();
+            String designacao = c.getDesignacao();
+            Categoria cate = c.getCategoria();
+            String catDesignacao = cate.getDesignacao();
+            int qnt = c.getStock();
+            int preco = c.getPreco();
+            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
+            i++;
+        }
+        return componentesTodas;
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes()}. */

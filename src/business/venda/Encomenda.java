@@ -13,7 +13,7 @@ public class Encomenda {
 	private int id;
 	private String cliente;
 	private int nif;
-	private float valor;
+	private int valor;
 	private LocalDate data;
 	private Configuracao configuracao;
 
@@ -35,25 +35,25 @@ public class Encomenda {
 	}
 
 	public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
-		Pair <Float,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
+		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
 		this.valor += temp.getKey();
 		return temp.getValue();
 	}
 
 	public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
-		Pair <Float,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
+		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
 		this.valor += temp.getKey();
 		return temp.getValue();
 	}
 
 	public Set<Integer> adicionaPacote(int idPacote) throws PacoteGeraConflitosException, SQLException {
-		Pair <Float,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
+		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
 		this.valor += temp.getKey();
 		return temp.getValue();
 	}
 
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
-		Pair <Float,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
+		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
 		this.valor += temp.getKey();
 		//return temp.getValue();
 	}
@@ -96,7 +96,7 @@ public class Encomenda {
 		return valor;
 	}
 
-	public void setValor(float valor) {
+	public void setValor(int valor) {
 		this.valor = valor;
 	}
 
@@ -111,4 +111,8 @@ public class Encomenda {
 	public void setConfiguracao(Configuracao configuracao) {
 		this.configuracao = configuracao;
 	}
+
+    public LocalDate getData() {
+        return data;
+    }
 }
