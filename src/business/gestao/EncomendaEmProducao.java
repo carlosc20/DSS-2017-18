@@ -12,4 +12,8 @@ public class EncomendaEmProducao extends Encomenda {
 	public void fornecerComponente(int aId) {
 		throw new UnsupportedOperationException();
 	}
+
+	public Set<Componente> getComponentesEmFalta() {
+		return componentesEmFalta;
+	}
 }

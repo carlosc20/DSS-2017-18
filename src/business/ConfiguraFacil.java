@@ -1,6 +1,7 @@
 package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
+import business.gestao.EncomendaEmProducao;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.utilizadores.Administrador;
@@ -32,7 +33,7 @@ public class ConfiguraFacil extends Observable {
 	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
 	private PacoteDAO todosPacotes = new PacoteDAO();
-	private EncomendaDAO encomendas = new EncomendaDAO();
+	private EncomendaDAO registoProduzidas = new EncomendaDAO();
 	private CategoriaDAO categorias = new CategoriaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
@@ -43,17 +44,28 @@ public class ConfiguraFacil extends Observable {
 
     private ConfiguraFacil(){}
 
+
     // -------------------------------- Encomenda ------------------------------------------
 
-    public void consultarConfiguracao() {
-        throw new UnsupportedOperationException();
-    }
-
-
-    //fazer no encomendaDAO
-    // TODO: 26/12/2018 acabar
+    /**
+     *
+     *
+     * @return
+     */
     public Object[][] getRegistoProduzidas() { //novo
-       // return encomendas.getRegistoProduzidas();
+        // TODO: 27/12/2018 acabar quando DAO estiver feito
+        /*
+        List<Encomenda> encs = registoProduzidas.list();
+        Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasRegistoProduzidas.length];
+        int i = 0;
+        for (Encomenda e : encs) {
+            int id = e.getId();
+
+            data[i] = new Object[]{id, };
+            i++;
+        }
+        return data;
+        */
         return null;
     }
 
@@ -69,7 +81,26 @@ public class ConfiguraFacil extends Observable {
     };
 
 
+    /**
+     *
+     *
+     * @return
+     */
     public Object[][] getFilaProducao() { //novo
+        // TODO: 27/12/2018 acabar quando DAO estiver feito
+        /*
+        List<EncomendaEmProducao> encs = filaProducao.list();
+        Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasFilaProducao.length];
+        int i = 0;
+        for (EncomendaEmProducao e : encs) {
+            int id = e.getId();
+            Set<Componente> comps = e.getComponentesEmFalta();
+            String c = comps.toString(); // TODO: 27/12/2018 completar
+            data[i] = new Object[]{id, c};
+            i++;
+        }
+        return data;
+        */
         return null;
     }
 
