@@ -1,7 +1,7 @@
 package business.venda.categorias;
 
 public class Carrocaria extends CategoriaObrigatoria {
-    public Carrocaria(String designacao){
-        super(designacao);
+    public String getDesignacao() {
+        return "Carrocaria";
     }
 }

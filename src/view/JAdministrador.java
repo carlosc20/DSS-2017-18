@@ -39,6 +39,8 @@ public class JAdministrador implements Observer {
         updateModel();
         utilizadoresList.setModel(model);
 
+        String[] tipos = ConfiguraFacil.tiposUtilizadores;
+
         // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {
             @Override
@@ -61,9 +63,9 @@ public class JAdministrador implements Observer {
         criarUtilizadorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
-                String[] tipos = facade.getTiposFuncionarios().toArray(new String[0]);
                 JComboBox<String> tiposF = new JComboBox<>(tipos);
                 Object[] options = {
                         "Nome:", nomeF,
@@ -92,7 +94,7 @@ public class JAdministrador implements Observer {
             }
         });
 
-        // desbloqueia/bloqueia o botão de remover quando existem/não existem membros
+        // desbloqueia/bloqueia o botão de remover quando está ou não selecionado um utilizador
         utilizadoresList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -108,13 +110,30 @@ public class JAdministrador implements Observer {
 
     }
 
+
+    /**
+     * Preenche o modelo da lista de funcionários com os nomes deles.
+     */
     private void updateModel() {
-        utilizadores = facade.getFuncionarios();
-        for (String u : utilizadores) {
-            model.addElement(u);
+        try {
+            utilizadores = facade.getFuncionarios();
+            for (String u : utilizadores) {
+                model.addElement(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Não foi possível aceder à base de dados.",
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
+
+    /**
+     * Limpa o modelo da lista de funcionários e preenche-o.
+     * É chamada sempre que há alterações na lista de funcionários.
+     */
     @Override
     public void update(Observable o, Object arg) {
         this.model.clear();

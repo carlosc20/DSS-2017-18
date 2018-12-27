@@ -2,6 +2,7 @@ package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
 import business.produtos.Componente;
+import business.produtos.Pacote;
 import business.utilizadores.Administrador;
 import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
@@ -191,6 +192,7 @@ public class ConfiguraFacil extends Observable {
             return data;
         }
 
+
     // -------------------------------- Stock --------------------------------------------------------------------------
 
     /**
@@ -200,20 +202,32 @@ public class ConfiguraFacil extends Observable {
      */
     public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 
+        // TODO: 27/12/2018 fazer
+
         setChanged();
         notifyObservers();
-            }
+    }
 
     /**
      *
      * @return Object[][] com todos os componentes no formato
      * {id,Designação da categoria,designacao da componente,quantidade,preço}
      */
-    // TODO: Precisa de ser testado depois dos DAOs estarem feitos
+    // Feito mas precisa de ser testado
+
+
     public Object[][] getComponentes(){
-       /*
-        Set<Componente> componentes = todosComponentes.set();
-        Object[componentes.size()][5] componentesTodas = new Object();
+
+        List<Componente> componentes = new ArrayList<>();
+        try {
+            componentes = todosComponentes.list();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (componentes.size()==0) return null;
+
+        Object[][] componentesTodas = new Object[componentes.size()][5];
         int i = 0;
         for(Componente c : componentes){
             int id = c.getId();
@@ -222,66 +236,65 @@ public class ConfiguraFacil extends Observable {
             String catDesignacao = cat.getDesignacao();
             int qnt = c.getStock();
             int preco = c.getPreco();
-            componentesTodas[i] = {id,catDesignacao,designacao,qnt,preco};
+            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
             i++;
         }
         return componentesTodas;
-    */
-       return null;
+
+     //  return null;
     }
 
+
+    /**
+     * Faz coisas.
+     *
+     * @param categoria categoria dos componentes
+     *
+     * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
+     */
     public Object[][] getComponentes(String categoria) { //novo
 
         Object[][] data = {
-                {1, "Motor",
-                        "Opel V6", 1, 100},
-                {2, "Motor",
-                        "BMW X31", 3, 200}
+                {"Motor", 1, "Opel V6", 1, 100},
+                {"Motor", 2, "BMW X31", 3, 200}
         };
         return data;
     }
 
-    public String[] getColunasComponentes() {  //novo
-        String[] columnNames = {
-                "Categoria",
-                "Id",
-                "Designação",
-                "Qtd em stock",
-                "Preço(€)"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes()}. */
+    public static String[] colunasComponentes = new String[] {"Categoria", "Id", "Designação", "Qtd em stock", "Preço(€)"};
+
 
     /**
+     * Faz coisas.
      *
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
-    //Precisa de ser testado depois dos DAOs
-    //TODO: Precisa de ser feito
+    //Feito mas precisa de ser testado
     public Object[][] getPacotes() {
-        /*
-        List pacotes = todosPacotes.list();
-        Object[pacotes.size()][2] pacotesTodos;
+
+        List<Pacote> pacotes = new ArrayList<>();
+        try {
+            pacotes = todosPacotes.list();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (pacotes.size() == 0) return null;
+        Object[][] pacotesTodos = new Object[pacotes.size()][2];
+
         int i = 0;
         for(Pacote p : pacotes){
             int id = p.getId();
             String designacao = p.getDesignacao();
-            pacotesTodos[i] = {id,designacao};
+            pacotesTodos[i] = new Object[]{id,designacao};
             i++;
-        }*/
-        return null;
+        }
+        return pacotesTodos;
     }
 
-
-    public String[] getColunasPacotes() {  //novo
-        String[] columnNames = {
-                "Id",
-                "Designação",
-                "Desconto(€)",
-                "Componentes"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getPacotes()}. */
+    public static String[] colunasPacotes = new String[] {"Id", "Designação", "Desconto(€)", "Componentes"};
 
 
     /**
@@ -290,8 +303,8 @@ public class ConfiguraFacil extends Observable {
      * @return lista de categorias
      */
     public List<String> getCategoriasObrigatorias() {
-        String[] tipos = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(tipos);
+        String[] c = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(c);
     }
 
 
@@ -301,31 +314,41 @@ public class ConfiguraFacil extends Observable {
      * @return lista de categorias
      */
     public List<String> getCategoriasOpcionais() {
-        String[] tipos = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(tipos);
+        String[] c = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(c);
     }
+
 
     // -------------------------------- Utilizadores -------------------------------------------------------------------
 
     /**
      * Devolve o cargo do funcionário correspondente às credencias fornecidas.
      *
+     * @param nome nome do utilizador
+     * @param password password do utilizador
+     *
      * @return 0 se for administrador, 1 se for vendedor, 2 se for repositor
      */
-    public int autenticar(String nome, String password) throws Exception {
-        // TODO: 27/12/2018 acabar
-        if (nome.equals("administrador")) return 0;
-        if (nome.equals("vendedor")) return 1;
-        if (nome.equals("repositor")) return 2;
+    public String autenticar(String nome, String password) throws Exception {
+        // TODO: tirar na versão final
+        if (nome.equals("administrador")) return "administrador";
+        if (nome.equals("vendedor")) return "vendedor";
+        if (nome.equals("repositor")) return "repositor";
+
+        Utilizador u = utilizadores.get(nome);
+        if (u.getPassword().equals(password)) {
+            return u.getFuncao();
+        }
+
         throw new Exception();
     }
 
     /**
      * Devolve uma lista com os nomes dos funcionários existentes.
      *
-     * @return lista com os nomes dos funcionários, lista vazia em caso de erro
+     * @return lista com os nomes dos funcionários
      */
-    public List<String> getFuncionarios() {
+    public List<String> getFuncionarios() throws Exception {
         try {
             List<Utilizador> users = utilizadores.list();
             List<String> nomes = new ArrayList<>(users.size());
@@ -337,21 +360,13 @@ public class ConfiguraFacil extends Observable {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw new Exception();
         }
     }
 
 
-    /**
-     * Devolve uma lista com todos os tipos possíveis de funcionário.
-     *
-     * @return lista com os tipos de funcionário
-     */
-    public List<String> getTiposFuncionarios() { // novo
-        // TODO: 27/12/2018 acabar
-        String[] tipos = {"Administrador", "Repositor", "Vendedor"};
-        return Arrays.asList(tipos);
-    }
+    /** Array com todos os tipos possíveis de funcionário. */
+    public static String[] tiposUtilizadores = new String[] {"Administrador", "Repositor", "Vendedor"};
 
 
     /**
@@ -362,6 +377,7 @@ public class ConfiguraFacil extends Observable {
      * @param tipo      tipo do utilizador
      */
     public void criarUtilizador(String nome, String password, String tipo) throws Exception {
+        // TODO: 27/12/2018 por restriçoes ao nome e pass, melhorar a exceçao
         Utilizador u;
         switch (tipo) {
             case "Vendedor":
@@ -374,7 +390,7 @@ public class ConfiguraFacil extends Observable {
                 u = new Repositor(nome, password);
                 break;
                 default:
-                    throw new Exception(); // TODO: 27/12/2018 por exceçao direito
+                    throw new Exception();
         }
         utilizadores.add(u);
         setChanged();
@@ -396,11 +412,4 @@ public class ConfiguraFacil extends Observable {
         setChanged();
         notifyObservers();
     }
-
-	/*
-	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
-		throw new UnsupportedOperationException();
-	}
-	*/
-
 }

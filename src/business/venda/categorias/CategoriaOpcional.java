@@ -2,11 +2,7 @@ package business.venda.categorias;
 
 import business.venda.categorias.Categoria;
 
-public class CategoriaOpcional extends Categoria {
-
-    public CategoriaOpcional(String designacao) {
-        super(designacao);
-    }
+public abstract class CategoriaOpcional extends Categoria {
 
     public boolean getObrigatoria(){
         return false;
