@@ -64,9 +64,9 @@ public class CategoriaDAO extends DAO {
         return super.size("Categoria");
     }
 
-    private Categoria criarCategoria(String designacao) {
+    private Categoria criarCategoria(String designacao) throws CategoriaNaoExisteException {
         if(designacao == null){
-            return null;
+            throw new CategoriaNaoExisteException(null);
         }
         switch (designacao){
             case "Carrocaria":
@@ -80,7 +80,7 @@ public class CategoriaDAO extends DAO {
             case "Pneus":
                 return new Pneus();
             default:
-                return null;
+                throw new CategoriaNaoExisteException(designacao);
         }
     }
 }
