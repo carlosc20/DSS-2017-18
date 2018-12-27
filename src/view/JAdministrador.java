@@ -39,7 +39,7 @@ public class JAdministrador implements Observer {
         updateModel();
         utilizadoresList.setModel(model);
 
-        String[] tipos = facade.getTiposFuncionarios().toArray(new String[0]);
+        String[] tipos = ConfiguraFacil.tiposUtilizadores;
 
         // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {

@@ -190,6 +190,7 @@ public class ConfiguraFacil extends Observable {
             return data;
         }
 
+
     // -------------------------------- Stock --------------------------------------------------------------------------
 
     /**
@@ -199,9 +200,11 @@ public class ConfiguraFacil extends Observable {
      */
     public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 
+        // TODO: 27/12/2018 fazer
+
         setChanged();
         notifyObservers();
-            }
+    }
 
     /**
      *
@@ -229,29 +232,26 @@ public class ConfiguraFacil extends Observable {
        return null;
     }
 
+    /**
+     * Faz coisas.
+     *
+     * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
+     */
     public Object[][] getComponentes(String categoria) { //novo
 
         Object[][] data = {
-                {1, "Motor",
-                        "Opel V6", 1, 100},
-                {2, "Motor",
-                        "BMW X31", 3, 200}
+                {"Motor", 1, "Opel V6", 1, 100},
+                {"Motor", 2, "BMW X31", 3, 200}
         };
         return data;
     }
 
-    public String[] getColunasComponentes() {  //novo
-        String[] columnNames = {
-                "Categoria",
-                "Id",
-                "Designação",
-                "Qtd em stock",
-                "Preço(€)"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes()}. */
+    public static String[] colunasComponentes = new String[] {"Categoria", "Id", "Designação", "Qtd em stock", "Preço(€)"};
+
 
     /**
+     * Faz coisas.
      *
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
@@ -271,16 +271,8 @@ public class ConfiguraFacil extends Observable {
         return null;
     }
 
-
-    public String[] getColunasPacotes() {  //novo
-        String[] columnNames = {
-                "Id",
-                "Designação",
-                "Desconto(€)",
-                "Componentes"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getPacotes()}. */
+    public static String[] colunasPacotes = new String[] {"Id", "Designação", "Desconto(€)", "Componentes"};
 
 
     /**
@@ -289,8 +281,8 @@ public class ConfiguraFacil extends Observable {
      * @return lista de categorias
      */
     public List<String> getCategoriasObrigatorias() {
-        String[] tipos = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(tipos);
+        String[] c = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(c);
     }
 
 
@@ -300,14 +292,18 @@ public class ConfiguraFacil extends Observable {
      * @return lista de categorias
      */
     public List<String> getCategoriasOpcionais() {
-        String[] tipos = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(tipos);
+        String[] c = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(c);
     }
+
 
     // -------------------------------- Utilizadores -------------------------------------------------------------------
 
     /**
      * Devolve o cargo do funcionário correspondente às credencias fornecidas.
+     *
+     * @param nome nome do utilizador
+     * @param password password do utilizador
      *
      * @return 0 se for administrador, 1 se for vendedor, 2 se for repositor
      */
@@ -328,7 +324,7 @@ public class ConfiguraFacil extends Observable {
     /**
      * Devolve uma lista com os nomes dos funcionários existentes.
      *
-     * @return lista com os nomes dos funcionários, lista vazia em caso de erro
+     * @return lista com os nomes dos funcionários
      */
     public List<String> getFuncionarios() throws Exception {
         try {
@@ -347,15 +343,8 @@ public class ConfiguraFacil extends Observable {
     }
 
 
-    /**
-     * Devolve uma lista com todos os tipos possíveis de funcionário.
-     *
-     * @return lista com os tipos de funcionário
-     */
-    public List<String> getTiposFuncionarios() { // novo
-        String[] tipos = {"Administrador", "Repositor", "Vendedor"};
-        return Arrays.asList(tipos);
-    }
+    /** Array com todos os tipos possíveis de funcionário. */
+    public static String[] tiposUtilizadores = new String[] {"Administrador", "Repositor", "Vendedor"};
 
 
     /**
