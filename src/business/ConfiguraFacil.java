@@ -7,6 +7,7 @@ import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
+import business.venda.categorias.CategoriaObrigatoria;
 import data.*;
 import business.venda.Encomenda;
 import business.venda.categorias.Categoria;
@@ -167,20 +168,18 @@ public class ConfiguraFacil extends Observable {
         int i = 0;
         for(Categoria cat : categ){
             String des = cat.getDesignacao();
-            for(Componente c : comp){
-                if (c.getCategoria().getDesignacao().equals(cat.getDesignacao())){
-                    data[i] = new Object[]{des, c.getId(), c.getDesignacao(), c.getStock(), c.getPreco()};
+            if(cat instanceof CategoriaObrigatoria) {
+                for (Componente c : comp) {
+                    if (c.getCategoria().getDesignacao().equals(cat.getDesignacao())) {
+                        data[i] = new Object[]{des, c.getId(), c.getDesignacao(), c.getStock(), c.getPreco()};
+                    } else {
+                        data[i] = new Object[]{des, null, null, null, null};
                     }
-                else {
-                    data[i] = new Object[]{des, null, null, null, null};
                 }
             }
-
         }
         return data;
     }
-
-
 
     // -------------------------------- Stock --------------------------------------------------------------------------
 
