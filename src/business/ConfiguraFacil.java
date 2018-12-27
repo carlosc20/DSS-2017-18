@@ -6,6 +6,7 @@ import business.utilizadores.Administrador;
 import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
+import business.venda.*;
 import data.*;
 import business.venda.Encomenda;
 import business.venda.categorias.Categoria;
@@ -39,61 +40,7 @@ public class ConfiguraFacil extends Observable {
     private ConfiguraFacil() {
     }
 
-
-    // -------------------------------- Encomendas ---------------------------------------------------------------------
     // -------------------------------- Encomenda ------------------------------------------
-    //falta o dao
-    public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
-        encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
-    }
-
-    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException{
-        return encomendaAtual.getEfeitosAdicionarComponente(idComponente);
-    }
-
-    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException{
-            return this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
-    }
-
-    public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
-            return encomendaAtual.adicionaComponente(idComponente);
-    }
-
-    public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
-        Set<Integer> res = new HashSet<>();
-        try {
-            res = encomendaAtual.removeComponente(idComponente);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
-
-    public Set<Integer> adicionaPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException {
-        Set<Integer> res = new HashSet<>();
-        try {
-            res = encomendaAtual.adicionaPacote(idPacote);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
-
-    public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException {
-        try {
-          encomendaAtual.removePacote(idPacote);
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void criarConfiguracaoOtima() { // muda nome
-        throw new UnsupportedOperationException();
-    }
-
-    public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
-        throw new UnsupportedOperationException();
-    }
 
     public void consultarConfiguracao() {
         throw new UnsupportedOperationException();
@@ -132,29 +79,48 @@ public class ConfiguraFacil extends Observable {
     }
 
     // -------------------------------- Encomenda atual ----------------------------------------------------------------
-
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
-
+        encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
     }
 
-    public List<Integer> adicionaComponente(int aIdComponente) {
-        throw new UnsupportedOperationException();
+    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException{
+        return encomendaAtual.getEfeitosAdicionarComponente(idComponente);
     }
 
-    public List<Integer> adicionaDependencia(int aIdComponente) {
-        throw new UnsupportedOperationException();
+    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException{
+        return this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
     }
 
-    public void removeComponente(int aId) {
-        throw new UnsupportedOperationException();
+    public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
+        return encomendaAtual.adicionaComponente(idComponente);
     }
 
-    public List<Integer> adicionaPacote(int aId) {
-        throw new UnsupportedOperationException();
+    public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
+        Set<Integer> res = new HashSet<>();
+        try {
+            res = encomendaAtual.removeComponente(idComponente);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
-    public void removePacote(int aId) {
-        throw new UnsupportedOperationException();
+    public Set<Integer> adicionaPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException {
+        Set<Integer> res = new HashSet<>();
+        try {
+            res = encomendaAtual.adicionaPacote(idPacote);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException {
+        try {
+            encomendaAtual.removePacote(idPacote);
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void criarConfiguracaoOtima() { // muda nome
@@ -162,7 +128,6 @@ public class ConfiguraFacil extends Observable {
     }
 
     public void cancelaEncomenda() {
-
     }
 
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
