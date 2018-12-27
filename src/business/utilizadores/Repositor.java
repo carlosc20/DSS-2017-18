@@ -13,6 +13,6 @@ public class Repositor extends Utilizador {
     }
 
     public String getFuncao() {
-        return "repositor";
+        return "Repositor";
     }
 }

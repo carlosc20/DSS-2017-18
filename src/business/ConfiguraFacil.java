@@ -8,6 +8,7 @@ import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
+import business.venda.categorias.CategoriaNaoExisteException;
 import business.venda.categorias.CategoriaObrigatoria;
 import data.*;
 import business.venda.Encomenda;
@@ -25,13 +26,15 @@ import java.util.*;
 public class ConfiguraFacil extends Observable {
 
     private static ConfiguraFacil instancia = new ConfiguraFacil();
+
 	private Utilizador utilizadorAtual;
 	private Encomenda encomendaAtual;
-	private CategoriaDAO categorias = new CategoriaDAO();
-	private EncomendaEmProducaoDAO filaProducao;
+
+	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
 	private PacoteDAO todosPacotes = new PacoteDAO();
-	private EncomendaDAO encomendas; // nome corrigido
+	private EncomendaDAO encomendas = new EncomendaDAO();
+	private CategoriaDAO categorias = new CategoriaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
 
@@ -39,14 +42,14 @@ public class ConfiguraFacil extends Observable {
         return instancia;
     }
 
-    private ConfiguraFacil() {
-    }
+    private ConfiguraFacil(){}
 
     // -------------------------------- Encomenda ------------------------------------------
 
     public void consultarConfiguracao() {
         throw new UnsupportedOperationException();
     }
+
 
     //fazer no encomendaDAO
     // TODO: 26/12/2018 acabar
@@ -55,32 +58,27 @@ public class ConfiguraFacil extends Observable {
         return null;
     }
 
-    public String[] getColunasRegistoProduzidas() { //novo
-        String[] columnNames = {
-                "Id",
-                "Cliente",
-                "Nif",
-                "Preço sem descontos (€)",
-                "Descontos (€)",
-                "Componentes",
-                "Pacotes"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getRegistoProduzidas()}. */
+    public static String[] colunasRegistoProduzidas = new String[] {
+            "Id",
+            "Cliente",
+            "Nif",
+            "Preço sem descontos (€)",
+            "Descontos (€)",
+            "Componentes",
+            "Pacotes"
+    };
+
 
     public Object[][] getFilaProducao() { //novo
         return null;
     }
 
-    public String[] getColunasFilaProducao() { //novo
-        String[] columnNames = {
-                "Id",
-                "Componentes em falta"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
+    public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
 
     // -------------------------------- Encomenda atual ----------------------------------------------------------------
+
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
         encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
     }
@@ -162,12 +160,17 @@ public class ConfiguraFacil extends Observable {
         List<Categoria> categ = new ArrayList<>();
         try {
             categ = categorias.list();
-            } catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } catch (CategoriaNaoExisteException categoriaNaoExiste) {
+            try {
+                categorias.remove(categoriaNaoExiste.getMessage());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        Set<Componente> comp = new HashSet<>();
-                //encomendaAtual.getComponentes();
-        //if (categ.size() == 0) return null;
+        Set<Componente> comp = encomendaAtual.getComponentes();
+        if (categ.size() == 0) return null;
 
         Object[][] data = buildCategObrigatorias(categ);
         for(int i = 0; i<data.length; i++)
@@ -331,9 +334,9 @@ public class ConfiguraFacil extends Observable {
      */
     public String autenticar(String nome, String password) throws Exception {
         // TODO: tirar na versão final
-        if (nome.equals("administrador")) return "administrador";
-        if (nome.equals("vendedor")) return "vendedor";
-        if (nome.equals("repositor")) return "repositor";
+        if (nome.equals("Administrador")) return "Administrador";
+        if (nome.equals("Vendedor")) return "Vendedor";
+        if (nome.equals("Repositor")) return "Repositor";
 
         Utilizador u = utilizadores.get(nome);
         if (u.getPassword().equals(password)) {

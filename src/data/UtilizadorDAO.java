@@ -1,9 +1,6 @@
 package data;
 
-import business.utilizadores.Administrador;
-import business.utilizadores.Repositor;
-import business.utilizadores.Utilizador;
-import business.utilizadores.Vendedor;
+import business.utilizadores.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +34,7 @@ public class UtilizadorDAO extends DAO {
 		return numRows == 1;
 	}
 
-	public List<Utilizador> list() throws SQLException {
+	public List<Utilizador> list() throws SQLException, FuncaoNaoExisteExcpetion {
 		Connection cn = Connect.connect();
 		ResultSet res = super.getAll(cn, "Utilizador");
 		List<Utilizador> list = new ArrayList<>();
@@ -51,7 +48,7 @@ public class UtilizadorDAO extends DAO {
 		return list;
 	}
 
-	public Utilizador get(String nome) throws SQLException {
+	public Utilizador get(String nome) throws SQLException, FuncaoNaoExisteExcpetion {
 		Connection cn = Connect.connect();
 		PreparedStatement st = cn.prepareStatement("SELECT password, funcao FROM Utilizador WHERE nome = ? LIMIT 1");
 		st.setString(1, nome);
@@ -75,7 +72,10 @@ public class UtilizadorDAO extends DAO {
 		return super.size("Utilizador");
 	}
 
-	private Utilizador criarUtilizador(String nome, String password, String funcao) {
+	private Utilizador criarUtilizador(String nome, String password, String funcao) throws FuncaoNaoExisteExcpetion {
+		if(funcao == null){
+			throw new FuncaoNaoExisteExcpetion(null);
+		}
 		switch (funcao){
 			case "Vendedor":
 				return new Vendedor(nome, password);
@@ -84,7 +84,7 @@ public class UtilizadorDAO extends DAO {
 			case "Repositor":
 				return new Repositor(nome, password);
 			default:
-				return null;
+				throw new FuncaoNaoExisteExcpetion(funcao) ;
 		}
 	}
 }

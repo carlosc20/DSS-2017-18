@@ -30,7 +30,7 @@ public class CategoriaDAO extends DAO {
         return numRows == 1;
     }
 
-    public List<Categoria> list() throws SQLException {
+    public List<Categoria> list() throws SQLException, CategoriaNaoExisteException {
         Connection cn = Connect.connect();
         ResultSet res = super.getAll(cn, "Categoria");
         List<Categoria> list = new ArrayList<>();
@@ -42,7 +42,7 @@ public class CategoriaDAO extends DAO {
         return list;
     }
 
-    public Categoria get(String designacao) throws SQLException {
+    public Categoria get(String designacao) throws SQLException, CategoriaNaoExisteException {
         Connection cn = Connect.connect();
         PreparedStatement st = cn.prepareStatement("SELECT 1 FROM Categoria WHERE designacao = ? LIMIT 1");
         st.setString(1, designacao);
@@ -64,9 +64,9 @@ public class CategoriaDAO extends DAO {
         return super.size("Categoria");
     }
 
-    private Categoria criarCategoria(String designacao) {
+    private Categoria criarCategoria(String designacao) throws CategoriaNaoExisteException {
         if(designacao == null){
-            return null;
+            throw new CategoriaNaoExisteException(null);
         }
         switch (designacao){
             case "Carrocaria":
@@ -80,7 +80,7 @@ public class CategoriaDAO extends DAO {
             case "Pneus":
                 return new Pneus();
             default:
-                return null;
+                throw new CategoriaNaoExisteException(designacao);
         }
     }
 }
