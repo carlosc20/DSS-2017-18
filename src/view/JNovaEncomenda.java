@@ -169,7 +169,7 @@ public class JNovaEncomenda implements Observer {
         adicionarPacoteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] columnNames = facade.getColunasPacotes();
+                String[] columnNames = ConfiguraFacil.colunasPacotes;
                 Object[][] data = facade.getPacotes();
                 DefaultTableModel model = new DefaultTableModel(data, columnNames) {
                     @Override
@@ -242,7 +242,7 @@ public class JNovaEncomenda implements Observer {
      */
     private int adicionaComponente(JFrame frame, String categoria) {
 
-        String[] columnNames = facade.getColunasComponentes();
+        String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentes(categoria);
 
         DefaultTableModel model = new DefaultTableModel(data, columnNames) {
@@ -273,7 +273,7 @@ public class JNovaEncomenda implements Observer {
     }
 
     private void updateObrigatorios() {
-        String[] columnNames = facade.getColunasComponentes();
+        String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentesObgConfig();
         modelObr.setDataVector(data, columnNames);
     }

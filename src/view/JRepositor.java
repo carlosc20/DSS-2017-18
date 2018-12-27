@@ -98,13 +98,13 @@ public class JRepositor implements Observer {
     }
 
     private void updateComponentes() {
-        String[] columnNames = facade.getColunasComponentes();
+        String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentes();
         modelC.setDataVector(data, columnNames);
     }
 
     private void updatePacotes() {
-        String[] columnNames = facade.getColunasPacotes();
+        String[] columnNames = ConfiguraFacil.colunasPacotes;
         Object[][] data = facade.getPacotes();
         modelP.setDataVector(data, columnNames);
     }

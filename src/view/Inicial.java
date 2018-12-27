@@ -33,19 +33,19 @@ public class Inicial {
                 String password = String.valueOf(passwordField.getPassword());
 
                 try {
-                    int cargo = facade.autenticar(nome, password);
+                    String cargo = facade.autenticar(nome, password);
                     // new JNovaEncomenda();
                     // TODO: 27/12/2018
                     switch (cargo) {
-                        case 0:
+                        case "administrador":
                             frame.dispose();
                             new JAdministrador();
                             break;
-                        case 1:
+                        case "vendedor":
                             frame.dispose();
                             new JVendedor();
                             break;
-                        case 2:
+                        case "repositor":
                             frame.dispose();
                             new JRepositor();
                             break;
@@ -61,7 +61,6 @@ public class Inicial {
                             "Erro",
                             JOptionPane.ERROR_MESSAGE);
                     nomeField.requestFocusInWindow();
-                    e1.printStackTrace();
                 }
             }
         });

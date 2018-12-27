@@ -14,6 +14,6 @@ public class Administrador extends Utilizador {
     }
 
     public String getFuncao() {
-        return "Administrador";
+        return "administrador";
     }
 }
