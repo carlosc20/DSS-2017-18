@@ -1,33 +1,34 @@
 package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
+import business.produtos.Componente;
 import business.utilizadores.Administrador;
 import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
+import business.venda.Encomenda;
+import business.venda.categorias.Categoria;
+import data.*;
 import javafx.collections.ObservableArrayBase;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Observable;
+import java.sql.SQLException;
+import java.util.*;
 
 public class ConfiguraFacil extends Observable {
 
     private static ConfiguraFacil instancia = new ConfiguraFacil();
-	/*
 	private Utilizador utilizadorAtual;
-	private Venda.Encomenda encomendaAtual;
+	private Encomenda encomendaAtual;
 	private CategoriaDAO categorias;
 	private EncomendaEmProducaoDAO filaProducao;
 	private ComponenteDAO todosComponentes;
 	private PacoteDAO todosPacotes;
 	private EncomendaDAO encomendas; // nome corrigido
 	private UtilizadorDAO utilizadores;
-	*/
+
 
     public static ConfiguraFacil getInstancia() {
         return instancia;
@@ -74,7 +75,8 @@ public class ConfiguraFacil extends Observable {
     //fazer no encomendaDAO
     // TODO: 26/12/2018 acabar
     public Object[][] getRegistoProduzidas() { //novo
-        return encomendas.getRegistoProduzidas();
+       // return encomendas.getRegistoProduzidas();
+        return null;
     }
 
     public String[] getColunasRegistoProduzidas() { //novo
@@ -123,9 +125,10 @@ public class ConfiguraFacil extends Observable {
      * {id,Designação da categoria,designacao da componente,quantidade,preço}
      */
     // TODO: Precisa de ser testado depois dos DAOs estarem feitos
-    public Object[][] getComponentes() {
-        Set<Componente> componentes = todosComponentes.list();
-        Object[componentes.size()][5] componentesTodas;
+    public Object[][] getComponentes(){
+       /*
+        Set<Componente> componentes = todosComponentes.set();
+        Object[componentes.size()][5] componentesTodas = new Object();
         int i = 0;
         for(Componente c : componentes){
             int id = c.getId();
@@ -138,6 +141,8 @@ public class ConfiguraFacil extends Observable {
             i++;
         }
         return componentesTodas;
+    */
+       return null;
     }
 
     public String[] getColunasComponentes() {  //novo
@@ -156,7 +161,9 @@ public class ConfiguraFacil extends Observable {
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
     //Precisa de ser testado depois dos DAOs
+    //TODO: Precisa de ser feito
     public Object[][] getPacotes() {
+        /*
         List pacotes = todosPacotes.list();
         Object[pacotes.size()][2] pacotesTodos;
         int i = 0;
@@ -165,7 +172,8 @@ public class ConfiguraFacil extends Observable {
             String designacao = p.getDesignacao();
             pacotesTodos[i] = {id,designacao};
             i++;
-        }
+        }*/
+        return null;
     }
 
     public String[] getColunasPacotes() {  //novo
@@ -200,15 +208,17 @@ public class ConfiguraFacil extends Observable {
      * Devolve uma lista com os nomes dos funcionários existentes.
      * @return List<nomes:String>
      */
-    // TODO: Precisa de ser Testado depois dos DAOs estarem feitos
+    // TODO: Precisa de ser feito
     public List<String> getFuncionarios() {
+        /*
         List users = utilizadores.list();
         List<String> nomes = new ArrayList<>();
         for(Utilizador u: users){
             String nome = u.getNome();
             nomes.add(nome);
         }
-        return nomes;
+        return nomes;*/
+        return null;
     }
 
 
