@@ -1,5 +1,6 @@
 package business.venda;
 
+import business.produtos.Componente;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
@@ -26,27 +27,35 @@ public class Encomenda {
 		this.configuracao = new Configuracao(cDAO, pDAO);
 	}
 
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
 		return configuracao.getEfeitosSecundariosAdicionarComponente(idComponente);
 	}
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
-		return configuracao.getEfeitosSecundariosAdicionarComponente(idPacote);
+	public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, SQLException, PacoteGeraConflitosException {
+		return configuracao.getEfeitosSecundariosAdicionarPacote(idPacote);
 	}
 
-	public void adicionaComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
-		this.valor += configuracao.adicionarComponente(idComponente);
+	public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
+		Pair <Float,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
+		this.valor += temp.getKey();
+		return temp.getValue();
 	}
 
-	public void removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
-		this.valor += configuracao.removerComponente(idComponente);
+	public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
+		Pair <Float,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
+		this.valor += temp.getKey();
+		return temp.getValue();
 	}
 
-	public void adicionaPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException {
-		this.valor += configuracao.adicionarPacote(idPacote);
+	public Set<Integer> adicionaPacote(int idPacote) throws PacoteGeraConflitosException, SQLException {
+		Pair <Float,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
+		this.valor += temp.getKey();
+		return temp.getValue();
 	}
 
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
-		this.valor += configuracao.removerPacote(idPacote);
+		Pair <Float,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
+		this.valor += temp.getKey();
+		//return temp.getValue();
 	}
 	public Set<Integer> finalizarEncomenda() throws SQLException, FaltamDependentesException {
 		setData(LocalDate.now());
@@ -56,6 +65,9 @@ public class Encomenda {
 		throw new UnsupportedOperationException();
 	}
 
+	public Set<Componente> getComponentes(){
+		return configuracao.getComponentes();
+	}
 	public int getId() {
 		return id;
 	}

@@ -33,7 +33,7 @@ public class Configuracao {
 	 * @param idComponente id do componente a adicionar
 	 * @returns valor a acrescentar à encomenda
 	 */
-	public float adicionarComponente(int idComponente) throws SQLException {
+	public Pair<Float,Set<Integer>> adicionarComponente(int idComponente) throws SQLException {
 		Componente componente = cDAO.get(idComponente);
 		//Manhas para não fazer métodos diferentes. Todos recebem lista
 		HashSet<Componente> componentesAdd = new HashSet<>();
@@ -43,7 +43,7 @@ public class Configuracao {
 		//Valor retirado corresponde ao valor que os componentes a remover tinham e que vai ser subtraído
 		//Valor Acrescentado é o valor dos componentes novos a adicionar. no tratarDependencias somente pq
 		//faço lá o ciclo necessário para ter os valores.
-		float valorRetirado = tratarIncompatibilidades(componentesAdd);
+		Pair <Float,Set<Integer>> temp = tratarIncompatibilidades(componentesAdd);
 		float valorAcrescentado = tratarDependencias(componentesAdd);
 
 		//Adição do componente
@@ -64,10 +64,14 @@ public class Configuracao {
 			descontoAcrescentado = ativaPacote(idComponente);
 		}
 		else {
-			descontoAcrescentado = formacaoPacote(idComponente);
+			descontoAcrescentado = formacaoPacote(componente);
 		}
+		Set<Integer> pac = temp.getValue();
+		float val = temp.getKey();
 
-		return (valorAcrescentado - valorRetirado - descontoAcrescentado);
+
+
+		return new Pair<Float,Set<Integer>>((valorAcrescentado - val - descontoAcrescentado), pac);
 	}
 	/*
 	 *Verifica se houve ativação de algum pacote
@@ -88,11 +92,11 @@ public class Configuracao {
 	 *@param idComponente id do componente que poderá ter formado pacote
 	 *@returns val valor a descontar para o total da encomenda
 	 */
-	public float formacaoPacote(int idComponente) throws SQLException {
+	public float formacaoPacote(Componente componente) throws SQLException {
 		HashSet<Pacote> pac;    //Pacotes que tem na sua constituição o componente fornecido como parámetro
 		HashSet<Integer> aux;    //Componentes de um pacote
 		TreeSet<Pacote> formados = new TreeSet<>(new ComparaPacotesByDesconto()); // pacotes que podem ser formados
-		pac = (HashSet<Pacote>) pDAO.getPacotesComComponente(idComponente);
+		pac = (HashSet<Pacote>) pDAO.list(componente);
 		boolean flag;            //Irá indicar se pode ser formado o pacote
 
 		//!!!Talvez possa otimizar e trazer os pacotes para a memória, mas não sei se vale a pena
@@ -118,7 +122,7 @@ public class Configuracao {
 	 *Vai buscar as incompatibilidades dos componentes que recebeu como argumento e remove-as
 	 *@param componentes Componentes cujas incompatibilidades serão removidas
 	 */
-	private float tratarIncompatibilidades(Set<Componente> componentes) throws SQLException {
+	private Pair <Float,Set<Integer>> tratarIncompatibilidades(Set<Componente> componentes) throws SQLException {
 		HashSet<Integer> idIncompativeis = new HashSet<>();  //Id's dos componentes incompatíveis de todos os componentes
 		Set<Integer> aux;									 //Id's dos componentes incompatíveis de cada um dos componentes
 
@@ -136,9 +140,9 @@ public class Configuracao {
 	 *@param idComponentes Componentes a ser removidos
 	 *@returns valor a ser diminuido ao valor da encomenda
 	 */
-	private float removerComponentes (Set<Componente> componentes, Set<Integer> idDependentesInc){
+	private Pair<Float,Set<Integer>> removerComponentes (Set<Componente> componentes, Set<Integer> idDependentesInc){
 		float valorRetirado = 0; //valor a retirar da encomenda
-		Iterator<Integer> it;
+		HashSet<Integer> pac = new HashSet<>();
 		boolean found = false; //para não tirar o desconto várias vezes
 
 		//Retira os dependentes da config.
@@ -155,10 +159,17 @@ public class Configuracao {
 			for (int id : p.getComponentes()) {
 				for (Componente c : componentes) {
 					if (componentes.contains(id)) {
+						//Se ficar assim pode ser otimizado
 						if(!found){
 							pacotes.remove(p);
+							pac.add(p.getId());
 							valorRetirado -= p.getDesconto();
-							PacoteDormente pd = new PacoteDormente(p,0);
+							// Ver melhor isto !!!!
+							for(int key : pacotesDormentes.keySet()){
+								if(p.getComponentes().contains(key))
+									pacotesDormentes.remove(key);
+							}
+							//PacoteDormente pd = new PacoteDormente(p,0);
 						}
 						//pd.incr();
 						//pacotesDormentes.put(id,p);
@@ -168,7 +179,7 @@ public class Configuracao {
 			}
 		}
 
-		return valorRetirado;
+		return new Pair<Float, Set<Integer>>(valorRetirado, pac);
 	}
 	/*
 	 *Vais buscar dependencias e adiciona-as a this.dependentes
@@ -197,7 +208,7 @@ public class Configuracao {
 	 *Remove um componente e as dependencias que gerou
 	 *@param idComponente Id componente a ser retirado
 	 */
-	public float removerComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
+	public Pair <Float,Set<Integer>> removerComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
 		//Isto parece-me desnecessário
 		Componente c = cDAO.get(idComponente);
 		if (!componentes.contains(c)) throw new ComponenteNaoExisteNaConfiguracao("Componentes não existe");
@@ -214,15 +225,18 @@ public class Configuracao {
 	 *@param idPacote Id do pacote a ser adicionado
 	 *@returns par em que a chave é a quantia a ser descontada na encomenda e o valor é a lista de pacotes que podem ter sido removidos
 	 */
-	public float adicionarPacote(int idPacote) throws SQLException {
+	public Pair<Float,Set<Integer>> adicionarPacote(int idPacote) throws SQLException {
 		Pacote p = pDAO.get(idPacote);
 		HashSet<Componente> componentes = (HashSet<Componente>) p.getComponentesRef();
 
 		//tratamentos
-		float valorRetirado = tratarIncompatibilidades(componentes);
+		Pair <Float, Set<Integer>> temp = tratarIncompatibilidades(componentes);
 		float valorAcrescentado = tratarDependenciasPacote(componentes,p);
 
-		return valorAcrescentado - valorRetirado;
+		Set<Integer> pac = temp.getValue();
+		float val = temp.getKey();
+
+		return new Pair<Float,Set<Integer>>((valorAcrescentado - val), pac);
 	}
 	private float tratarDependenciasPacote(Set<Componente> componentes, Pacote p){
 		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
@@ -265,7 +279,7 @@ public class Configuracao {
 		}
 		return found;
 	}
-	public float removerPacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
+	public Pair<Float,Set<Integer>> removerPacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
 		Pacote p = pDAO.get(idPacote);
 		if(!pacotes.contains(p)) throw new PacoteNaoExisteNaConfiguracaoException("Pacote não existe");
 
@@ -330,7 +344,10 @@ public class Configuracao {
 		//return new Pair<>(incompARemover, pacotesARemover);
 	}
 	protected void otimizarPacotes() throws SQLException {
-		Set<Pacote> todosPacotes = pDAO.getPacotesCorrespondentes(componentes);
+		Set<Pacote> todosPacotes = new HashSet<>();
+		for (Componente c : componentes){
+			todosPacotes.addAll(pDAO.list(c));
+		}
 		Set<Pacote> otimos = calculaOtimos(todosPacotes);
 		boolean reotimizacao = comparaPacotes(otimos);
 		if(reotimizacao) {
@@ -370,35 +387,15 @@ public class Configuracao {
 	}
 
 	public Set<Componente> getComponentes() {
-		return componentes;
+		return new HashSet<>(componentes);
 	}
 
 	public Set<Integer> getDependentes() {
-		return dependentes;
+		return new HashSet<>(dependentes);
 	}
 
 	public Set<Pacote> getPacotes() {
-		return pacotes;
-	}
-
-	public ComponenteDAO getcDAO() {
-		return cDAO;
-	}
-
-	public PacoteDAO getpDAO() {
-		return pDAO;
-	}
-
-	public void setComponentes(Set<Componente> componentes) {
-		this.componentes = componentes;
-	}
-
-	public void setDependentes(Set<Integer> dependentes) {
-		this.dependentes = dependentes;
-	}
-
-	public void setPacotes(Set<Pacote> pacotes) {
-		this.pacotes = pacotes;
+		return new HashSet<>(pacotes);
 	}
 
 	public void setcDAO(ComponenteDAO cDAO) {
