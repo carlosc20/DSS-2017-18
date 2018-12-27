@@ -10,15 +10,13 @@ public class Pacote {
 	private int id;
 	private String designacao;
 	private int desconto;
-	private int numCompEmFalta;
 	private Set<Integer> componentes;
 	private ComponenteDAO cDAO;
 
-	public Pacote(int id, String designacao, int desconto, int numCompEmFalta, Set<Integer> componentes) {
+	public Pacote(int id, String designacao, int desconto, Set<Integer> componentes) {
 		this.id = id;
 		this.designacao = designacao;
 		this.desconto = desconto;
-		this.numCompEmFalta = numCompEmFalta;
 		this.componentes = componentes;
 	}
 	public Set<Componente> getComponentesRef() throws SQLException {
@@ -30,14 +28,13 @@ public class Pacote {
 		return res;
 	}
 
-	public void incr(){
-		numCompEmFalta++;
+	public Pacote(Pacote p) {
+		this.id = p.getId();
+		this.designacao = p.getDesignacao();
+		this.desconto = p.getDesconto();
+		this.componentes = componentes;
 	}
 
-	public boolean decr() {
-		numCompEmFalta--;
-		return numCompEmFalta==0;
-	}
 	@Override
 	public boolean equals(Object o){
 		if (this == o)
@@ -66,7 +63,4 @@ public class Pacote {
 		return desconto;
 	}
 
-	public int getNumCompEmFalta() {
-		return numCompEmFalta;
-	}
 }

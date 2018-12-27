@@ -48,7 +48,7 @@ public class Encomenda {
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
 		this.valor += configuracao.removerPacote(idPacote);
 	}
-	public Set<Integer> finalizarEncomenda() throws SQLException {
+	public Set<Integer> finalizarEncomenda() throws SQLException, FaltamDependentesException {
 		setData(LocalDate.now());
 		return configuracao.atualizaStock();
 	}

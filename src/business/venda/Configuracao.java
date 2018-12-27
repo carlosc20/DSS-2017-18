@@ -3,6 +3,7 @@ package business.venda;
 import business.produtos.ComparaPacotesByDesconto;
 import business.produtos.Componente;
 import business.produtos.Pacote;
+import business.produtos.PacoteDormente;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
@@ -14,7 +15,7 @@ public class Configuracao {
 	private Set<Componente> componentes; //Componentes da configuração
 	private Set<Integer> dependentes; 	 //Id's dos componentes que precisam de ser adicionados
 	private Set<Pacote> pacotes;		 //Pacotes da configuração
-	private HashMap<Integer, Pacote> pacotesDormentes;  //Pacotes que deixaram de estar ativos, mas podem voltar.
+	private HashMap<Integer, PacoteDormente> pacotesDormentes;  //Pacotes que deixaram de estar ativos, mas podem voltar.
 	private ComponenteDAO cDAO;
 	private PacoteDAO pDAO;
 
@@ -74,12 +75,10 @@ public class Configuracao {
 	 *@returns val valor a descontar para o total da encomenda
 	 */
 	public float ativaPacote(int idComponente){
-		Pacote p = pacotesDormentes.get(idComponente);
-		boolean formou = p.decr();
-		//pacotesDormentes.remove(idComponente);
-		if (formou) {
-			pacotes.add(p);
-			return p.getDesconto();
+		PacoteDormente pd = pacotesDormentes.get(idComponente);
+		boolean flag = pd.decr();
+		if (flag) {
+			return pd.getDesconto();
 		}
 		return 0;
 	}
@@ -89,7 +88,7 @@ public class Configuracao {
 	 *@param idComponente id do componente que poderá ter formado pacote
 	 *@returns val valor a descontar para o total da encomenda
 	 */
-	public float formacaoPacote(int idComponente) {
+	public float formacaoPacote(int idComponente) throws SQLException {
 		HashSet<Pacote> pac;    //Pacotes que tem na sua constituição o componente fornecido como parámetro
 		HashSet<Integer> aux;    //Componentes de um pacote
 		TreeSet<Pacote> formados = new TreeSet<>(new ComparaPacotesByDesconto()); // pacotes que podem ser formados
@@ -159,10 +158,11 @@ public class Configuracao {
 						if(!found){
 							pacotes.remove(p);
 							valorRetirado -= p.getDesconto();
-							}
-						p.incr();
-						pacotesDormentes.put(id,p);
-						found = true;
+							PacoteDormente pd = new PacoteDormente(p,0);
+						}
+						//pd.incr();
+						//pacotesDormentes.put(id,p);
+						//found = true;
 					}
 				}
 			}
@@ -241,9 +241,11 @@ public class Configuracao {
 			return val-=p.getDesconto();
 		}
 		this.dependentes.addAll(idDependentes);
+
+		PacoteDormente pd = new PacoteDormente(p,0);
 		for(int id : idDependentes) {
-			p.incr();
-			pacotesDormentes.put(id, p);
+			pd.incr();
+			pacotesDormentes.put(id, pd);
 		}
 		return val;
 	}
@@ -327,7 +329,7 @@ public class Configuracao {
 		return incompARemover;
 		//return new Pair<>(incompARemover, pacotesARemover);
 	}
-	protected void otimizarPacotes() {
+	protected void otimizarPacotes() throws SQLException {
 		Set<Pacote> todosPacotes = pDAO.getPacotesCorrespondentes(componentes);
 		Set<Pacote> otimos = calculaOtimos(todosPacotes);
 		boolean reotimizacao = comparaPacotes(otimos);

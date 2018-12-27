@@ -23,7 +23,7 @@ public class JVendedor implements Observer {
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
-    // TODO: atualizar tabelas, desativar janela enquanto se cria encomenda
+    // TODO: desativar janela enquanto se cria encomenda, ter as colunas ja guardadas
 
     public JVendedor() {
 

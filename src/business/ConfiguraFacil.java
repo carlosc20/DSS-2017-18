@@ -1,27 +1,28 @@
 package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
+import business.produtos.Componente;
 import business.utilizadores.Administrador;
 import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
+import data.*;
+import business.venda.Encomenda;
+import business.venda.categorias.Categoria;
 import data.*;
 import javafx.collections.ObservableArrayBase;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Observable;
+import java.sql.SQLException;
+import java.util.*;
 
 public class ConfiguraFacil extends Observable {
 
     private static ConfiguraFacil instancia = new ConfiguraFacil();
-
 	private Utilizador utilizadorAtual;
-	private Venda.Encomenda encomendaAtual;
+	private Encomenda encomendaAtual;
 	private CategoriaDAO categorias;
 	private EncomendaEmProducaoDAO filaProducao;
 	private ComponenteDAO todosComponentes;
@@ -38,7 +39,43 @@ public class ConfiguraFacil extends Observable {
     }
 
 
-    // -------------------------------- Encomenda ------------------------------------------
+    // -------------------------------- Encomendas ---------------------------------------------------------------------
+
+
+
+    //fazer no encomendaDAO
+    // TODO: 26/12/2018 acabar
+    public Object[][] getRegistoProduzidas() { //novo
+       // return encomendas.getRegistoProduzidas();
+        return null;
+    }
+
+    public String[] getColunasRegistoProduzidas() { //novo
+        String[] columnNames = {
+                "Id",
+                "Cliente",
+                "Nif",
+                "Preço sem descontos (€)",
+                "Descontos (€)",
+                "Componentes",
+                "Pacotes"
+        };
+        return columnNames;
+    }
+
+    public Object[][] getFilaProducao() { //novo
+        return null;
+    }
+
+    public String[] getColunasFilaProducao() { //novo
+        String[] columnNames = {
+                "Id",
+                "Componentes em falta"
+        };
+        return columnNames;
+    }
+
+    // -------------------------------- Encomenda atual ----------------------------------------------------------------
 
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
 
@@ -68,57 +105,35 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
+    public void cancelaEncomenda() {
+
+    }
+
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
         throw new UnsupportedOperationException();
     }
 
-    public void consultarConfiguracao() {
-        throw new UnsupportedOperationException();
-    }
 
-    public List<String> getCategoriasObrigatorias() {
-        String[] tipos = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(tipos);
-    }
+    /**
+     * asdsa
+     *
+     * @return tabela com uma linha por cada categoria obrigatória
+     */
+    public Object[][] getComponentesObgConfig() { //novo
 
-    public List<String> getCategoriasOpcionais() {
-        String[] tipos = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(tipos);
-    }
-
-    //fazer no encomendaDAO
-    // TODO: 26/12/2018 acabar
-    public Object[][] getRegistoProduzidas() { //novo
-        return encomendas.getRegistoProduzidas();
-    }
-
-    public String[] getColunasRegistoProduzidas() { //novo
-        String[] columnNames = {
-                "Id",
-                "Cliente",
-                "Nif",
-                "Preço sem descontos (€)",
-                "Descontos (€)",
-                "Componentes",
-                "Pacotes"
+        Object[][] data = {
+                {"Motor", null, null, null, null},
+                {"Motor", null, null, null, null},
+                {"Motor", null, null, null, null},
+                {"Motor", null, null, null, null},
+                {"Motor", null, null, null, null}
         };
-        return columnNames;
-    }
-
-    public Object[][] getFilaProducao() { //novo
-        return null;
-    }
-
-    public String[] getColunasFilaProducao() { //novo
-        String[] columnNames = {
-                "Id",
-                "Componentes em falta"
-        };
-        return columnNames;
+        return data;
     }
 
 
-    // -------------------------------- Stock -----------------------------------------------
+
+    // -------------------------------- Stock --------------------------------------------------------------------------
 
     /**
      * Substitui o stock atual pelo fornecido num ficheiro CSV
@@ -138,10 +153,10 @@ public class ConfiguraFacil extends Observable {
      * {id,Designação da categoria,designacao da componente,quantidade,preço}
      */
     // TODO: Precisa de ser testado depois dos DAOs estarem feitos
-    public Object[][] getComponentes() {
-
-        Set<Componente> componentes = todosComponentes.list();
-        Object[componentes.size()][5] componentesTodas;
+    public Object[][] getComponentes(){
+       /*
+        Set<Componente> componentes = todosComponentes.set();
+        Object[componentes.size()][5] componentesTodas = new Object();
         int i = 0;
         for(Componente c : componentes){
             int id = c.getId();
@@ -154,6 +169,8 @@ public class ConfiguraFacil extends Observable {
             i++;
         }
         return componentesTodas;
+    */
+       return null;
     }
 
     public Object[][] getComponentes(String categoria) { //novo
@@ -169,8 +186,8 @@ public class ConfiguraFacil extends Observable {
 
     public String[] getColunasComponentes() {  //novo
         String[] columnNames = {
-                "Id",
                 "Categoria",
+                "Id",
                 "Designação",
                 "Qtd em stock",
                 "Preço(€)"
@@ -183,6 +200,7 @@ public class ConfiguraFacil extends Observable {
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
     //Precisa de ser testado depois dos DAOs
+    //TODO: Precisa de ser feito
     public Object[][] getPacotes() {
         /*
         List pacotes = todosPacotes.list();
@@ -193,10 +211,10 @@ public class ConfiguraFacil extends Observable {
             String designacao = p.getDesignacao();
             pacotesTodos[i] = {id,designacao};
             i++;
-        }
-        */
+        }*/
         return null;
     }
+
 
     public String[] getColunasPacotes() {  //novo
         String[] columnNames = {
@@ -209,7 +227,28 @@ public class ConfiguraFacil extends Observable {
     }
 
 
-    // -------------------------------- Utilizadores ----------------------------------------
+    /**
+     * Devolve uma lista de todas as categorias de componentes obrigatórios.
+     *
+     * @return lista de categorias
+     */
+    public List<String> getCategoriasObrigatorias() {
+        String[] tipos = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(tipos);
+    }
+
+
+    /**
+     * Devolve uma lista de todas as categorias de componentes opcionais.
+     *
+     * @return lista de categorias
+     */
+    public List<String> getCategoriasOpcionais() {
+        String[] tipos = {"cat 1", "cat 2", "cat 3"};
+        return Arrays.asList(tipos);
+    }
+
+    // -------------------------------- Utilizadores -------------------------------------------------------------------
 
     /**
      * Devolve o cargo do funcionário correspondente às credencias fornecidas.
@@ -217,6 +256,7 @@ public class ConfiguraFacil extends Observable {
      * @return 0 se for administrador, 1 se for vendedor, 2 se for repositor
      */
     public int autenticar(String nome, String password) throws Exception {
+        // TODO: 27/12/2018 acabar
         if (nome.equals("administrador")) return 0;
         if (nome.equals("vendedor")) return 1;
         if (nome.equals("repositor")) return 2;
@@ -226,35 +266,48 @@ public class ConfiguraFacil extends Observable {
     private String[] gajosa = {"Ângelo", "Carlos", "Daniel", "Marco"}; // TODO: apagar quando DAO estiver feito
     private ArrayList<String> gajos = new ArrayList<>(Arrays.asList(gajosa));
 
+
     /**
      * Devolve uma lista com os nomes dos funcionários existentes.
-     * @return List<nomes:String>
+     *
+     * @return lista com os nomes dos funcionários
      */
-    // TODO: Precisa de ser Testado depois dos DAOs estarem feitos
+    // TODO: Precisa de ser feito
     public List<String> getFuncionarios() {
+        /*
         List users = utilizadores.list();
         List<String> nomes = new ArrayList<>();
         for(Utilizador u: users){
             String nome = u.getNome();
             nomes.add(nome);
         }
-        return nomes;
+        return nomes;*/
+        return null;
     }
 
 
     /**
-     * Devolve uma lista com os tipos de funcionários existentes.
+     * Devolve uma lista com todos os tipos possíveis de funcionário.
+     *
+     * @return lista com os tipos de funcionário
      */
     public List<String> getTiposFuncionarios() { // novo
+        // TODO: 27/12/2018 acabar
         String[] tipos = {"Administrador", "Repositor", "Vendedor"};
         return Arrays.asList(tipos);
     }
 
+
     /**
-     * Cria um utilizador no sistema e adiciona-o à base de dados
+     * Cria um utilizador no sistema e adiciona-o à base de dados.
+     *
+     * @param nome      nome do utilizador
+     * @param password  password do utilizador
+     * @param tipo      tipo do utilizador
      */
     public void criarUtilizador(String nome, String password, String tipo) {
 
+        // TODO: 27/12/2018 acabar
         gajos.add(nome);
         /*
         Utilizador u;
@@ -274,10 +327,12 @@ public class ConfiguraFacil extends Observable {
 
 
     /**
-     * Remove um utilizador do sistema
+     * Remove um utilizador do sistema.
+     *
+     * @param nome  nome do utilizador
      */
     public void removerUtilizador(String nome) {
-
+        // TODO: 27/12/2018 acabar
         gajos.remove(nome);
         // TODO: n da com chave so no DAO?
         /*
