@@ -83,12 +83,22 @@ public class ConfiguraFacil extends Observable {
         encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
     }
 
-    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException{
-        return encomendaAtual.getEfeitosAdicionarComponente(idComponente);
+    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
+        try {
+            return encomendaAtual.getEfeitosAdicionarComponente(idComponente);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException{
-        return this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
+    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException{
+        try {
+            return this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
@@ -127,9 +137,6 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-    public void cancelaEncomenda() {
-    }
-
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
         throw new UnsupportedOperationException();
     }
@@ -140,15 +147,36 @@ public class ConfiguraFacil extends Observable {
      *
      * @return tabela com uma linha por cada categoria obrigatória
      */
-    public Object[][] getComponentesObgConfig() { //novo
-
+    public Object [][] getComponentesObgConfig() { //novo
+/*
         Object[][] data = {
                 {"Motor", null, null, null, null},
                 {"Motor", null, null, null, null},
                 {"Motor", null, null, null, null},
                 {"Motor", null, null, null, null},
                 {"Motor", null, null, null, null}
-        };
+        };*/
+        List<Categoria> categ = new ArrayList<>();
+        try {
+            categ = categorias.list();
+            } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Set<Componente> comp = encomendaAtual.getComponentes();
+        Object[][] data = new Object[categ.size()][5];
+        int i = 0;
+        for(Categoria cat : categ){
+            String des = cat.getDesignacao();
+            for(Componente c : comp){
+                if (c.getCategoria().getDesignacao().equals(cat.getDesignacao())){
+                    data[i] = new Object[]{des, c.getId(), c.getDesignacao(), c.getStock(), c.getPreco()};
+                    }
+                else {
+                    data[i] = new Object[]{des, null, null, null, null};
+                }
+            }
+
+        }
         return data;
     }
 
