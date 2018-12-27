@@ -169,7 +169,7 @@ public class ConfiguraFacil extends Observable {
                 //encomendaAtual.getComponentes();
         //if (categ.size() == 0) return null;
 
-        Object[][] data = buildCategObirgatorias(categ);
+        Object[][] data = buildCategObrigatorias(categ);
         for(int i = 0; i<data.length; i++)
             for(Componente c : comp) {
                 if (c.getCategoria().getDesignacao().equals(data[i][0])) {
@@ -179,12 +179,12 @@ public class ConfiguraFacil extends Observable {
         return data;
     }
 
-        private Object[][] buildCategObirgatorias (List<Categoria> categ) {
+        private Object[][] buildCategObrigatorias (List<Categoria> categ) {
             Object[][] data = new Object[categ.size()][5];
             int i = 0;
             for (Categoria cat : categ) {
                 String des = cat.getDesignacao();
-                if (cat instanceof CategoriaObrigatoria) {
+                if (cat.getObrigatoria()) {
                     data[i] = new Object[]{des, null, null, null, null};
                     i++;
                 }
