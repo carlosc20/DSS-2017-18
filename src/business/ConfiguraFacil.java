@@ -31,7 +31,7 @@ public class ConfiguraFacil extends Observable {
 	private ComponenteDAO todosComponentes;
 	private PacoteDAO todosPacotes;
 	private EncomendaDAO encomendas; // nome corrigido
-	private UtilizadorDAO utilizadores;
+	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
 
     public static ConfiguraFacil getInstancia() {
@@ -137,6 +137,7 @@ public class ConfiguraFacil extends Observable {
     public void criarConfiguracaoOtima() { // muda nome
         throw new UnsupportedOperationException();
     }
+
 
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
         throw new UnsupportedOperationException();
@@ -318,26 +319,25 @@ public class ConfiguraFacil extends Observable {
         throw new Exception();
     }
 
-    private String[] gajosa = {"Ângelo", "Carlos", "Daniel", "Marco"}; // TODO: apagar quando DAO estiver feito
-    private ArrayList<String> gajos = new ArrayList<>(Arrays.asList(gajosa));
-
-
     /**
      * Devolve uma lista com os nomes dos funcionários existentes.
      *
-     * @return lista com os nomes dos funcionários
+     * @return lista com os nomes dos funcionários, lista vazia em caso de erro
      */
-    // TODO: Precisa de ser feito
     public List<String> getFuncionarios() {
-        /*
-        List users = utilizadores.list();
-        List<String> nomes = new ArrayList<>();
-        for(Utilizador u: users){
-            String nome = u.getNome();
-            nomes.add(nome);
+        try {
+            List<Utilizador> users = utilizadores.list();
+            List<String> nomes = new ArrayList<>(users.size());
+            for(Utilizador u: users){
+                String nome = u.getNome();
+                nomes.add(nome);
+            }
+            return nomes;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
-        return nomes;*/
-        return null;
     }
 
 
@@ -360,22 +360,22 @@ public class ConfiguraFacil extends Observable {
      * @param password  password do utilizador
      * @param tipo      tipo do utilizador
      */
-    public void criarUtilizador(String nome, String password, String tipo) {
-
-        // TODO: 27/12/2018 acabar
-        gajos.add(nome);
-        /*
+    public void criarUtilizador(String nome, String password, String tipo) throws Exception {
         Utilizador u;
         switch (tipo) {
             case "Vendedor":
                 u = new Vendedor(nome, password);
+                break;
             case "Administrador":
                 u = new Administrador(nome, password);
+                break;
             case "Repositor":
                 u = new Repositor(nome, password);
+                break;
+                default:
+                    throw new Exception(); // TODO: 27/12/2018 por exceçao direito
         }
-        DAO.add(u);
-        */
+        utilizadores.add(u);
         setChanged();
         notifyObservers();
     }
@@ -387,13 +387,11 @@ public class ConfiguraFacil extends Observable {
      * @param nome  nome do utilizador
      */
     public void removerUtilizador(String nome) {
-        // TODO: 27/12/2018 acabar
-        gajos.remove(nome);
-        // TODO: n da com chave so no DAO?
-        /*
-		Utilizador u = DAO.get(nome);
-		DAO.remove()
-		*/
+        try {
+            utilizadores.remove(nome);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         setChanged();
         notifyObservers();
     }

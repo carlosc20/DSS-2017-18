@@ -4,5 +4,7 @@ import business.gestao.EncomendaEmProducao;
 
 public class EncomendaEmProducaoDAO {
 
-    public void put(EncomendaEmProducao encomenda){throw new UnsupportedOperationException();}
+    public boolean add(EncomendaEmProducao encomenda){
+        throw new UnsupportedOperationException();
+    }
 }

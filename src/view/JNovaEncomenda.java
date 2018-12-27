@@ -1,6 +1,9 @@
 package view;
 
 import business.ConfiguraFacil;
+import business.venda.ComponenteNaoExisteNaConfiguracao;
+import business.venda.PacoteGeraConflitosException;
+import business.venda.PacoteJaExisteNaConfiguracaoException;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -8,6 +11,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -86,11 +90,10 @@ public class JNovaEncomenda implements Observer {
 
         //---------------- LISTENERS ---------------------------------------------------
 
-        // fecha a janela e cancela a encomenda atual
+        // fecha a janela
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                facade.cancelaEncomenda();
                 frame.dispose();
             }
         });
@@ -135,7 +138,11 @@ public class JNovaEncomenda implements Observer {
                         obrigatorioButton.setText("Remover componente");
                     }
                 } else {            // se está escolhido remove-o
-                    facade.removeComponente(id);
+                    try {
+                        facade.removeComponente(id);
+                    } catch (ComponenteNaoExisteNaConfiguracao e1) {
+                        e1.printStackTrace();
+                    }
                     obrigatorioButton.setText("Adicionar componente");
                 }
             }
@@ -181,7 +188,13 @@ public class JNovaEncomenda implements Observer {
                 if (option == JOptionPane.OK_OPTION) {
                     int row = obrigatoriosTable.getSelectedRow();
                     Integer id = (Integer) obrigatoriosTable.getValueAt(row, 0);
-                    facade.adicionaPacote(id);
+                    try {
+                        facade.adicionaPacote(id);
+                    } catch (PacoteJaExisteNaConfiguracaoException e1) {
+                        e1.printStackTrace();
+                    } catch (PacoteGeraConflitosException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
@@ -250,7 +263,11 @@ public class JNovaEncomenda implements Observer {
 
         if (option == JOptionPane.OK_OPTION) {
             int id = (int) model.getValueAt(table.getSelectedRow(), 0);
-            facade.adicionaComponente(id);
+            try {
+                facade.adicionaComponente(id);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return option;
     }
