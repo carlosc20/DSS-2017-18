@@ -216,6 +216,7 @@ public class ConfiguraFacil extends Observable {
 
 
     public Object[][] getComponentes(){
+
         List<Componente> componentes = new ArrayList<>();
         try {
             componentes = todosComponentes.list();
@@ -242,8 +243,11 @@ public class ConfiguraFacil extends Observable {
      //  return null;
     }
 
+
     /**
      * Faz coisas.
+     *
+     * @param categoria categoria dos componentes
      *
      * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
      */
@@ -267,6 +271,7 @@ public class ConfiguraFacil extends Observable {
      */
     //Feito mas precisa de ser testado
     public Object[][] getPacotes() {
+
         List<Pacote> pacotes = new ArrayList<>();
         try {
             pacotes = todosPacotes.list();
