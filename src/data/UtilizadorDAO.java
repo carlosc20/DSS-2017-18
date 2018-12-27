@@ -77,11 +77,11 @@ public class UtilizadorDAO extends DAO {
 
 	private Utilizador criarUtilizador(String nome, String password, String funcao) {
 		switch (funcao){
-			case "Vendedor":
+			case "vendedor":
 				return new Vendedor(nome, password);
-			case "Administrador":
+			case "administrador":
 				return new Administrador(nome, password);
-			case "Repositor":
+			case "repositor":
 				return new Repositor(nome, password);
 			default:
 				return null;

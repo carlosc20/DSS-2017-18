@@ -102,13 +102,13 @@ public class JVendedor implements Observer {
     }
 
     private void updateFilaProducao() {
-        String[] columnNames = facade.getColunasFilaProducao();
+        String[] columnNames = ConfiguraFacil.colunasFilaProducao;
         Object[][] data = facade.getFilaProducao();
         modelFP.setDataVector(data, columnNames);
     }
 
     private void updateRegistoProduzidas() {
-        String[] columnNames = facade.getColunasRegistoProduzidas();
+        String[] columnNames = ConfiguraFacil.colunasRegistoProduzidas;
         Object[][] data = facade.getRegistoProduzidas();
         modelRP.setDataVector(data, columnNames);
     }
