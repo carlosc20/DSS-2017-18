@@ -19,4 +19,16 @@ public class PacoteDormente extends Pacote {
     public int getNumCompEmFalta() {
         return numCompEmFalta;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if (this == o)
+            return true;
+
+        if ((o==null) || (this.getClass() != o.getClass()))
+            return false;
+
+        PacoteDormente p = (PacoteDormente) o;
+        return super.equals(p);
+    }
 }

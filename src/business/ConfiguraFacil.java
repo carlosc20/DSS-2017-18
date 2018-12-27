@@ -164,22 +164,30 @@ public class ConfiguraFacil extends Observable {
             e.printStackTrace();
         }
         Set<Componente> comp = encomendaAtual.getComponentes();
-        Object[][] data = new Object[categ.size()][5];
-        int i = 0;
-        for(Categoria cat : categ){
-            String des = cat.getDesignacao();
-            if(cat instanceof CategoriaObrigatoria) {
-                for (Componente c : comp) {
-                    if (c.getCategoria().getDesignacao().equals(cat.getDesignacao())) {
-                        data[i] = new Object[]{des, c.getId(), c.getDesignacao(), c.getStock(), c.getPreco()};
-                    } else {
-                        data[i] = new Object[]{des, null, null, null, null};
-                    }
+        if (categ.size() == 0) return null;
+
+        Object[][] data = buildCategObirgatorias(categ);
+        for(int i = 0; i<data.length; i++)
+            for(Componente c : comp) {
+                if (c.getCategoria().getDesignacao().equals(data[i][0])) {
+                    data[i][1] = new Object[]{c.getId(), c.getDesignacao(), c.getStock(), c.getPreco()};
                 }
             }
-        }
         return data;
     }
+
+        private Object[][] buildCategObirgatorias (List<Categoria> categ) {
+            Object[][] data = new Object[categ.size()][5];
+            int i = 0;
+            for (Categoria cat : categ) {
+                String des = cat.getDesignacao();
+                if (cat instanceof CategoriaObrigatoria) {
+                    data[i] = new Object[]{cat.getDesignacao(), null, null, null, null};
+                    i++;
+                }
+            }
+            return data;
+        }
 
     // -------------------------------- Stock --------------------------------------------------------------------------
 
@@ -190,10 +198,9 @@ public class ConfiguraFacil extends Observable {
      */
     public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 
-
         setChanged();
         notifyObservers();
-    }
+            }
 
     /**
      *
