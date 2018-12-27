@@ -8,9 +8,11 @@ import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
-import business.venda.categorias.*;
+import business.venda.categorias.CategoriaNaoExisteException;
+import business.venda.categorias.CategoriaObrigatoria;
 import data.*;
 import business.venda.Encomenda;
+import business.venda.categorias.Categoria;
 import data.*;
 import javafx.collections.ObservableArrayBase;
 import javafx.util.Pair;
@@ -24,13 +26,15 @@ import java.util.*;
 public class ConfiguraFacil extends Observable {
 
     private static ConfiguraFacil instancia = new ConfiguraFacil();
+
 	private Utilizador utilizadorAtual;
 	private Encomenda encomendaAtual;
-	private CategoriaDAO categorias;
-	private EncomendaEmProducaoDAO filaProducao;
-	private ComponenteDAO todosComponentes;
-	private PacoteDAO todosPacotes;
-	private EncomendaDAO encomendas; // nome corrigido
+
+	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
+	private ComponenteDAO todosComponentes = new ComponenteDAO();
+	private PacoteDAO todosPacotes = new PacoteDAO();
+	private EncomendaDAO encomendas = new EncomendaDAO();
+	private CategoriaDAO categorias = new CategoriaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
 
@@ -38,14 +42,14 @@ public class ConfiguraFacil extends Observable {
         return instancia;
     }
 
-    private ConfiguraFacil() {
-    }
+    private ConfiguraFacil(){}
 
     // -------------------------------- Encomenda ------------------------------------------
 
     public void consultarConfiguracao() {
         throw new UnsupportedOperationException();
     }
+
 
     //fazer no encomendaDAO
     // TODO: 26/12/2018 acabar
@@ -54,32 +58,27 @@ public class ConfiguraFacil extends Observable {
         return null;
     }
 
-    public String[] getColunasRegistoProduzidas() { //novo
-        String[] columnNames = {
-                "Id",
-                "Cliente",
-                "Nif",
-                "Preço sem descontos (€)",
-                "Descontos (€)",
-                "Componentes",
-                "Pacotes"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getRegistoProduzidas()}. */
+    public static String[] colunasRegistoProduzidas = new String[] {
+            "Id",
+            "Cliente",
+            "Nif",
+            "Preço sem descontos (€)",
+            "Descontos (€)",
+            "Componentes",
+            "Pacotes"
+    };
+
 
     public Object[][] getFilaProducao() { //novo
         return null;
     }
 
-    public String[] getColunasFilaProducao() { //novo
-        String[] columnNames = {
-                "Id",
-                "Componentes em falta"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
+    public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
 
     // -------------------------------- Encomenda atual ----------------------------------------------------------------
+
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
         encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
     }
@@ -161,13 +160,19 @@ public class ConfiguraFacil extends Observable {
         List<Categoria> categ = new ArrayList<>();
         try {
             categ = categorias.list();
-            } catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } catch (CategoriaNaoExisteException categoriaNaoExiste) {
+            try {
+                categorias.remove(categoriaNaoExiste.getMessage());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         Set<Componente> comp = encomendaAtual.getComponentes();
         if (categ.size() == 0) return null;
 
-        Object[][] data = buildCategObirgatorias(categ);
+        Object[][] data = buildCategObrigatorias(categ);
         for(int i = 0; i<data.length; i++)
             for(Componente c : comp) {
                 if (c.getCategoria().getDesignacao().equals(data[i][0])) {
@@ -177,13 +182,13 @@ public class ConfiguraFacil extends Observable {
         return data;
     }
 
-        private Object[][] buildCategObirgatorias (List<Categoria> categ) {
+        private Object[][] buildCategObrigatorias (List<Categoria> categ) {
             Object[][] data = new Object[categ.size()][5];
             int i = 0;
             for (Categoria cat : categ) {
                 String des = cat.getDesignacao();
-                if (cat instanceof CategoriaObrigatoria) {
-                    data[i] = new Object[]{cat.getDesignacao(), null, null, null, null};
+                if (cat.getObrigatoria()) {
+                    data[i] = new Object[]{des, null, null, null, null};
                     i++;
                 }
             }
@@ -251,49 +256,12 @@ public class ConfiguraFacil extends Observable {
      * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
      */
     public Object[][] getComponentes(String categoria) { //novo
-        Categoria cat = null;
-        switch (categoria){
-            case "Carrocaria":
-                cat = new Carrocaria();
-                break;
-            case "Jantes":
-                cat = new Jantes();
-                break;
-            case "Motor":
-                cat = new Motor();
-                break;
-            case "Pintura":
-                cat = new Pintura();
-                break;
-            case "Pneus":
-                cat = new Pneus();
-                break;
-            default: return null;
-        }
 
-        List<Componente> componentes = new ArrayList<>();
-        try {
-            componentes = todosComponentes.list();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        if (componentes.size()==0) return null;
-
-        Object[][] componentesTodas = new Object[componentes.size()][5];
-        int i = 0;
-        for(Componente c : componentes){
-            int id = c.getId();
-            String designacao = c.getDesignacao();
-            Categoria cate = c.getCategoria();
-            String catDesignacao = cate.getDesignacao();
-            int qnt = c.getStock();
-            int preco = c.getPreco();
-            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
-            i++;
-        }
-        return componentesTodas;
-
+        Object[][] data = {
+                {"Motor", 1, "Opel V6", 1, 100},
+                {"Motor", 2, "BMW X31", 3, 200}
+        };
+        return data;
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes()}. */
@@ -366,9 +334,9 @@ public class ConfiguraFacil extends Observable {
      */
     public String autenticar(String nome, String password) throws Exception {
         // TODO: tirar na versão final
-        if (nome.equals("administrador")) return "administrador";
-        if (nome.equals("vendedor")) return "vendedor";
-        if (nome.equals("repositor")) return "repositor";
+        if (nome.equals("Administrador")) return "Administrador";
+        if (nome.equals("Vendedor")) return "Vendedor";
+        if (nome.equals("Repositor")) return "Repositor";
 
         Utilizador u = utilizadores.get(nome);
         if (u.getPassword().equals(password)) {
