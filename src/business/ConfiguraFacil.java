@@ -25,13 +25,15 @@ import java.util.*;
 public class ConfiguraFacil extends Observable {
 
     private static ConfiguraFacil instancia = new ConfiguraFacil();
+
 	private Utilizador utilizadorAtual;
 	private Encomenda encomendaAtual;
+
 	private CategoriaDAO categorias;
-	private EncomendaEmProducaoDAO filaProducao;
-	private ComponenteDAO todosComponentes;
-	private PacoteDAO todosPacotes;
-	private EncomendaDAO encomendas; // nome corrigido
+	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
+	private ComponenteDAO todosComponentes = new ComponenteDAO();
+	private PacoteDAO todosPacotes = new PacoteDAO();
+	private EncomendaDAO encomendas = new EncomendaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
 
@@ -39,14 +41,14 @@ public class ConfiguraFacil extends Observable {
         return instancia;
     }
 
-    private ConfiguraFacil() {
-    }
+    private ConfiguraFacil(){}
 
     // -------------------------------- Encomenda ------------------------------------------
 
     public void consultarConfiguracao() {
         throw new UnsupportedOperationException();
     }
+
 
     //fazer no encomendaDAO
     // TODO: 26/12/2018 acabar
@@ -55,32 +57,27 @@ public class ConfiguraFacil extends Observable {
         return null;
     }
 
-    public String[] getColunasRegistoProduzidas() { //novo
-        String[] columnNames = {
-                "Id",
-                "Cliente",
-                "Nif",
-                "Preço sem descontos (€)",
-                "Descontos (€)",
-                "Componentes",
-                "Pacotes"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getRegistoProduzidas()}. */
+    public static String[] colunasRegistoProduzidas = new String[] {
+            "Id",
+            "Cliente",
+            "Nif",
+            "Preço sem descontos (€)",
+            "Descontos (€)",
+            "Componentes",
+            "Pacotes"
+    };
+
 
     public Object[][] getFilaProducao() { //novo
         return null;
     }
 
-    public String[] getColunasFilaProducao() { //novo
-        String[] columnNames = {
-                "Id",
-                "Componentes em falta"
-        };
-        return columnNames;
-    }
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
+    public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
 
     // -------------------------------- Encomenda atual ----------------------------------------------------------------
+
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
         encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
     }
@@ -139,7 +136,6 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
         throw new UnsupportedOperationException();
     }
@@ -178,18 +174,18 @@ public class ConfiguraFacil extends Observable {
         return data;
     }
 
-        private Object[][] buildCategObirgatorias (List<Categoria> categ) {
-            Object[][] data = new Object[categ.size()][5];
-            int i = 0;
-            for (Categoria cat : categ) {
-                String des = cat.getDesignacao();
-                if (cat instanceof CategoriaObrigatoria) {
-                    data[i] = new Object[]{cat.getDesignacao(), null, null, null, null};
-                    i++;
-                }
+    private Object[][] buildCategObirgatorias (List<Categoria> categ) {
+        Object[][] data = new Object[categ.size()][5];
+        int i = 0;
+        for (Categoria cat : categ) {
+            String des = cat.getDesignacao();
+            if (cat instanceof CategoriaObrigatoria) {
+                data[i] = new Object[]{cat.getDesignacao(), null, null, null, null};
+                i++;
             }
-            return data;
         }
+        return data;
+    }
 
 
     // -------------------------------- Stock --------------------------------------------------------------------------
