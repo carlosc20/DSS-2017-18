@@ -2,6 +2,7 @@ package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
 import business.produtos.Componente;
+import business.produtos.Pacote;
 import business.utilizadores.Administrador;
 import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
@@ -211,11 +212,20 @@ public class ConfiguraFacil extends Observable {
      * @return Object[][] com todos os componentes no formato
      * {id,Designação da categoria,designacao da componente,quantidade,preço}
      */
-    // TODO: Precisa de ser testado depois dos DAOs estarem feitos
+    // Feito mas precisa de ser testado
+
+
     public Object[][] getComponentes(){
-       /*
-        Set<Componente> componentes = todosComponentes.set();
-        Object[componentes.size()][5] componentesTodas = new Object();
+        List<Componente> componentes = new ArrayList<>();
+        try {
+            componentes = todosComponentes.list();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (componentes.size()==0) return null;
+
+        Object[][] componentesTodas = new Object[componentes.size()][5];
         int i = 0;
         for(Componente c : componentes){
             int id = c.getId();
@@ -224,12 +234,12 @@ public class ConfiguraFacil extends Observable {
             String catDesignacao = cat.getDesignacao();
             int qnt = c.getStock();
             int preco = c.getPreco();
-            componentesTodas[i] = {id,catDesignacao,designacao,qnt,preco};
+            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
             i++;
         }
         return componentesTodas;
-    */
-       return null;
+
+     //  return null;
     }
 
     /**
@@ -255,19 +265,25 @@ public class ConfiguraFacil extends Observable {
      *
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
-    //Precisa de ser testado depois dos DAOs
-    //TODO: Precisa de ser feito
+    //Feito mas precisa de ser testado
     public Object[][] getPacotes() {
-        /*
-        List pacotes = todosPacotes.list();
-        Object[pacotes.size()][2] pacotesTodos;
+        List<Pacote> pacotes = new ArrayList<>();
+        try {
+            pacotes = todosPacotes.list();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (pacotes.size() == 0) return null;
+        Object[][] pacotesTodos = new Object[pacotes.size()][2];
+
         int i = 0;
         for(Pacote p : pacotes){
             int id = p.getId();
             String designacao = p.getDesignacao();
-            pacotesTodos[i] = {id,designacao};
+            pacotesTodos[i] = new Object[]{id,designacao};
             i++;
-        }*/
+        }
         return null;
     }
 
