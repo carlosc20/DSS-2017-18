@@ -289,7 +289,7 @@ public class ConfiguraFacil extends Observable {
             pacotesTodos[i] = new Object[]{id,designacao};
             i++;
         }
-        return null;
+        return pacotesTodos;
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getPacotes()}. */
