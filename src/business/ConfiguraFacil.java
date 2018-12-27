@@ -311,11 +311,17 @@ public class ConfiguraFacil extends Observable {
      *
      * @return 0 se for administrador, 1 se for vendedor, 2 se for repositor
      */
-    public int autenticar(String nome, String password) throws Exception {
-        // TODO: 27/12/2018 acabar
-        if (nome.equals("administrador")) return 0;
-        if (nome.equals("vendedor")) return 1;
-        if (nome.equals("repositor")) return 2;
+    public String autenticar(String nome, String password) throws Exception {
+        // TODO: tirar na versão final
+        if (nome.equals("administrador")) return "administrador";
+        if (nome.equals("vendedor")) return "vendedor";
+        if (nome.equals("repositor")) return "repositor";
+
+        Utilizador u = utilizadores.get(nome);
+        if (u.getPassword().equals(password)) {
+            return u.getFuncao();
+        }
+
         throw new Exception();
     }
 
@@ -324,7 +330,7 @@ public class ConfiguraFacil extends Observable {
      *
      * @return lista com os nomes dos funcionários, lista vazia em caso de erro
      */
-    public List<String> getFuncionarios() {
+    public List<String> getFuncionarios() throws Exception {
         try {
             List<Utilizador> users = utilizadores.list();
             List<String> nomes = new ArrayList<>(users.size());
@@ -336,7 +342,7 @@ public class ConfiguraFacil extends Observable {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            throw new Exception();
         }
     }
 
@@ -347,7 +353,6 @@ public class ConfiguraFacil extends Observable {
      * @return lista com os tipos de funcionário
      */
     public List<String> getTiposFuncionarios() { // novo
-        // TODO: 27/12/2018 acabar
         String[] tipos = {"Administrador", "Repositor", "Vendedor"};
         return Arrays.asList(tipos);
     }
@@ -361,6 +366,7 @@ public class ConfiguraFacil extends Observable {
      * @param tipo      tipo do utilizador
      */
     public void criarUtilizador(String nome, String password, String tipo) throws Exception {
+        // TODO: 27/12/2018 por restriçoes ao nome e pass, melhorar a exceçao
         Utilizador u;
         switch (tipo) {
             case "Vendedor":
@@ -373,7 +379,7 @@ public class ConfiguraFacil extends Observable {
                 u = new Repositor(nome, password);
                 break;
                 default:
-                    throw new Exception(); // TODO: 27/12/2018 por exceçao direito
+                    throw new Exception();
         }
         utilizadores.add(u);
         setChanged();
@@ -395,11 +401,4 @@ public class ConfiguraFacil extends Observable {
         setChanged();
         notifyObservers();
     }
-
-	/*
-	private void colocaNaFila(Diagrama_de_packages.Business.Encomenda aEncomendaAtual, List<Integer> aEmFalta) {
-		throw new UnsupportedOperationException();
-	}
-	*/
-
 }
