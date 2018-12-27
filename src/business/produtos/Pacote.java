@@ -1,18 +1,53 @@
 package business.produtos;
 
+import data.ComponenteDAO;
+
+import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Pacote {
 	private int id;
 	private String designacao;
 	private int desconto;
+	private int numCompEmFalta;
 	private Set<Integer> componentes;
+	private ComponenteDAO cDAO;
 
-	public Pacote(int id, String designacao, int desconto, Set<Integer> componentes) {
+	public Pacote(int id, String designacao, int desconto, int numCompEmFalta, Set<Integer> componentes) {
 		this.id = id;
 		this.designacao = designacao;
 		this.desconto = desconto;
+		this.numCompEmFalta = numCompEmFalta;
 		this.componentes = componentes;
+	}
+	public Set<Componente> getComponentesRef() throws SQLException {
+		HashSet<Componente> res = new HashSet<>();
+
+		for(int d : componentes){
+			res.add(cDAO.get(id));
+		}
+		return res;
+	}
+
+	public void incr(){
+		numCompEmFalta++;
+	}
+
+	public boolean decr() {
+		numCompEmFalta--;
+		return numCompEmFalta==0;
+	}
+	@Override
+	public boolean equals(Object o){
+		if (this == o)
+			return true;
+
+		if ((o==null) || (this.getClass() != o.getClass()))
+			return false;
+
+		Pacote p = (Pacote) o;
+		return (this.id == p.getId());
 	}
 
 	public Set<Integer> getComponentes() {
@@ -29,5 +64,9 @@ public class Pacote {
 
 	public int getDesconto() {
 		return desconto;
+	}
+
+	public int getNumCompEmFalta() {
+		return numCompEmFalta;
 	}
 }
