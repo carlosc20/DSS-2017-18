@@ -127,8 +127,6 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-    public void cancelaEncomenda() {
-    }
 
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
         throw new UnsupportedOperationException();
