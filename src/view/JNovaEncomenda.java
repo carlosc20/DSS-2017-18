@@ -129,8 +129,8 @@ public class JNovaEncomenda implements Observer {
         // muda o texto do botão entre remover componente e adicionar componente conforme a linha selecionada
         obrigatoriosTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    int row = obrigatoriosTable.getSelectedRow();
+                int row = obrigatoriosTable.getSelectedRow();
+                if (!e.getValueIsAdjusting() && row != -1) {
                     Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
                     if(id == null) {
                         obrigatorioButton.setText("Adicionar componente");
