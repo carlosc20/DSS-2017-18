@@ -158,6 +158,52 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
+	public List<Componente> listComponentesDependentes(Componente componente) throws SQLException {
+		int idComponente = componente.getId();
+		Connection cn = Connect.connect();
+		List<Componente> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement(
+				"SELECT id, designacao, preco, stock, categoria " +
+						"FROM Componente " +
+						"INNER JOIN Componente_Dependente ON Componente_Dependente.id_dependente = Componente.id " +
+						"WHERE Componente_Dependente.id_componente = ?");
+		st.setInt(1, idComponente);
+		ResultSet res = st.executeQuery();
+		while (res.next()){
+			int id = res.getInt("id");
+			String designacao = res.getString("designacao");
+			int preco = res.getInt("preco");
+			int stock = res.getInt("stock");
+			String categoriaDesignacao = res.getString("categoria");
+			Categoria categoria = criarCategoria(categoriaDesignacao);
+			result.add(new Componente(id, designacao, preco, stock, null, null, categoria));
+		}
+		return result;
+	}
+
+	public List<Componente> listComponentesIncompativeis(Componente componente) throws SQLException {
+		int idComponente = componente.getId();
+		Connection cn = Connect.connect();
+		List<Componente> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement(
+				"SELECT id, designacao, preco, stock, categoria " +
+						"FROM Componente " +
+						"INNER JOIN Componente_Incompativel ON Componente_Incompativel.id_incompativel = Componente.id " +
+						"WHERE Componente_Incompativel.id_componente = ?");
+		st.setInt(1, idComponente);
+		ResultSet res = st.executeQuery();
+		while (res.next()){
+			int id = res.getInt("id");
+			String designacao = res.getString("designacao");
+			int preco = res.getInt("preco");
+			int stock = res.getInt("stock");
+			String categoriaDesignacao = res.getString("categoria");
+			Categoria categoria = criarCategoria(categoriaDesignacao);
+			result.add(new Componente(id, designacao, preco, stock, null, null, categoria));
+		}
+		return result;
+	}
+
 	public List<Componente> listComponentesEmFalta(EncomendaEmProducao encomenda) throws SQLException {
 		int idEncomenda = encomenda.getId();
 		Connection cn = Connect.connect();
