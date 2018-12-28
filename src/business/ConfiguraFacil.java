@@ -1,6 +1,8 @@
-package business;// import Venda.EncomendaAtual;
-// import Diagrama_de_packages.Business.EncomendaAtual;
+package business;// import Venda.Encomenda;
+// import Diagrama_de_packages.Business.Encomenda;
 
+import business.gestao.Encomenda;
+import business.gestao.EncomendaEmProducao;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.utilizadores.Administrador;
@@ -11,6 +13,7 @@ import business.venda.*;
 import business.venda.categorias.*;
 import data.*;
 import business.venda.EncomendaAtual;
+import business.venda.categorias.Categoria;
 import javafx.util.Pair;
 
 import java.io.File;
@@ -27,7 +30,7 @@ public class ConfiguraFacil extends Observable {
 	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
 	private PacoteDAO todosPacotes = new PacoteDAO();
-	private EncomendaDAO encomendas = new EncomendaDAO();
+	private EncomendaDAO registoProduzidas = new EncomendaDAO();
 	private CategoriaDAO categorias = new CategoriaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
@@ -38,18 +41,30 @@ public class ConfiguraFacil extends Observable {
 
     private ConfiguraFacil(){}
 
-    // -------------------------------- EncomendaAtual ------------------------------------------
+    // -------------------------------- Encomendas ---------------------------------------------------------------------
 
-    public void consultarConfiguracao() {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     *  Devolve uma matriz com informações das encomendas no registo de encomendas produzidas.
+     *  Cada linha corresponde a uma encomenda.
+     *
+     *  @return
+     */
+    public Object[][] getRegistoProduzidas() throws Exception { //novo
+        try {
+            List<Encomenda> encs = registoProduzidas.list();
+            Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasRegistoProduzidas.length];
+            int i = 0;
+            for (Encomenda e : encs) {
+                int id = e.getId();
 
-
-    //fazer no encomendaDAO
-    // TODO: 26/12/2018 acabar
-    public Object[][] getRegistoProduzidas() { //novo
-       // return encomendas.getRegistoProduzidas();
-        return null;
+                data[i] = new Object[]{id, };
+                i++;
+            }
+            return data;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getRegistoProduzidas()}. */
@@ -64,14 +79,35 @@ public class ConfiguraFacil extends Observable {
     };
 
 
-    public Object[][] getFilaProducao() { //novo
-        return null;
+    /**
+     *  Devolve uma matriz com informações das encomendas na fila de encomendas em produção.
+     *  Cada linha corresponde a uma encomenda.
+     *
+     *  @return
+     */
+    public Object[][] getFilaProducao() throws Exception { //novo
+        try {
+            List<EncomendaEmProducao> encs = filaProducao.list();
+            Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasFilaProducao.length];
+            int i = 0;
+            for (EncomendaEmProducao e : encs) {
+                int id = e.getId();
+                Collection<Componente> comps = e.getComponentesEmFalta();
+                String c = comps.toString(); // TODO: 27/12/2018 completar
+                data[i] = new Object[]{id, c};
+                i++;
+            }
+            return data;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception();
+        }
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
     public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
 
-    // -------------------------------- EncomendaAtual atual ----------------------------------------------------------------
+    // -------------------------------- Encomenda Atual ----------------------------------------------------------------
 
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
         encomendaAtual = new EncomendaAtual(1,cliente, nif);
@@ -143,14 +179,7 @@ public class ConfiguraFacil extends Observable {
      * @return tabela com uma linha por cada categoria obrigatória
      */
     public Object [][] getComponentesObgConfig() { //novo
-/*
-        Object[][] data = {
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null}
-        };*/
+
         List<Categoria> categ = new ArrayList<>();
         try {
             categ = categorias.list();
@@ -189,6 +218,18 @@ public class ConfiguraFacil extends Observable {
             return data;
         }
 
+    public Object [][] getComponentesOpcConfig() {
+        return new Object[][] {
+                {"Motor", 1, "Teste", 1, 20},
+        };
+    }
+
+    public Object [][] getComponentesDepConfig() {
+        return new Object[][] {
+                {"Motor", 1, "Teste", 1, 20},
+        };
+    }
+
 
     // -------------------------------- Stock --------------------------------------------------------------------------
 
@@ -211,8 +252,6 @@ public class ConfiguraFacil extends Observable {
      * {id,Designação da categoria,designacao da componente,quantidade,preço}
      */
     // Feito mas precisa de ser testado
-
-
     public Object[][] getComponentes(){
 
         List<Componente> componentes = new ArrayList<>();
@@ -369,7 +408,8 @@ public class ConfiguraFacil extends Observable {
         if (nome.equals("Repositor")) return "Repositor";
 
         Utilizador u = utilizadores.get(nome);
-        if (u.getPassword().equals(password)) {
+        String pw = u.getPassword();
+        if (pw.equals(password)) {
             return u.getFuncao();
         }
 

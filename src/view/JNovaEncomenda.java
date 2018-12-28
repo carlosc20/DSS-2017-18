@@ -76,6 +76,7 @@ public class JNovaEncomenda implements Observer {
             }
         };
         opcionaisTable.setModel(modelOpc);
+        updateOpcionais();
 
         modelDep = new DefaultTableModel() {
             @Override
@@ -84,7 +85,7 @@ public class JNovaEncomenda implements Observer {
             }
         };
         dependenciasTable.setModel(modelDep);
-
+        updateDependencias();
 
         // TODO: dar enable/disable no finalizar e configOtima
 
@@ -133,11 +134,13 @@ public class JNovaEncomenda implements Observer {
                 String cat = (String) obrigatoriosTable.getValueAt(row, 0);
                 Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
 
-                if(id == null) {    // se o componente dessa categoria não está escolhido abre a janela de adicionar
+                if(id == null) {
+                    // se o componente dessa categoria não está escolhido abre a janela de adicionar
                     if(adicionaComponente(frame, cat) == JOptionPane.OK_OPTION) {
                         obrigatorioButton.setText("Remover componente");
                     }
-                } else {            // se está escolhido remove-o
+                } else {
+                    // se está escolhido remove-o
                     try {
                         facade.removeComponente(id);
                     } catch (ComponenteNaoExisteNaConfiguracao e1) {
@@ -256,12 +259,13 @@ public class JNovaEncomenda implements Observer {
         table.setRowSelectionInterval(0, 0);
         int option = JOptionPane.showConfirmDialog(frame,
                 new JScrollPane(table),
-                "Escolher componente",
+                "Escolher  " + categoria,
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE);
 
 
         if (option == JOptionPane.OK_OPTION) {
+            // TODO: 28/12/2018 cenas
             int id = (int) model.getValueAt(table.getSelectedRow(), 0);
             try {
                 facade.adicionaComponente(id);
@@ -276,6 +280,18 @@ public class JNovaEncomenda implements Observer {
         String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentesObgConfig();
         modelObr.setDataVector(data, columnNames);
+    }
+
+    private void updateOpcionais() {
+        String[] columnNames = ConfiguraFacil.colunasComponentes;
+        Object[][] data = facade.getComponentesOpcConfig();
+        modelOpc.setDataVector(data, columnNames);
+    }
+
+    private void updateDependencias() {
+        String[] columnNames = ConfiguraFacil.colunasComponentes;
+        Object[][] data = facade.getComponentesDepConfig();
+        modelDep.setDataVector(data, columnNames);
     }
 
     @Override

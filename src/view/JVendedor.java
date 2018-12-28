@@ -95,6 +95,7 @@ public class JVendedor implements Observer {
                                 "Erro", // TODO: informaçao sobre erro
                                 "Erro",
                                 JOptionPane.ERROR_MESSAGE);
+                        e1.printStackTrace();
                     }
                 }
             }
@@ -103,13 +104,23 @@ public class JVendedor implements Observer {
 
     private void updateFilaProducao() {
         String[] columnNames = ConfiguraFacil.colunasFilaProducao;
-        Object[][] data = facade.getFilaProducao();
+        Object[][] data = new Object[0][];
+        try {
+            data = facade.getFilaProducao();
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO: 28/12/2018 erro
+        }
         modelFP.setDataVector(data, columnNames);
     }
 
     private void updateRegistoProduzidas() {
         String[] columnNames = ConfiguraFacil.colunasRegistoProduzidas;
-        Object[][] data = facade.getRegistoProduzidas();
+        Object[][] data = new Object[0][];
+        try {
+            data = facade.getRegistoProduzidas();
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO: 28/12/2018 erro
+        }
         modelRP.setDataVector(data, columnNames);
     }
 
