@@ -31,10 +31,9 @@ public class Inicial {
 
                 String nome =  nomeField.getText();
                 String password = String.valueOf(passwordField.getPassword());
-
                 try {
+                    //new JNovaEncomenda();
                     String cargo = facade.autenticar(nome, password);
-                    // new JNovaEncomenda();
                     // TODO: 27/12/2018
                     switch (cargo) {
                         case "Administrador":
@@ -61,6 +60,7 @@ public class Inicial {
                             "Erro",
                             JOptionPane.ERROR_MESSAGE);
                     nomeField.requestFocusInWindow();
+                    e1.printStackTrace();
                 }
             }
         });
