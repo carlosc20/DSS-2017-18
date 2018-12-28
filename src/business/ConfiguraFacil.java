@@ -115,7 +115,10 @@ public class ConfiguraFacil extends Observable {
 
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
         try {
-            return encomendaAtual.getEfeitosAdicionarComponente(idComponente);
+            Pair<Set<Integer>,Set<Integer>> r = encomendaAtual.getEfeitosAdicionarComponente(idComponente);
+            setChanged();
+            notifyObservers();
+            return r;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -124,7 +127,10 @@ public class ConfiguraFacil extends Observable {
 
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException{
         try {
-            return this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
+            Pair<Set<Integer>,Set<Integer>> r = this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
+            setChanged();
+            notifyObservers();
+            return r;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -132,6 +138,8 @@ public class ConfiguraFacil extends Observable {
     }
 
     public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
+        setChanged();
+        notifyObservers();
         return encomendaAtual.adicionaComponente(idComponente);
     }
 
@@ -139,6 +147,8 @@ public class ConfiguraFacil extends Observable {
         Set<Integer> res = new HashSet<>();
         try {
             res = encomendaAtual.removeComponente(idComponente);
+            setChanged();
+            notifyObservers();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -149,6 +159,8 @@ public class ConfiguraFacil extends Observable {
         Set<Integer> res = new HashSet<>();
         try {
             res = encomendaAtual.adicionaPacote(idPacote);
+            setChanged();
+            notifyObservers();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -158,12 +170,16 @@ public class ConfiguraFacil extends Observable {
     public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException {
         try {
             encomendaAtual.removePacote(idPacote);
+            setChanged();
+            notifyObservers();
         }catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void criarConfiguracaoOtima() { // muda nome
+        setChanged();
+        notifyObservers();
         throw new UnsupportedOperationException();
     }
 

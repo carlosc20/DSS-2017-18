@@ -5,6 +5,7 @@ import business.venda.ComponenteJaExisteNaConfiguracaoException;
 import business.venda.ComponenteNaoExisteNaConfiguracao;
 import business.venda.PacoteGeraConflitosException;
 import business.venda.PacoteJaExisteNaConfiguracaoException;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -39,8 +40,6 @@ public class JNovaEncomenda implements Observer {
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
-    private List<String> catOpcionais;
-
     public JNovaEncomenda() {
 
         JFrame frame = new JFrame("Nova encomenda");
@@ -51,7 +50,10 @@ public class JNovaEncomenda implements Observer {
 
         facade.addObserver(this);
 
-        catOpcionais = facade.getCategoriasOpcionais();
+        DefaultListModel<String> modelCatOpc = new DefaultListModel<>();
+        for (String u : facade.getCategoriasOpcionais()) {
+            modelCatOpc.addElement(u);
+        }
 
         // atualiza tabelas
         modelObr = new DefaultTableModel() {
@@ -148,20 +150,13 @@ public class JNovaEncomenda implements Observer {
         adicionarOpcButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                DefaultListModel<String> model = new DefaultListModel<>();
-                for (String u : catOpcionais) {
-                    model.addElement(u);
-                }
-                JList<String> list = new JList<>(model);
+                JList<String> list = new JList<>(modelCatOpc);
                 list.setSelectedIndex(0);
                 int option = JOptionPane.showConfirmDialog(frame,
                         new JScrollPane(list),
                         "Escolher categoria",
                         JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE);
-
-
                 if (option == JOptionPane.OK_OPTION) {
                     mostraAdicionarComponente(frame, list.getSelectedValue());
                 }
@@ -196,6 +191,7 @@ public class JNovaEncomenda implements Observer {
         });
 
 
+
         // ----------- Componentes Dependencias ------------------------------------------------------------------------
 
         // adiciona componente opcional selecionado
@@ -204,14 +200,9 @@ public class JNovaEncomenda implements Observer {
             public void actionPerformed(ActionEvent e) {
                 int row = dependenciasTable.getSelectedRow();
                 Integer id = (Integer) dependenciasTable.getValueAt(row, 1);
-                try {
-
-                    facade.adicionaComponente(id);
-
-                    adicionarDepButton.setEnabled(false);
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
+                    if (adicionaComponente(frame, id) == 0) {
+                        adicionarDepButton.setEnabled(false);
+                    }
             }
         });
 
@@ -231,7 +222,8 @@ public class JNovaEncomenda implements Observer {
         });
 
 
-        // ----------- Outros ------------------------------------------------------------------------------------------
+
+        // ----------- Pacotes -----------------------------------------------------------------------------------------
 
         // abre janela para escolher pacote
         adicionarPacoteButton.addActionListener(new ActionListener() {
@@ -268,6 +260,9 @@ public class JNovaEncomenda implements Observer {
         });
 
 
+
+        // ----------- Outros ------------------------------------------------------------------------------------------
+
         // completa a encomenda e abre uma janela a informar sobre a formação de pacotes se necessário
         finalizarButton.addActionListener(new ActionListener() {
             @Override
@@ -292,9 +287,6 @@ public class JNovaEncomenda implements Observer {
                 facade.criarConfiguracaoOtima();
             }
         });
-
-
-
     }
 
 
@@ -346,12 +338,13 @@ public class JNovaEncomenda implements Observer {
                 JOptionPane.PLAIN_MESSAGE);
 
 
-        if (option == JOptionPane.OK_OPTION) {
+        if (option == 0) {
             int id = (int) model.getValueAt(table.getSelectedRow(), 0);
             return adicionaComponente(frame, id);
         }
         return option;
     }
+
 
     /**
      * Abre janela para
@@ -362,9 +355,9 @@ public class JNovaEncomenda implements Observer {
      */
     private int adicionaComponente(JFrame frame, int id) {
         try {
-            // TODO: 28/12/2018 verificar outras cenas
+            Pair<Set<Integer>,Set<Integer>> efeitos = facade.getEfeitosAdicionarComponente(id);
 
-            facade.getEfeitosAdicionarComponente(id);
+            // TODO: 28/12/2018 verificar outras cenas
 
             Set<Integer> pacotes = facade.adicionaComponente(id);
             mostraPacotesDesfeitos(frame, pacotes);
@@ -395,6 +388,8 @@ public class JNovaEncomenda implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-
+        updateObrigatorios();
+        updateOpcionais();
+        updateDependencias();
     }
 }
