@@ -237,10 +237,12 @@ public class ComponenteDAO extends DAO {
 			String designacao = res.getString("designacao");
 			int preco = res.getInt("preco");
 			int stock = res.getInt("stock");
+			Set<Integer> dep = getDependentes(id);
+			Set<Integer> inc = getIncompativeis(id);
 			String categoriaDesignacao = res.getString("categoria");
 			Categoria categoria = criarCategoria(categoriaDesignacao);
 			Connect.close(cn);
-			return new Componente(id, designacao, preco, stock, null, null, categoria);
+			return new Componente(id, designacao, preco, stock, dep, inc, categoria);
 		} else {
 			Connect.close(cn);
 			return null;
