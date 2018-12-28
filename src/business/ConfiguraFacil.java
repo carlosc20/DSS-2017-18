@@ -2,6 +2,7 @@ package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
 import business.gestao.Encomenda;
+import business.gestao.EncomendaEmProducao;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.utilizadores.Administrador;
@@ -46,7 +47,7 @@ public class ConfiguraFacil extends Observable {
      *  Devolve uma matriz com informações das encomendas no registo de encomendas produzidas.
      *  Cada linha corresponde a uma encomenda.
      *
-     * @return
+     *  @return
      */
     public Object[][] getRegistoProduzidas() throws Exception { //novo
         try {
@@ -79,26 +80,28 @@ public class ConfiguraFacil extends Observable {
 
 
     /**
+     *  Devolve uma matriz com informações das encomendas na fila de encomendas em produção.
+     *  Cada linha corresponde a uma encomenda.
      *
-     *
-     * @return
+     *  @return
      */
-    public Object[][] getFilaProducao() { //novo
-        // TODO: 27/12/2018 acabar quando DAO estiver feito
-        /*
-        List<EncomendaEmProducao> encs = filaProducao.list();
-        Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasFilaProducao.length];
-        int i = 0;
-        for (EncomendaEmProducao e : encs) {
-            int id = e.getId();
-            Set<Componente> comps = e.getComponentesEmFalta();
-            String c = comps.toString(); // TODO: 27/12/2018 completar
-            data[i] = new Object[]{id, c};
-            i++;
+    public Object[][] getFilaProducao() throws Exception { //novo
+        try {
+            List<EncomendaEmProducao> encs = filaProducao.list();
+            Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasFilaProducao.length];
+            int i = 0;
+            for (EncomendaEmProducao e : encs) {
+                int id = e.getId();
+                Collection<Componente> comps = e.getComponentesEmFalta();
+                String c = comps.toString(); // TODO: 27/12/2018 completar
+                data[i] = new Object[]{id, c};
+                i++;
+            }
+            return data;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception();
         }
-        return data;
-        */
-        return null;
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
@@ -176,14 +179,7 @@ public class ConfiguraFacil extends Observable {
      * @return tabela com uma linha por cada categoria obrigatória
      */
     public Object [][] getComponentesObgConfig() { //novo
-/*
-        Object[][] data = {
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null},
-                {"Motor", null, null, null, null}
-        };*/
+
         List<Categoria> categ = new ArrayList<>();
         try {
             categ = categorias.list();
@@ -221,6 +217,18 @@ public class ConfiguraFacil extends Observable {
             }
             return data;
         }
+
+    public Object [][] getComponentesOpcConfig() {
+        return new Object[][] {
+                {"Motor", 1, "Teste", 1, 20},
+        };
+    }
+
+    public Object [][] getComponentesDepConfig() {
+        return new Object[][] {
+                {"Motor", 1, "Teste", 1, 20},
+        };
+    }
 
 
     // -------------------------------- Stock --------------------------------------------------------------------------
@@ -400,7 +408,8 @@ public class ConfiguraFacil extends Observable {
         if (nome.equals("Repositor")) return "Repositor";
 
         Utilizador u = utilizadores.get(nome);
-        if (u.getPassword().equals(password)) {
+        String pw = u.getPassword();
+        if (pw.equals(password)) {
             return u.getFuncao();
         }
 
