@@ -59,8 +59,8 @@ public class PacoteDAO extends DAO {
 		Connection cn = Connect.connect();
 		List<Pacote> result = new ArrayList<>();
 		PreparedStatement st = cn.prepareStatement(
-				"SELECT id, designacao, desconto FROM Pacote" +
-						"INNER JOIN Pacote_Componente ON Pacote.id = Pacote_Componente.id_pacote" +
+				"SELECT id, designacao, desconto FROM Pacote " +
+						"INNER JOIN Pacote_Componente ON Pacote.id = Pacote_Componente.id_pacote " +
 						"WHERE Pacote_Componente.id_componente = ?");
 		st.setInt(1, idComponente);
 		ResultSet res = st.executeQuery();
@@ -78,8 +78,8 @@ public class PacoteDAO extends DAO {
 		Connection cn = Connect.connect();
 		List<Pacote> result = new ArrayList<>();
 		PreparedStatement st = cn.prepareStatement(
-				"SELECT id, designacao, Encomenda_Pacote.desconto AS desconto FROM Encomenda_Pacote" +
-						"INNER JOIN Pacote ON Pacote.id = Encomenda_Pacote.id_pacote" +
+				"SELECT id, designacao, Encomenda_Pacote.desconto AS desconto FROM Encomenda_Pacote " +
+						"INNER JOIN Pacote ON Pacote.id = Encomenda_Pacote.id_pacote " +
 						"WHERE Encomenda_Pacote.id_encomenda = ?");
 		st.setInt(1, idEncomenda);
 		ResultSet res = st.executeQuery();
