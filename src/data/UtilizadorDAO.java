@@ -12,12 +12,7 @@ import java.util.List;
 public class UtilizadorDAO extends DAO {
 
 	public static void main(String[] args) throws Exception {
-		UtilizadorDAO udao = new UtilizadorDAO();
-		System.out.println(udao.add(new Administrador("Daniel", "123456")));
-		System.out.println(udao.list().toString());
-		System.out.println(udao.get("Daniel").getPassword());
-		System.out.println(udao.remove("Daniel"));
-		System.out.println(udao.size());
+		System.out.println(new UtilizadorDAO().get("Administrador"));
 	}
 
 	public boolean add(Utilizador utilizador) throws SQLException {
@@ -51,14 +46,16 @@ public class UtilizadorDAO extends DAO {
 	public Utilizador get(String nome) throws SQLException, FuncaoNaoExisteExcpetion {
 		Connection cn = Connect.connect();
 		PreparedStatement st = cn.prepareStatement("SELECT password, funcao FROM Utilizador WHERE nome = ? LIMIT 1");
-		st.setString(1, "nome");
+		st.setString(1, nome);
 		ResultSet res = st.executeQuery();
 		if(res.first()) {
 			String password = res.getString("password");
 			String funcao = res.getString("funcao");
 			Connect.close(cn);
+			System.out.println(password);
 			return criarUtilizador(nome, password, funcao);
 		} else {
+			System.out.println("ola");
 			Connect.close(cn);
 			return null;
 		}
