@@ -317,7 +317,7 @@ public class ConfiguraFacil extends Observable {
             String catDesignacao = cat.getDesignacao();
             int qnt = c.getStock();
             int preco = c.getPreco();
-            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
+            componentesTodas[i] = new Object[]{catDesignacao,id,designacao,qnt,preco};
             i++;
         }
         return componentesTodas;
@@ -372,7 +372,7 @@ public class ConfiguraFacil extends Observable {
             String catDesignacao = cate.getDesignacao();
             int qnt = c.getStock();
             int preco = c.getPreco();
-            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
+            componentesTodas[i] = new Object[]{catDesignacao,id,designacao,qnt,preco};
             i++;
         }
         return componentesTodas;

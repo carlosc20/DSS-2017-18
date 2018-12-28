@@ -340,7 +340,7 @@ public class JNovaEncomenda implements Observer {
 
 
         if (option == 0) {
-            int id = (int) model.getValueAt(table.getSelectedRow(), 0);
+            int id = (int) model.getValueAt(table.getSelectedRow(), 1);
             return adicionaComponente(frame, id);
         }
         return option;
