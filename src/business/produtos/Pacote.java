@@ -18,11 +18,12 @@ public class Pacote {
 		this.designacao = designacao;
 		this.desconto = desconto;
 		this.componentes = componentes;
+		this.cDAO = new ComponenteDAO();
 	}
 	public Set<Componente> getComponentesRef() throws SQLException {
 		HashSet<Componente> res = new HashSet<>();
 
-		for(int d : componentes){
+		for(int id : componentes){
 			res.add(cDAO.get(id));
 		}
 		return res;
@@ -32,7 +33,8 @@ public class Pacote {
 		this.id = p.getId();
 		this.designacao = p.getDesignacao();
 		this.desconto = p.getDesconto();
-		this.componentes = componentes;
+		this.componentes = p.getComponentes();
+		this.cDAO = p.getcDAO();
 	}
 
 	@Override
@@ -45,6 +47,11 @@ public class Pacote {
 
 		Pacote p = (Pacote) o;
 		return (this.id == p.getId());
+	}
+
+
+	public ComponenteDAO getcDAO() {
+		return cDAO;
 	}
 
 	public Set<Integer> getComponentes() {

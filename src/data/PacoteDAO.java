@@ -49,7 +49,8 @@ public class PacoteDAO extends DAO {
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
 			int desconto = res.getInt("desconto");
-			list.add(new Pacote(id, designacao, desconto, null));
+			Set<Integer> componentes = getComponentesId(id);
+			list.add(new Pacote(id, designacao, desconto, componentes));
 		}
 		Connect.close(cn);
 		return list;
@@ -88,7 +89,8 @@ public class PacoteDAO extends DAO {
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
 			int desconto = res.getInt("desconto");
-			result.add(new Pacote(id, designacao, desconto, null));
+			Set<Integer> componentes = getComponentesId(id);
+			result.add(new Pacote(id, designacao, desconto, componentes));
 		}
 		return result;
 	}
@@ -101,8 +103,9 @@ public class PacoteDAO extends DAO {
 		if(res.first()) {
 			String designacao = res.getString("designacao");
 			int desconto = res.getInt("desconto");
+			Set<Integer> componentes = getComponentesId(id);
 			Connect.close(cn);
-			return new Pacote(id, designacao, desconto, null);
+			return new Pacote(id, designacao, desconto, componentes);
 		} else {
 			Connect.close(cn);
 			return null;
