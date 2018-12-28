@@ -1,6 +1,7 @@
 package view;
 
 import business.ConfiguraFacil;
+import business.venda.ComponenteJaExisteNaConfiguracaoException;
 import business.venda.ComponenteNaoExisteNaConfiguracao;
 import business.venda.PacoteGeraConflitosException;
 import business.venda.PacoteJaExisteNaConfiguracaoException;
@@ -12,9 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 public class JNovaEncomenda implements Observer {
 
@@ -108,13 +107,14 @@ public class JNovaEncomenda implements Observer {
 
                 if(id == null) {
                     // se o componente dessa categoria não está escolhido abre a janela de adicionar
-                    if(adicionaComponente(frame, cat) == JOptionPane.OK_OPTION) {
+                    if(mostraAdicionarComponente(frame, cat) == JOptionPane.OK_OPTION) {
                         obrigatorioButton.setText("Remover componente");
                     }
                 } else {
                     // se está escolhido remove-o
                     try {
-                        facade.removeComponente(id);
+                        Set<Integer> pacotes = facade.removeComponente(id);
+                        mostraPacotesDesfeitos(frame, pacotes);
                     } catch (ComponenteNaoExisteNaConfiguracao e1) {
                         e1.printStackTrace();
                     }
@@ -163,7 +163,7 @@ public class JNovaEncomenda implements Observer {
 
 
                 if (option == JOptionPane.OK_OPTION) {
-                    adicionaComponente(frame, list.getSelectedValue());
+                    mostraAdicionarComponente(frame, list.getSelectedValue());
                 }
             }
         });
@@ -176,7 +176,8 @@ public class JNovaEncomenda implements Observer {
                 int row = opcionaisTable.getSelectedRow();
                 Integer id = (Integer) opcionaisTable.getValueAt(row, 1);
                 try {
-                    facade.removeComponente(id);
+                    Set<Integer> pacotes = facade.removeComponente(id);
+                    mostraPacotesDesfeitos(frame, pacotes);
                     removerOpcButton.setEnabled(false);
                 } catch (ComponenteNaoExisteNaConfiguracao e1) {
                     e1.printStackTrace();
@@ -204,7 +205,9 @@ public class JNovaEncomenda implements Observer {
                 int row = dependenciasTable.getSelectedRow();
                 Integer id = (Integer) dependenciasTable.getValueAt(row, 1);
                 try {
+
                     facade.adicionaComponente(id);
+
                     adicionarDepButton.setEnabled(false);
                 } catch (SQLException e1) {
                     e1.printStackTrace();
@@ -296,11 +299,33 @@ public class JNovaEncomenda implements Observer {
 
 
     /**
+     * Abre janela que mostra os ids dos pacotes desfeitos com a remoção de componentes
+     *
+     * @param pacotes Set com os ids dos pacotes desfeitos
+     */
+    private void mostraPacotesDesfeitos(JFrame frame, Set<Integer> pacotes) {
+        if(pacotes.size() > 0) {
+            Integer[] ids = new Integer[pacotes.size()];
+            int i = 0;
+            for (Integer p : pacotes) {
+                ids[i++] = p;
+            }
+
+            JOptionPane.showMessageDialog(frame,
+                    "Devido à remoção de componentes foram desfeitos os seguintes pacotes: "
+                            + Arrays.toString(ids),
+                    "Pacotes desfeitos",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+
+    /**
      * Abre janela para adicionar componente da categoria indicada
      *
      * @param categoria     categoria do componente a adicionar
      */
-    private int adicionaComponente(JFrame frame, String categoria) {
+    private int mostraAdicionarComponente(JFrame frame, String categoria) {
 
         String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentes(categoria);
@@ -322,16 +347,33 @@ public class JNovaEncomenda implements Observer {
 
 
         if (option == JOptionPane.OK_OPTION) {
-            // TODO: 28/12/2018 cenas
             int id = (int) model.getValueAt(table.getSelectedRow(), 0);
-            try {
-                facade.adicionaComponente(id);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            return adicionaComponente(frame, id);
         }
         return option;
     }
+
+    /**
+     * Abre janela para
+     *
+     * @param id     categoria do componente a adicionar
+     *
+     * @return 0 se o componente for adicionado
+     */
+    private int adicionaComponente(JFrame frame, int id) {
+        try {
+            // TODO: 28/12/2018 verificar outras cenas
+
+            facade.getEfeitosAdicionarComponente(id);
+
+            Set<Integer> pacotes = facade.adicionaComponente(id);
+            mostraPacotesDesfeitos(frame, pacotes);
+        } catch (SQLException| ComponenteJaExisteNaConfiguracaoException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 
     private void updateObrigatorios() {
         String[] columnNames = ConfiguraFacil.colunasComponentes;
