@@ -93,10 +93,10 @@ public class Configuracao {
 	 *@returns val valor a descontar para o total da encomenda
 	 */
 	public int formacaoPacote(Componente componente) throws SQLException {
-		HashSet<Pacote> pac;    //Pacotes que tem na sua constituição o componente fornecido como parámetro
+		List<Pacote> pac;    //Pacotes que tem na sua constituição o componente fornecido como parámetro
 		HashSet<Integer> aux;    //Componentes de um pacote
 		TreeSet<Pacote> formados = new TreeSet<>(new ComparaPacotesByDesconto()); // pacotes que podem ser formados
-		pac = (HashSet<Pacote>) pDAO.list(componente);
+		pac = pDAO.list(componente);
 		boolean flag;            //Irá indicar se pode ser formado o pacote
 
 		//!!!Talvez possa otimizar e trazer os pacotes para a memória, mas não sei se vale a pena
@@ -330,7 +330,7 @@ public class Configuracao {
 
 	private Set<Integer> getRemocoes(Set<Integer> idIncompativeis){
 		HashSet<Integer> incompARemover = new HashSet<>();
-		HashSet<Integer> pacotesARemover = new HashSet<>();
+		//HashSet<Integer> pacotesARemover = new HashSet<>();
 		for(int id : idIncompativeis){
 			for(Componente c : componentes){
 				int idC = c.getId();
