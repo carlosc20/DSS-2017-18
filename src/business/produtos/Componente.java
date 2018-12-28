@@ -17,7 +17,7 @@ public class Componente {
 	private Categoria categoria;
 	private ComponenteDAO componentes;
 
-	public Componente(int id, String designacao, int preco, int stock, Set<Integer> depedendencias, Set<Integer> incompatibilidades, Categoria categoria) {
+	public Componente(int id, String designacao, int preco, int stock, Set<Integer> depedendencias, Set<Integer> incompatibilidades, Categoria categoria, ComponenteDAO componentes) {
 		this.id = id;
 		this.designacao = designacao;
 		this.preco = preco;
@@ -25,6 +25,7 @@ public class Componente {
 		this.depedendencias = depedendencias;
 		this.incompatibilidades = incompatibilidades;
 		this.categoria = categoria;
+		this.componentes = componentes;
 	}
 
 	public void decrementaStock() {
