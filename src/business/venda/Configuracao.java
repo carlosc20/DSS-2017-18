@@ -113,10 +113,13 @@ public class Configuracao {
 		}
 
 		//É retirado o pacote com menor custo da estrutura auxiliar e adicionado à configuração
-		Pacote p = formados.first();
-		pacotes.add(p);
 
-		return p.getDesconto();
+		if(formados.size()!=0){
+			Pacote p = formados.first();
+			pacotes.add(p);
+			return p.getDesconto();}
+		else return 0;
+
 	}
 	/*
 	 *Vai buscar as incompatibilidades dos componentes que recebeu como argumento e remove-as

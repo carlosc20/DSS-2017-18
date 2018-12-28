@@ -70,7 +70,8 @@ public class PacoteDAO extends DAO {
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
 			int desconto = res.getInt("desconto");
-			result.add(new Pacote(id, designacao, desconto, null));
+			Set<Integer> componentes = getComponentesId(id);
+			result.add(new Pacote(id, designacao, desconto, componentes));
 		}
 		return result;
 	}
