@@ -13,11 +13,11 @@ public class CategoriaDAO extends DAO {
 
     public static void main(String[] args) throws Exception {
         CategoriaDAO cdao = new CategoriaDAO();
-        System.out.println(cdao.add(new Pneus()));
-        System.out.println(cdao.list().toString());
-        System.out.println(cdao.get("Pneus"));
-        System.out.println(cdao.remove("Pneus"));
-        System.out.println(cdao.size());
+        cdao.add(new Carrocaria());
+        cdao.add(new Jantes());
+        cdao.add(new Motor());
+        cdao.add(new Pintura());
+        cdao.add(new Pneus());
     }
 
     public boolean add(Categoria categoria) throws SQLException {
