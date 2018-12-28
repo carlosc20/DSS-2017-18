@@ -1,5 +1,6 @@
 package data;
 
+import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 
@@ -8,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,10 +25,16 @@ public class PacoteDAO extends DAO {
 		st.setString(2, designacao);
 		st.setInt(3, desconto);
 		int numRows = st.executeUpdate();
+		if(numRows != 1) {
+			st = cn.prepareStatement("DELETE FROM Pacote_Componente WHERE id_pacote = ?");
+			st.setInt(1, id);
+			st.execute();
+		}
 		for (int componente:componentes) {
-			st = cn.prepareStatement("REPLACE INTO Pacote_Componente(id_pacote, id_componente) VALUES (?, ?)");
+			st = cn.prepareStatement("INSERT INTO Pacote_Componente (id_pacote, id_componente) VALUES (?, ?)");
 			st.setInt(1, id);
 			st.setInt(2, componente);
+			st.execute();
 		}
 		Connect.close(cn);
 		return numRows == 1;
@@ -57,6 +63,25 @@ public class PacoteDAO extends DAO {
 						"INNER JOIN Pacote_Componente ON Pacote.id = Pacote_Componente.id_pacote" +
 						"WHERE Pacote_Componente.id_componente = ?");
 		st.setInt(1, idComponente);
+		ResultSet res = st.executeQuery();
+		while (res.next()){
+			int id = res.getInt("id");
+			String designacao = res.getString("designacao");
+			int desconto = res.getInt("desconto");
+			result.add(new Pacote(id, designacao, desconto, null));
+		}
+		return result;
+	}
+
+	public List<Pacote> list(Encomenda encomenda) throws SQLException {
+		int idEncomenda = encomenda.getId();
+		Connection cn = Connect.connect();
+		List<Pacote> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement(
+				"SELECT id, designacao, Encomenda_Pacote.desconto AS desconto FROM Encomenda_Pacote" +
+						"INNER JOIN Pacote ON Pacote.id = Encomenda_Pacote.id_pacote" +
+						"WHERE Encomenda_Pacote.id_encomenda = ?");
+		st.setInt(1, idEncomenda);
 		ResultSet res = st.executeQuery();
 		while (res.next()){
 			int id = res.getInt("id");

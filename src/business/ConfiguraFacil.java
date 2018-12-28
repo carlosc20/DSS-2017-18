@@ -1,6 +1,7 @@
 package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
+import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.utilizadores.Administrador;
@@ -10,9 +11,10 @@ import business.utilizadores.Vendedor;
 import business.venda.*;
 import business.venda.categorias.*;
 import data.*;
-import business.venda.Encomenda;
+import business.venda.EncomendaAtual;
 import business.venda.categorias.Categoria;
 import javafx.util.Pair;
+
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
@@ -22,7 +24,7 @@ public class ConfiguraFacil extends Observable {
     private static ConfiguraFacil instancia = new ConfiguraFacil();
 
 	private Utilizador utilizadorAtual;
-	private Encomenda encomendaAtual;
+	private EncomendaAtual encomendaAtual;
 
 	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
@@ -38,29 +40,30 @@ public class ConfiguraFacil extends Observable {
 
     private ConfiguraFacil(){}
 
-
-    // -------------------------------- Encomenda ------------------------------------------
+    // -------------------------------- Encomendas ---------------------------------------------------------------------
 
     /**
-     *
+     *  Devolve uma matriz com informações das encomendas no registo de encomendas produzidas.
+     *  Cada linha corresponde a uma encomenda.
      *
      * @return
      */
-    public Object[][] getRegistoProduzidas() { //novo
-        // TODO: 27/12/2018 acabar quando DAO estiver feito
-        /*
-        List<Encomenda> encs = registoProduzidas.list();
-        Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasRegistoProduzidas.length];
-        int i = 0;
-        for (Encomenda e : encs) {
-            int id = e.getId();
+    public Object[][] getRegistoProduzidas() throws Exception { //novo
+        try {
+            List<Encomenda> encs = registoProduzidas.list();
+            Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasRegistoProduzidas.length];
+            int i = 0;
+            for (Encomenda e : encs) {
+                int id = e.getId();
 
-            data[i] = new Object[]{id, };
-            i++;
+                data[i] = new Object[]{id, };
+                i++;
+            }
+            return data;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception();
         }
-        return data;
-        */
-        return null;
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getRegistoProduzidas()}. */
@@ -101,11 +104,10 @@ public class ConfiguraFacil extends Observable {
     /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
     public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
 
-
-    // -------------------------------- Encomenda atual ----------------------------------------------------------------
+    // -------------------------------- Encomenda Atual ----------------------------------------------------------------
 
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
-        encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
+        encomendaAtual = new EncomendaAtual(1,cliente, nif);
     }
 
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{

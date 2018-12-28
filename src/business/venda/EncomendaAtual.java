@@ -1,30 +1,29 @@
 package business.venda;
 
+import business.gestao.EncomendaEmProducao;
+import business.gestao.Encomenda;
 import business.produtos.Componente;
-import data.ComponenteDAO;
-import data.PacoteDAO;
+import business.produtos.Pacote;
 import javafx.util.Pair;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Set;
 
-public class Encomenda {
+public class EncomendaAtual {
 	private int id;
 	private String cliente;
 	private int nif;
 	private int valor;
-	private LocalDate data;
 	private Configuracao configuracao;
 
-	public Encomenda() {}
-
-	public Encomenda(int _id, String _cliente, int _nif, ComponenteDAO cDAO, PacoteDAO pDAO) {
-		this.id = _id;
-		this.cliente = _cliente;
-		this.nif = _nif;
+	public EncomendaAtual(int id, String cliente, int nif) {
+		this.id = id;
+		this.cliente = cliente;
+		this.nif = nif;
 		this.valor = 0;
-		this.configuracao = new Configuracao(cDAO, pDAO);
+		this.configuracao = new Configuracao();
 	}
 
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
@@ -57,10 +56,16 @@ public class Encomenda {
 		this.valor += temp.getKey();
 		//return temp.getValue();
 	}
-	public Set<Integer> finalizarEncomenda() throws SQLException, FaltamDependentesException {
-		setData(LocalDate.now());
-		return configuracao.atualizaStock();
+
+	public Encomenda finalizarEncomenda() throws SQLException, FaltamDependentesException {
+		Set<Componente> componentesEmFalta = configuracao.atualizaStock();
+		if(componentesEmFalta.isEmpty()) {
+			return new Encomenda(id, cliente, nif, valor, LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes());
+		} else {
+			return new EncomendaEmProducao(id, cliente, nif, valor, LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes(), componentesEmFalta);
+		}
 	}
+
 	public void configuracaoOtima() {
 		throw new UnsupportedOperationException();
 	}
@@ -92,7 +97,7 @@ public class Encomenda {
 		this.nif = nif;
 	}
 
-	public float getValor() {
+	public int getValor() {
 		return valor;
 	}
 
@@ -104,15 +109,7 @@ public class Encomenda {
 		return configuracao;
 	}
 
-	public void setData(LocalDate data) {
-		this.data = data;
-	}
-
 	public void setConfiguracao(Configuracao configuracao) {
 		this.configuracao = configuracao;
 	}
-
-    public LocalDate getData() {
-        return data;
-    }
 }
