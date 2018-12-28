@@ -24,7 +24,6 @@ public class ComponenteDAO extends DAO {
 		HashSet<Integer> incJantes1 = new HashSet<>();
 		HashSet<Integer> depJantes2 = new HashSet<>();
 		HashSet<Integer> incJantes2 = new HashSet<>();
-		incJantes2.add(1);
 		HashSet<Integer> depCarrocaria1 = new HashSet<>();
 		HashSet<Integer> incCarrocaria1 = new HashSet<>();
 		incCarrocaria1.add(3);

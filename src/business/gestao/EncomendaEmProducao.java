@@ -8,7 +8,6 @@ import data.EncomendaDAO;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 public class EncomendaEmProducao extends Encomenda {
@@ -44,4 +43,7 @@ public class EncomendaEmProducao extends Encomenda {
 		}
 	}
 
+	public boolean getFinalizada(){
+		return false;
+	}
 }

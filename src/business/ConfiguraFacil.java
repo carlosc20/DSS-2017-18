@@ -167,9 +167,34 @@ public class ConfiguraFacil extends Observable {
         throw new UnsupportedOperationException();
     }
 
-
+    //isto a meio duvidoso por causa do cast, e falta a parte dos pacotes formados
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
-        throw new UnsupportedOperationException();
+
+        Encomenda feita = null;
+
+        try {
+            feita = encomendaAtual.finalizarEncomenda();
+        } catch (SQLException | FaltamDependentesException e){
+            e.printStackTrace();
+        }
+
+        if(feita.getFinalizada()){
+            try {
+                registoProduzidas.add(feita);
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                filaProducao.add((EncomendaEmProducao) feita);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+
     }
 
 
