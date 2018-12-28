@@ -8,7 +8,7 @@ import business.utilizadores.Repositor;
 import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
-import business.venda.categorias.CategoriaNaoExisteException;
+import business.venda.categorias.*;
 import data.*;
 import business.venda.Encomenda;
 import business.venda.categorias.Categoria;
@@ -242,8 +242,6 @@ public class ConfiguraFacil extends Observable {
      * {id,Designação da categoria,designacao da componente,quantidade,preço}
      */
     // Feito mas precisa de ser testado
-
-
     public Object[][] getComponentes(){
 
         List<Componente> componentes = new ArrayList<>();
@@ -281,12 +279,48 @@ public class ConfiguraFacil extends Observable {
      * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
      */
     public Object[][] getComponentes(String categoria) { //novo
+        Categoria cat = null;
+        switch (categoria){
+            case "Carrocaria":
+                cat = new Carrocaria();
+                break;
+            case "Jantes":
+                cat = new Jantes();
+                break;
+            case "Motor":
+                cat = new Motor();
+                break;
+            case "Pintura":
+                cat = new Pintura();
+                break;
+            case "Pneus":
+                cat = new Pneus();
+                break;
+            default: return null;
+        }
 
-        Object[][] data = {
-                {"Motor", 1, "Opel V6", 1, 100},
-                {"Motor", 2, "BMW X31", 3, 200}
-        };
-        return data;
+        List<Componente> componentes = new ArrayList<>();
+        try {
+            componentes = todosComponentes.list(cat);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (componentes.size()==0) return null;
+
+        Object[][] componentesTodas = new Object[componentes.size()][5];
+        int i = 0;
+        for(Componente c : componentes){
+            int id = c.getId();
+            String designacao = c.getDesignacao();
+            Categoria cate = c.getCategoria();
+            String catDesignacao = cate.getDesignacao();
+            int qnt = c.getStock();
+            int preco = c.getPreco();
+            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
+            i++;
+        }
+        return componentesTodas;
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes()}. */

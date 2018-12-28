@@ -95,6 +95,7 @@ public class JVendedor implements Observer {
                                 "Erro", // TODO: informaçao sobre erro
                                 "Erro",
                                 JOptionPane.ERROR_MESSAGE);
+                        e1.printStackTrace();
                     }
                 }
             }
