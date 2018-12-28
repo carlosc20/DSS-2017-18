@@ -25,6 +25,7 @@ public class Componente {
 		this.depedendencias = depedendencias;
 		this.incompatibilidades = incompatibilidades;
 		this.categoria = categoria;
+		this.componentes = new ComponenteDAO();
 	}
 
 	public void decrementaStock() {

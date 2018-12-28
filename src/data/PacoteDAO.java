@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +49,8 @@ public class PacoteDAO extends DAO {
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
 			int desconto = res.getInt("desconto");
-			list.add(new Pacote(id, designacao, desconto, null));
+			Set<Integer> componentes = getComponentesId(id);
+			list.add(new Pacote(id, designacao, desconto, componentes));
 		}
 		Connect.close(cn);
 		return list;
@@ -59,8 +61,8 @@ public class PacoteDAO extends DAO {
 		Connection cn = Connect.connect();
 		List<Pacote> result = new ArrayList<>();
 		PreparedStatement st = cn.prepareStatement(
-				"SELECT id, designacao, desconto FROM Pacote" +
-						"INNER JOIN Pacote_Componente ON Pacote.id = Pacote_Componente.id_pacote" +
+				"SELECT id, designacao, desconto FROM Pacote " +
+						"INNER JOIN Pacote_Componente ON Pacote.id = Pacote_Componente.id_pacote " +
 						"WHERE Pacote_Componente.id_componente = ?");
 		st.setInt(1, idComponente);
 		ResultSet res = st.executeQuery();
@@ -78,8 +80,8 @@ public class PacoteDAO extends DAO {
 		Connection cn = Connect.connect();
 		List<Pacote> result = new ArrayList<>();
 		PreparedStatement st = cn.prepareStatement(
-				"SELECT id, designacao, Encomenda_Pacote.desconto AS desconto FROM Encomenda_Pacote" +
-						"INNER JOIN Pacote ON Pacote.id = Encomenda_Pacote.id_pacote" +
+				"SELECT id, designacao, Encomenda_Pacote.desconto AS desconto FROM Encomenda_Pacote " +
+						"INNER JOIN Pacote ON Pacote.id = Encomenda_Pacote.id_pacote " +
 						"WHERE Encomenda_Pacote.id_encomenda = ?");
 		st.setInt(1, idEncomenda);
 		ResultSet res = st.executeQuery();
@@ -87,7 +89,8 @@ public class PacoteDAO extends DAO {
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
 			int desconto = res.getInt("desconto");
-			result.add(new Pacote(id, designacao, desconto, null));
+			Set<Integer> componentes = getComponentesId(id);
+			result.add(new Pacote(id, designacao, desconto, componentes));
 		}
 		return result;
 	}
@@ -100,12 +103,27 @@ public class PacoteDAO extends DAO {
 		if(res.first()) {
 			String designacao = res.getString("designacao");
 			int desconto = res.getInt("desconto");
+			Set<Integer> componentes = getComponentesId(id);
 			Connect.close(cn);
-			return new Pacote(id, designacao, desconto, null);
+			return new Pacote(id, designacao, desconto, componentes);
 		} else {
 			Connect.close(cn);
 			return null;
 		}
+	}
+
+	public Set<Integer> getComponentesId(int idPacote) throws SQLException {
+		Connection cn = Connect.connect();
+		Set<Integer> result = new HashSet<>();
+		PreparedStatement st = cn.prepareStatement("SELECT id_componente FROM Pacote_Componente WHERE id_pacote = ?");
+		st.setInt(1, idPacote);
+		ResultSet res = st.executeQuery();
+		ComponenteDAO componenteDAO =  new ComponenteDAO();
+		while (res.next()){
+			int id = res.getInt("id_componente");
+			result.add(id);
+		}
+		return result;
 	}
 
 	public void remove(int id) throws SQLException {

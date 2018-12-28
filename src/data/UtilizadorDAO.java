@@ -12,12 +12,7 @@ import java.util.List;
 public class UtilizadorDAO extends DAO {
 
 	public static void main(String[] args) throws Exception {
-		UtilizadorDAO udao = new UtilizadorDAO();
-		System.out.println(udao.add(new Administrador("Daniel", "123456")));
-		System.out.println(udao.list().toString());
-		System.out.println(udao.get("Daniel").getPassword());
-		System.out.println(udao.remove("Daniel"));
-		System.out.println(udao.size());
+		System.out.println(new UtilizadorDAO().get("Administrador"));
 	}
 
 	public boolean add(Utilizador utilizador) throws SQLException {
@@ -57,8 +52,10 @@ public class UtilizadorDAO extends DAO {
 			String password = res.getString("password");
 			String funcao = res.getString("funcao");
 			Connect.close(cn);
+			System.out.println(password);
 			return criarUtilizador(nome, password, funcao);
 		} else {
+			System.out.println("ola");
 			Connect.close(cn);
 			return null;
 		}
