@@ -1,15 +1,14 @@
 package data;
 
+import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
-import business.venda.Encomenda;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,10 +25,16 @@ public class PacoteDAO extends DAO {
 		st.setString(2, designacao);
 		st.setInt(3, desconto);
 		int numRows = st.executeUpdate();
+		if(numRows != 1) {
+			st = cn.prepareStatement("DELETE FROM Pacote_Componente WHERE id_pacote = ?");
+			st.setInt(1, id);
+			st.execute();
+		}
 		for (int componente:componentes) {
-			st = cn.prepareStatement("REPLACE INTO Pacote_Componente(id_pacote, id_componente) VALUES (?, ?)");
+			st = cn.prepareStatement("INSERT INTO Pacote_Componente (id_pacote, id_componente) VALUES (?, ?)");
 			st.setInt(1, id);
 			st.setInt(2, componente);
+			st.execute();
 		}
 		Connect.close(cn);
 		return numRows == 1;

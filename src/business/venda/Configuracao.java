@@ -19,13 +19,13 @@ public class Configuracao {
 	private ComponenteDAO cDAO;
 	private PacoteDAO pDAO;
 
-	public Configuracao(ComponenteDAO cDAO, PacoteDAO pDAO) {
+	public Configuracao() {
 		this.componentes = new HashSet<>();
 		this.dependentes = new HashSet<>();
 		this.pacotes = new HashSet<>();
 		this.pacotesDormentes = new HashMap<>();
-		this.cDAO = cDAO;
-		this.pDAO = pDAO;
+		this.cDAO = new ComponenteDAO();
+		this.pDAO = new PacoteDAO();
 	}
 
 	/*
@@ -371,7 +371,7 @@ public class Configuracao {
 		return false;
 	}
 
-	public Set<Integer> atualizaStock() throws SQLException, FaltamDependentesException {
+	public Set<Componente> atualizaStock() throws SQLException, FaltamDependentesException {
 		boolean flag = false;
 		for(Componente c : componentes){
 			int id = c.getId();

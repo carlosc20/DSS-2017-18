@@ -1,8 +1,9 @@
 package data;
 
+import business.gestao.EncomendaEmProducao;
+import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
-import business.venda.Encomenda;
 import business.venda.categorias.*;
 
 import java.sql.Connection;
@@ -27,15 +28,25 @@ public class ComponenteDAO extends DAO {
 		st.setInt(3, preco);
 		st.setInt(4, stock);
 		int numRows = st.executeUpdate();
+		if(numRows != 1) {
+			st = cn.prepareStatement("DELETE FROM Componente_Dependencia WHERE id_pacote = ?");
+			st.setInt(1, id);
+			st.execute();
+			st = cn.prepareStatement("DELETE FROM Componente_Incompatibilidade WHERE id_pacote = ?");
+			st.setInt(1, id);
+			st.execute();
+		}
 		for (int dependencia:dependencias) {
-			st = cn.prepareStatement("REPLACE INTO Componente_Dependencia (id_componente, id_dependencia) VALUES (?, ?)");
+			st = cn.prepareStatement("INSERT INTO Componente_Dependencia (id_componente, id_dependencia) VALUES (?, ?)");
 			st.setInt(1, id);
 			st.setInt(2, dependencia);
+			st.execute();
 		}
 		for (int incompativel:incompatibilidades) {
-			st = cn.prepareStatement("REPLACE INTO Componente_Incompatibilidade (id_componente, id_incompativel) VALUES (?, ?)");
+			st = cn.prepareStatement("INSERT INTO Componente_Incompatibilidade (id_componente, id_incompativel) VALUES (?, ?)");
 			st.setInt(1, id);
 			st.setInt(2, incompativel);
+			st.execute();
 		}
 		Connect.close(cn);
 		return numRows == 1;
@@ -80,7 +91,6 @@ public class ComponenteDAO extends DAO {
 		PreparedStatement st = cn.prepareStatement("SELECT id, designacao, preco, stock FROM Componente WHERE categoria = ?");
 		st.setString(1, designacaoCategoria);
 		ResultSet res = st.executeQuery();
-		ComponenteDAO componenteDAO =  new ComponenteDAO();
 		while (res.next()){
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
@@ -102,7 +112,30 @@ public class ComponenteDAO extends DAO {
 						"WHERE Encomenda_Componente.id_encomenda = ?");
 		st.setInt(1, idEncomenda);
 		ResultSet res = st.executeQuery();
-		ComponenteDAO componenteDAO =  new ComponenteDAO();
+		while (res.next()){
+			int id = res.getInt("id");
+			String designacao = res.getString("designacao");
+			int preco = res.getInt("preco");
+			int stock = res.getInt("stock");
+			String categoriaDesignacao = res.getString("categoria");
+			Categoria categoria = criarCategoria(categoriaDesignacao);
+			result.add(new Componente(id, designacao, preco, stock, null, null, categoria));
+		}
+		return result;
+	}
+
+	public List<Componente> listComponentesEmFalta(EncomendaEmProducao encomenda) throws SQLException {
+		int idEncomenda = encomenda.getId();
+		Connection cn = Connect.connect();
+		List<Componente> result = new ArrayList<>();
+		PreparedStatement st = cn.prepareStatement(
+				"SELECT id, designacao, Encomenda_Componente.preco AS preco, stock" +
+						"FROM Encomenda_Componente" +
+						"INNER JOIN Componente ON Encomenda_Componente.id_componente = Componente.id" +
+						"INNER JOIN Encomenda_Falta ON Encomenda_Falta.id_componente = Componente.id" +
+						"WHERE Encomenda_Falta.id_encomenda = ?");
+		st.setInt(1, idEncomenda);
+		ResultSet res = st.executeQuery();
 		while (res.next()){
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
@@ -168,21 +201,20 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public Set<Integer> atualizaStock(Set<Componente> componentes) throws SQLException {
+	public Set<Componente> atualizaStock(Set<Componente> componentes) throws SQLException {
 		Connection cn = null;
-		HashSet<Integer> result = new HashSet<>();
+		HashSet<Componente> result = new HashSet<>();
 		try {
 			for (Componente componente : componentes) {
-				int idComponente = componente.getId();
 				if (componente.getStock() == 0) {
-					result.add(idComponente);
+					result.add(componente);
 				} else {
 					if (cn == null) {
 						cn = Connect.connect();
 						cn.setAutoCommit(false);
 					}
 					PreparedStatement st = cn.prepareStatement("UPDATE Componente SET stock = (stock - 1) WHERE id = ?");
-					st.setInt(1, idComponente);
+					st.setInt(1, componente.getId());
 					st.execute();
 				}
 			}

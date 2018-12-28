@@ -1,5 +1,5 @@
-package business;// import Venda.Encomenda;
-// import Diagrama_de_packages.Business.Encomenda;
+package business;// import Venda.EncomendaAtual;
+// import Diagrama_de_packages.Business.EncomendaAtual;
 
 import business.produtos.Componente;
 import business.produtos.Pacote;
@@ -10,13 +10,9 @@ import business.utilizadores.Vendedor;
 import business.venda.*;
 import business.venda.categorias.*;
 import data.*;
-import business.venda.Encomenda;
-import data.*;
-import javafx.collections.ObservableArrayBase;
+import business.venda.EncomendaAtual;
 import javafx.util.Pair;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
@@ -26,7 +22,7 @@ public class ConfiguraFacil extends Observable {
     private static ConfiguraFacil instancia = new ConfiguraFacil();
 
 	private Utilizador utilizadorAtual;
-	private Encomenda encomendaAtual;
+	private EncomendaAtual encomendaAtual;
 
 	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
@@ -42,7 +38,7 @@ public class ConfiguraFacil extends Observable {
 
     private ConfiguraFacil(){}
 
-    // -------------------------------- Encomenda ------------------------------------------
+    // -------------------------------- EncomendaAtual ------------------------------------------
 
     public void consultarConfiguracao() {
         throw new UnsupportedOperationException();
@@ -75,10 +71,10 @@ public class ConfiguraFacil extends Observable {
     /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
     public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
 
-    // -------------------------------- Encomenda atual ----------------------------------------------------------------
+    // -------------------------------- EncomendaAtual atual ----------------------------------------------------------------
 
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
-        encomendaAtual = new Encomenda(1,cliente, nif, todosComponentes, todosPacotes);
+        encomendaAtual = new EncomendaAtual(1,cliente, nif);
     }
 
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
