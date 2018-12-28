@@ -205,28 +205,28 @@ public class ConfiguraFacil extends Observable {
         return data;
     }
 
-        private Object[][] buildCategObrigatorias (List<Categoria> categ) {
-            Object[][] data = new Object[categ.size()][5];
-            int i = 0;
-            for (Categoria cat : categ) {
-                String des = cat.getDesignacao();
-                if (cat.getObrigatoria()) {
-                    data[i] = new Object[]{des, null, null, null, null};
-                    i++;
-                }
+    private Object[][] buildCategObrigatorias (List<Categoria> categ) {
+        Object[][] data = new Object[categ.size()][5];
+        int i = 0;
+        for (Categoria cat : categ) {
+            String des = cat.getDesignacao();
+            if (cat.getObrigatoria()) {
+                data[i] = new Object[]{des, null, null, null, null};
+                i++;
             }
-            return data;
         }
+        return data;
+    }
 
     public Object [][] getComponentesOpcConfig() {
         return new Object[][] {
-                {"Motor", 1, "Teste", 1, 20},
+                {"Motor", 1, "Teste", 1, 20}
         };
     }
 
     public Object [][] getComponentesDepConfig() {
         return new Object[][] {
-                {"Motor", 1, "Teste", 1, 20},
+                {"Motor", 1, "Teste", 1, 20}
         };
     }
 

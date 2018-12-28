@@ -51,7 +51,7 @@ public class UtilizadorDAO extends DAO {
 	public Utilizador get(String nome) throws SQLException, FuncaoNaoExisteExcpetion {
 		Connection cn = Connect.connect();
 		PreparedStatement st = cn.prepareStatement("SELECT password, funcao FROM Utilizador WHERE nome = ? LIMIT 1");
-		st.setString(1, "nome");
+		st.setString(1, nome);
 		ResultSet res = st.executeQuery();
 		if(res.first()) {
 			String password = res.getString("password");
