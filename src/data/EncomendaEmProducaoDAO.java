@@ -22,7 +22,7 @@ public class EncomendaEmProducaoDAO extends DAO {
         Collection<Componente> componentes = encomenda.getComponentes();
         Collection<Pacote> pacotes = encomenda.getPacotes();
         Collection<Componente> componentesEmFalta = encomenda.getComponentesEmFalta();
-        PreparedStatement st = cn.prepareStatement("REPLACE INTO EncomendaAtual (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, 0)");
+        PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, 0)");
         st.setInt(1, id);
         st.setString(2, cliente);
         st.setInt(3, nif);
@@ -62,10 +62,12 @@ public class EncomendaEmProducaoDAO extends DAO {
         return numRows == 1;
     }
 
-    public List<Encomenda> list() throws SQLException {
+    public List<EncomendaEmProducao> list() throws SQLException {
         Connection cn = Connect.connect();
-        ResultSet res = super.getAll(cn, "EncomendaAtual");
-        List<Encomenda> list = new ArrayList<>();
+        PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 0");
+        st.setString(1, "id");
+        ResultSet res = st.executeQuery();
+        List<EncomendaEmProducao> list = new ArrayList<>();
         while (res.next()){
             int id = res.getInt("id");
             String cliente = res.getString("cliente");
@@ -78,9 +80,9 @@ public class EncomendaEmProducaoDAO extends DAO {
         return list;
     }
 
-    public Encomenda get(int id) throws SQLException {
+    public EncomendaEmProducao get(int id) throws SQLException {
         Connection cn = Connect.connect();
-        PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM EncomendaAtual WHERE id = ? LIMIT 1");
+        PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 0 LIMIT 1");
         st.setString(1, "id");
         ResultSet res = st.executeQuery();
         if(res.first()) {
@@ -97,10 +99,10 @@ public class EncomendaEmProducaoDAO extends DAO {
     }
 
     public boolean remove(int id) throws SQLException {
-        return super.removeIntKey("EncomendaAtual", "id", id);
+        return super.removeIntKey("Encomenda", "id", id);
     }
 
     public int size() throws SQLException {
-        return super.size("EncomendaAtual");
+        return super.size("Encomenda");
     }
 }

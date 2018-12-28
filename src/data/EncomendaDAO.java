@@ -20,7 +20,7 @@ public class EncomendaDAO extends DAO {
 		Date data = Date.valueOf(encomenda.getData());
 		Collection<Componente> componentes = encomenda.getComponentes();
 		Collection<Pacote> pacotes = encomenda.getPacotes();
-		PreparedStatement st = cn.prepareStatement("REPLACE INTO EncomendaAtual (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, 1)");
+		PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, 1)");
 		st.setInt(1, id);
 		st.setString(2, cliente);
 		st.setInt(3, nif);
@@ -53,7 +53,9 @@ public class EncomendaDAO extends DAO {
 
 	public List<Encomenda> list() throws SQLException {
 		Connection cn = Connect.connect();
-		ResultSet res = super.getAll(cn, "EncomendaAtual");
+		PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 1");
+		st.setString(1, "id");
+		ResultSet res = st.executeQuery();
 		List<Encomenda> list = new ArrayList<>();
 		while (res.next()){
 			int id = res.getInt("id");
@@ -69,7 +71,7 @@ public class EncomendaDAO extends DAO {
 
 	public Encomenda get(int id) throws SQLException {
 		Connection cn = Connect.connect();
-		PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM EncomendaAtual WHERE id = ? LIMIT 1");
+		PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 1 LIMIT 1");
 		st.setString(1, "id");
 		ResultSet res = st.executeQuery();
 		if(res.first()) {
@@ -86,10 +88,10 @@ public class EncomendaDAO extends DAO {
 	}
 
 	public boolean remove(int id) throws SQLException {
-		return super.removeIntKey("EncomendaAtual", "id", id);
+		return super.removeIntKey("Encomenda", "id", id);
 	}
 
 	public int size() throws SQLException {
-		return super.size("EncomendaAtual");
+		return super.size("Encomenda");
 	}
 }
