@@ -374,9 +374,27 @@ public class ConfiguraFacil extends Observable {
      *
      * @return lista de categorias
      */
+    // feito precisa de ser testado
     public List<String> getCategoriasObrigatorias() {
-        String[] c = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(c);
+
+        List<Categoria> cats = new ArrayList<>();
+
+        try {
+            cats = categorias.list();
+        } catch (CategoriaNaoExisteException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        if(cats.size()==0) return null;
+
+        List<String> nomes = new ArrayList<>();
+
+        for(Categoria c : cats){
+            if(c.getObrigatoria()){
+                nomes.add(c.getDesignacao());
+            }
+        }
+        return nomes;
     }
 
 
@@ -385,9 +403,26 @@ public class ConfiguraFacil extends Observable {
      *
      * @return lista de categorias
      */
+    // feito precisa de ser testado
     public List<String> getCategoriasOpcionais() {
-        String[] c = {"cat 1", "cat 2", "cat 3"};
-        return Arrays.asList(c);
+        List<Categoria> cats = new ArrayList<>();
+
+        try {
+            cats = categorias.list();
+        } catch (CategoriaNaoExisteException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        if(cats.size()==0) return null;
+
+        List<String> nomes = new ArrayList<>();
+
+        for(Categoria c : cats){
+            if(!c.getObrigatoria()){
+                nomes.add(c.getDesignacao());
+            }
+        }
+        return nomes;
     }
 
 
