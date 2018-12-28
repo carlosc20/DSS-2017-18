@@ -1,7 +1,6 @@
 package business;// import Venda.Encomenda;
 // import Diagrama_de_packages.Business.Encomenda;
 
-import business.gestao.EncomendaEmProducao;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.utilizadores.Administrador;
@@ -10,16 +9,10 @@ import business.utilizadores.Utilizador;
 import business.utilizadores.Vendedor;
 import business.venda.*;
 import business.venda.categorias.CategoriaNaoExisteException;
-import business.venda.categorias.CategoriaObrigatoria;
 import data.*;
 import business.venda.Encomenda;
 import business.venda.categorias.Categoria;
-import data.*;
-import javafx.collections.ObservableArrayBase;
 import javafx.util.Pair;
-
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
@@ -107,6 +100,7 @@ public class ConfiguraFacil extends Observable {
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
     public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
+
 
     // -------------------------------- Encomenda atual ----------------------------------------------------------------
 
