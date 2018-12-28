@@ -251,6 +251,7 @@ public class JNovaEncomenda implements Observer {
                     try {
                         facade.adicionaPacote(id);
                     } catch (PacoteJaExisteNaConfiguracaoException e1) {
+                        // TODO: 28/12/2018 faz cenas
                         e1.printStackTrace();
                     } catch (PacoteGeraConflitosException e1) {
                         e1.printStackTrace();
