@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -106,6 +107,20 @@ public class PacoteDAO extends DAO {
 			Connect.close(cn);
 			return null;
 		}
+	}
+
+	public Set<Integer> getComponentesId(int idPacote) throws SQLException {
+		Connection cn = Connect.connect();
+		Set<Integer> result = new HashSet<>();
+		PreparedStatement st = cn.prepareStatement("SELECT id_componente FROM Pacote_Componente WHERE id_pacote = ?");
+		st.setInt(1, idPacote);
+		ResultSet res = st.executeQuery();
+		ComponenteDAO componenteDAO =  new ComponenteDAO();
+		while (res.next()){
+			int id = res.getInt("id_componente");
+			result.add(id);
+		}
+		return result;
 	}
 
 	public void remove(int id) throws SQLException {
