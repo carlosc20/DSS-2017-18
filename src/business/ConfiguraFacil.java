@@ -369,6 +369,7 @@ public class ConfiguraFacil extends Observable {
     public static String[] colunasPacotes = new String[] {"Id", "Designação", "Desconto(€)", "Componentes"};
 
 
+    // TODO: 28/12/2018 getCategorias
     /**
      * Devolve uma lista de todas as categorias de componentes obrigatórios.
      *
