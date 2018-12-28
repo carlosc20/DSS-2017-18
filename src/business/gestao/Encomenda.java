@@ -95,4 +95,8 @@ public class Encomenda {
     public void setPacotes(Collection<Pacote> pacotes) {
         this.pacotes = pacotes;
     }
+
+    public boolean getFinalizada(){
+        return true;
+    }
 }
