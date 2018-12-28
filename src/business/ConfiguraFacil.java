@@ -41,6 +41,7 @@ public class ConfiguraFacil extends Observable {
 
     private ConfiguraFacil(){}
 
+    public EncomendaAtual getEncomendaAtual() {return encomendaAtual;}
     // -------------------------------- Encomendas ---------------------------------------------------------------------
 
     /**
@@ -234,20 +235,23 @@ public class ConfiguraFacil extends Observable {
             }
         }
         Set<Componente> comp = encomendaAtual.getComponentes();
-        if (categ.size() == 0) return null;
+        //if (categ.size() == 0) return null;
 
         Object[][] data = buildCategObrigatorias(categ);
-        for(int i = 0; i<data.length; i++)
+        for(int i = 0; i<categ.size(); i++)
             for(Componente c : comp) {
                 if (c.getCategoria().getDesignacao().equals(data[i][0])) {
-                    data[i][1] = new Object[]{c.getId(), c.getDesignacao(), c.getStock(), c.getPreco()};
+                    data[i][1] = c.getId();
+                    data[i][2] = c.getDesignacao();
+                    data[i][3] = c.getStock();
+                    data[i][4] = c.getPreco();
                 }
             }
         return data;
     }
 
     private Object[][] buildCategObrigatorias (List<Categoria> categ) {
-        Object[][] data = new Object[categ.size()][5];
+        Object[][] data = new Object[5][5];
         int i = 0;
         for (Categoria cat : categ) {
             String des = cat.getDesignacao();

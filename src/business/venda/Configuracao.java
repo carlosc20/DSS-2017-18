@@ -299,7 +299,7 @@ public class Configuracao {
 	//meter a dar throw de exceção que não existem incompatibilidades
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente (int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
 		Componente c = cDAO.get(idComponente);
-		if(!componentes.contains(c)) throw new ComponenteJaExisteNaConfiguracaoException("Já existe");
+		if(componentes.contains(c)) throw new ComponenteJaExisteNaConfiguracaoException("Já existe");
 
 		Set<Integer> idIncompativeis = c.getIncompatibilidades();
 		Set<Integer> idDependentes = c.getDepedendencias();
@@ -390,7 +390,7 @@ public class Configuracao {
 	}
 
 	public Set<Componente> getComponentes() {
-		return new HashSet<>(componentes);
+		return componentes;
 	}
 
 	public Set<Integer> getDependentes() {
