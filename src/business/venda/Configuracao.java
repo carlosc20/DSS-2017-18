@@ -229,7 +229,7 @@ public class Configuracao {
 
 		HashSet<Integer> comp = new HashSet<>();
 		Componente c = componentes.get(idComponente);
-		Set<Integer> aux = c.getDependentesDasIncompatibilidades();
+		Set<Integer> aux = c.getDepedendencias();
 		comp.add(c.getId());
 
 		return removerComponentes(comp, aux);
