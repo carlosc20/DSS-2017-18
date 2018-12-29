@@ -126,6 +126,15 @@ public class ConfiguraFacil extends Observable {
     }
 
 
+    public Componente getC (int id){
+        try {
+            return todosComponentes.get(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Devolve um par com dois Sets de ids de componentes associados à adição de um componente.
      * O primeiro Set tem os ids dos componentes incompatíveis.
@@ -267,7 +276,7 @@ public class ConfiguraFacil extends Observable {
                 e.printStackTrace();
             }
         }
-        Set<Componente> comp = encomendaAtual.getComponentes();
+        List<Componente> comp = encomendaAtual.getComponentes();
         //if (categ.size() == 0) return null;
 
         Object[][] data = buildCategObrigatorias(categ);
@@ -428,14 +437,6 @@ public class ConfiguraFacil extends Observable {
      *
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
-    public Componente getC(int id){
-        try {
-            return todosComponentes.get(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
     //Feito mas precisa de ser testado
     public Object[][] getPacotes() {
 

@@ -37,7 +37,9 @@ public class JNovaEncomenda implements Observer {
     private JButton removerOpcButton;
     private DefaultTableModel modelOpc;
 
-    JFrame frame;
+    private JFrame frame;
+
+    private String[] colunasComponentes;
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
@@ -51,12 +53,24 @@ public class JNovaEncomenda implements Observer {
 
         facade.addObserver(this);
 
-        DefaultListModel<String> modelCatOpc = new DefaultListModel<>();
-        for (String u : facade.getCategoriasOpcionais()) {
-            modelCatOpc.addElement(u);
-        }
+        colunasComponentes = ConfiguraFacil.colunasComponentes;
 
-        // atualiza tabelas
+
+        cancelarButton.addActionListener(new ActionListener() {
+            /**
+             *  Fecha a janela atual e abre a Inicial.
+             */
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new JVendedor();
+            }
+        });
+
+
+
+        // ----------- Componentes obrigatorios ------------------------------------------------------------------------
+
         modelObr = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -67,42 +81,11 @@ public class JNovaEncomenda implements Observer {
         updateObrigatorios();
         obrigatoriosTable.setRowSelectionInterval(0, 0);
 
-        modelOpc = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        opcionaisTable.setModel(modelOpc);
-        updateOpcionais();
 
-        modelDep = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        dependenciasTable.setModel(modelDep);
-        updateDependencias();
-
-        // TODO: dar enable/disable no finalizar e configOtima
-
-        //---------------- Listeners -----------------------------------------------------------------------------------
-
-        // fecha a janela
-        cancelarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new JVendedor();
-            }
-        });
-
-
-    // ----------- Componentes obrigatorios ----------------------------------------------------------------------------
-
-        // abre janela de adicionar componente da categoria selecionada ou remove componente selecionado
         obrigatorioButton.addActionListener(new ActionListener() {
+            /**
+             * Abre janela de adicionar componente da categoria selecionada ou remove componente selecionado
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = obrigatoriosTable.getSelectedRow();
@@ -124,12 +107,16 @@ public class JNovaEncomenda implements Observer {
                         e1.printStackTrace();
                     }
                 }
+                obrigatoriosTable.setRowSelectionInterval(row, row);
             }
         });
 
 
-        // muda o texto do botão entre remover componente e adicionar componente conforme a linha selecionada
         obrigatoriosTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            /**
+             * Muda o texto do botão entre remover componente e adicionar componente conforme a linha selecionada
+             */
+            @Override
             public void valueChanged(ListSelectionEvent e) {
                 int row = obrigatoriosTable.getSelectedRow();
                 if (!e.getValueIsAdjusting() && row != -1) {
@@ -145,8 +132,21 @@ public class JNovaEncomenda implements Observer {
 
 
 
-
         // ----------- Componentes opcionais ---------------------------------------------------------------------------
+
+        DefaultListModel<String> modelCatOpc = new DefaultListModel<>();
+        for (String u : facade.getCategoriasOpcionais()) {
+            modelCatOpc.addElement(u);
+        }
+
+        modelOpc = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        opcionaisTable.setModel(modelOpc);
+        updateOpcionais();
 
         // abre janela para escolher categoria, se OK abre janela de adicionar componente
         adicionarOpcButton.addActionListener(new ActionListener() {
@@ -195,6 +195,15 @@ public class JNovaEncomenda implements Observer {
 
 
         // ----------- Componentes Dependencias ------------------------------------------------------------------------
+
+        modelDep = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        dependenciasTable.setModel(modelDep);
+        updateDependencias();
 
         // adiciona componente opcional selecionado
         adicionarDepButton.addActionListener(new ActionListener() {
@@ -266,8 +275,12 @@ public class JNovaEncomenda implements Observer {
 
         // ----------- Outros ------------------------------------------------------------------------------------------
 
-        // completa a encomenda e abre uma janela a informar sobre a formação de pacotes se necessário
+        // TODO: dar enable/disable no finalizar e configOtima
+
         finalizarButton.addActionListener(new ActionListener() {
+            /**
+             * Completa a encomenda e abre uma janela a informar sobre a formação de pacotes se necessário
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<Integer> formados = facade.finalizarEncomenda();
@@ -283,8 +296,10 @@ public class JNovaEncomenda implements Observer {
         });
 
 
-        // abre janela de configuração ótima
         configOtimaButton.addActionListener(new ActionListener() {
+            /**
+             * Abre janela de configuração ótima
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: 27/12/2018 acabar
@@ -371,23 +386,19 @@ public class JNovaEncomenda implements Observer {
         return 0;
     }
 
-
     private void updateObrigatorios() {
-        String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentesObgConfig();
-        modelObr.setDataVector(data, columnNames);
+        modelObr.setDataVector(data, colunasComponentes);
     }
 
     private void updateOpcionais() {
-        String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentesOpcConfig();
-        modelOpc.setDataVector(data, columnNames);
+        modelOpc.setDataVector(data, colunasComponentes);
     }
 
     private void updateDependencias() {
-        String[] columnNames = ConfiguraFacil.colunasComponentes;
         Object[][] data = facade.getComponentesDepConfig();
-        modelDep.setDataVector(data, columnNames);
+        modelDep.setDataVector(data, colunasComponentes);
     }
 
     @Override

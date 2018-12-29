@@ -133,8 +133,8 @@ public class PacoteDAO extends DAO {
 		return super.size("Pacote");
 	}
 
-	public void importCSV(String path) throws SQLException, IOException {
-		BufferedReader br = new BufferedReader(new FileReader(path));
+	public void importCSV(File file) throws SQLException, IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		Connection cn = Connect.connect();
 		cn.setAutoCommit(false);
 		String str = br.readLine();

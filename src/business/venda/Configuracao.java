@@ -12,17 +12,17 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class Configuracao {
-	private Set<Componente> componentes; //Componentes da configuração
+	private HashMap<Integer,Componente> componentes; //Componentes da configuração
 	private Set<Integer> dependentes; 	 //Id's dos componentes que precisam de ser adicionados
-	private Set<Pacote> pacotes;		 //Pacotes da configuração
+	private HashMap<Integer, Pacote> pacotes;		 //Pacotes da configuração
 	private HashMap<Integer, PacoteDormente> pacotesDormentes;  //Pacotes que deixaram de estar ativos, mas podem voltar.
 	private ComponenteDAO cDAO;
 	private PacoteDAO pDAO;
 
 	public Configuracao() {
-		this.componentes = new HashSet<>();
+		this.componentes = new HashMap<>();
 		this.dependentes = new HashSet<>();
-		this.pacotes = new HashSet<>();
+		this.pacotes = new HashMap<>();
 		this.pacotesDormentes = new HashMap<>();
 		this.cDAO = new ComponenteDAO();
 		this.pDAO = new PacoteDAO();
@@ -47,7 +47,7 @@ public class Configuracao {
 		int valorAcrescentado = tratarDependencias(componentesAdd);
 
 		//Adição do componente
-		this.componentes.add(componente);
+		this.componentes.put(componente.getId(),componente);
 
 		//Se foi adicionado um dos dependentes !! Deprecated, pq se eu retirar um dos dependentes e depois o vendedor
 		//remove-lo eu não sei que ele é dependente.
@@ -105,8 +105,8 @@ public class Configuracao {
 			aux = (HashSet<Integer>) p.getComponentes();
 			flag = true;
 			for (int id : aux) {
-				for (Componente c : componentes)
-					if (id != c.getId())
+				for (int key : componentes.keySet())
+					if (id != key)
 						flag = false;
 			}
 			if (flag) formados.add(p);
@@ -116,7 +116,7 @@ public class Configuracao {
 
 		if(formados.size()!=0){
 			Pacote p = formados.first();
-			pacotes.add(p);
+			pacotes.put(p.getId(), p);
 			return p.getDesconto();}
 		else return 0;
 
@@ -143,7 +143,7 @@ public class Configuracao {
 	 *@param idComponentes Componentes a ser removidos
 	 *@returns valor a ser diminuido ao valor da encomenda
 	 */
-	private Pair<Integer,Set<Integer>> removerComponentes (Set<Componente> componentes, Set<Integer> idDependentesInc){
+	private Pair<Integer,Set<Integer>> removerComponentes (Set<Componente> comp, Set<Integer> idDependentesInc){
 		int valorRetirado = 0; //valor a retirar da encomenda
 		HashSet<Integer> pac = new HashSet<>();
 		boolean found = false; //para não tirar o desconto várias vezes
@@ -152,16 +152,16 @@ public class Configuracao {
 		dependentes.removeAll(idDependentesInc);
 
 		//Retira os componentes da config. e também o seu valor
-		for(Componente c : componentes){
-			if(this.componentes.contains(c)){
+		for(Componente c : comp){
+			if(componentes.containsKey(c.getId())){
 				valorRetirado+=c.getPreco();
-				this.componentes.remove(c);}
+				componentes.remove(c.getId(),c);}
 		}
-		for(Pacote p : pacotes) {
+		for(Pacote p : pacotes.values()) {
 			found = false;
 			for (int id : p.getComponentes()) {
-				for (Componente c : componentes) {
-					if (this.componentes.contains(id)) {
+				for (Componente c : comp) {
+					if (componentes.containsKey(id)) {
 						//Se ficar assim pode ser otimizado !!!!!!!!!!FAZER ISTO
 						if(!found){
 							pacotes.remove(p);
@@ -213,15 +213,14 @@ public class Configuracao {
 	 *@param idComponente Id componente a ser retirado
 	 */
 	public Pair <Integer,Set<Integer>> removerComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
-		//Isto parece-me desnecessário
-		Componente c = cDAO.get(idComponente);
-		if (!componentes.contains(c)) throw new ComponenteNaoExisteNaConfiguracao("Componentes não existe");
+		if (!componentes.containsKey(idComponente)) throw new ComponenteNaoExisteNaConfiguracao("Componentes não existe");
 
-		HashSet<Componente> componentes = new HashSet<>();
+		HashSet<Componente> comp = new HashSet<>();
+		Componente c = componentes.get(idComponente);
 		Set<Integer> aux = c.getDependentesDasIncompatibilidades();
-		componentes.add(c);
+		comp.add(c);
 
-		return removerComponentes(componentes, aux);
+		return removerComponentes(comp, aux);
 	}
 
 	/*
@@ -269,24 +268,23 @@ public class Configuracao {
 	}
 	private float tratarIncompatibilidades(Set<Componente> componentes, Pacote p){return 1;}
 
-	private boolean existeConflito(Set<Componente> componentes) {
+	private boolean existeConflito(Set<Integer> componentes) {
 		boolean found = false;
-		Iterator<Pacote> it = pacotes.iterator();
+		Iterator<Pacote> it = pacotes.values().iterator();
 		Set<Integer> compIds;
 
 		while (it.hasNext() && !found) {
 			compIds = it.next().getComponentes();
-			for (Componente c : componentes) {
-				int idC = c.getId();
+			for (int idC : componentes) {
 				found = compIds.contains(idC);
 			}
 		}
 		return found;
 	}
 	public Pair<Integer,Set<Integer>> removerPacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
-		Pacote p = pDAO.get(idPacote);
-		if(!pacotes.contains(p)) throw new PacoteNaoExisteNaConfiguracaoException("Pacote não existe");
+		if(!pacotes.containsKey(idPacote)) throw new PacoteNaoExisteNaConfiguracaoException("Pacote não existe");
 
+		Pacote p = pacotes.get(idPacote);
 		Set<Componente> componentes = p.getComponentesRef();
 		Set<Integer> aux = new HashSet<>();
 
@@ -300,7 +298,7 @@ public class Configuracao {
 	//meter a dar throw de exceção que não existem incompatibilidades
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente (int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
 		Componente c = cDAO.get(idComponente);
-		if(componentes.contains(c)) throw new ComponenteJaExisteNaConfiguracaoException("Já existe");
+		if(componentes.containsKey(idComponente)) throw new ComponenteJaExisteNaConfiguracaoException("Já existe");
 
 		Set<Integer> idIncompativeis = c.getIncompatibilidades();
 		Set<Integer> idDependentes = c.getDepedendencias();
@@ -312,9 +310,9 @@ public class Configuracao {
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException {
 		Pacote pacote = pDAO.get(idPacote);
 
-		if(!pacotes.contains(pacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
+		if(!pacotes.containsKey(idPacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
 
-		if(existeConflito(componentes)) {
+		if(existeConflito(pacote.getComponentes())) {
 			throw new PacoteGeraConflitosException("Já existe um pacote com algum dos componentes do que pretende adicionar");
 		}
 
@@ -336,8 +334,7 @@ public class Configuracao {
 		HashSet<Integer> incompARemover = new HashSet<>();
 		//HashSet<Integer> pacotesARemover = new HashSet<>();
 		for(int id : idIncompativeis){
-			for(Componente c : componentes){
-				int idC = c.getId();
+			for(int idC : componentes.keySet()){
 				if(idC == id) incompARemover.add(id);
 			}
 			//for(Pacote p : pacotes){
@@ -347,20 +344,43 @@ public class Configuracao {
 		return incompARemover;
 		//return new Pair<>(incompARemover, pacotesARemover);
 	}
+
 	protected void otimizarPacotes() throws SQLException {
 		Set<Pacote> todosPacotes = new HashSet<>();
-		for (Componente c : componentes){
+		for (Componente c : componentes.values()){
 			todosPacotes.addAll(pDAO.list(c));
 		}
 		Set<Pacote> otimos = calculaOtimos(todosPacotes);
 		boolean reotimizacao = comparaPacotes(otimos);
 		if(reotimizacao) {
 			pacotes.clear();
-			pacotes.addAll(otimos);
+			for (Pacote p : otimos) {
+				pacotes.put(p.getId(), p);
+			}
 		}
 	}
-	//Por fazer
-	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){throw new UnsupportedOperationException();}
+
+	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){
+		HashSet<Pacote> solucao = new HashSet<>();
+		HashSet<Integer> componentes = new HashSet<>();
+		ArrayList<Pacote> porAdicionar = new ArrayList<>(pacotes);
+		porAdicionar.sort(new Comparator<Pacote>() {
+			@Override
+			public int compare(Pacote p1, Pacote p2) {
+				return p2.getDesconto() - p1.getDesconto();
+			}
+		});
+
+		for(Pacote pacote:porAdicionar) {
+			Set<Integer> componentesPacote = pacote.getComponentes();
+			if (Collections.disjoint(componentesPacote, componentes)) {
+				solucao.add(pacote);
+				componentes.addAll(componentesPacote);
+			}
+		}
+
+		return solucao;
+	}
 
 	private boolean comparaPacotes(Set<Pacote> otimos){
 		int valAtual = 0;
@@ -368,7 +388,7 @@ public class Configuracao {
 
 		//Por ser heurística
 		for(Pacote p : otimos) valOtimo+=p.getDesconto();
-		for(Pacote p : pacotes) valAtual+=p.getDesconto();
+		for(Pacote p : pacotes.values()) valAtual+=p.getDesconto();
 
 		if(valOtimo > valAtual) return true;
 
@@ -377,29 +397,28 @@ public class Configuracao {
 
 	public Set<Componente> atualizaStock() throws SQLException, FaltamDependentesException {
 		boolean flag = false;
-		for(Componente c : componentes){
-			int id = c.getId();
+		for(int id : componentes.keySet()){
 			if (!dependentes.contains(id))
 				throw new FaltamDependentesException("Insira os restantes dependentes");
 		}
 
-		return cDAO.atualizaStock(componentes);
+		return cDAO.atualizaStock(new ArrayList<Componente>(componentes.values()));
 	}
 
 	public void configuracaoOtima() {
 		throw new UnsupportedOperationException();
 	}
 
-	public Set<Componente> getComponentes() {
-		return componentes;
+	public List<Componente> getComponentes() {
+		return new ArrayList<Componente>(componentes.values());
 	}
 
 	public Set<Integer> getDependentes() {
 		return new HashSet<>(dependentes);
 	}
 
-	public Set<Pacote> getPacotes() {
-		return new HashSet<>(pacotes);
+	public List<Pacote> getPacotes() {
+		return new ArrayList<>(pacotes.values());
 	}
 
 	public void setcDAO(ComponenteDAO cDAO) {

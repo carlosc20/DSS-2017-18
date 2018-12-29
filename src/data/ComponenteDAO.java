@@ -7,6 +7,7 @@ import business.produtos.Pacote;
 import business.venda.categorias.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,40 +17,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class ComponenteDAO extends DAO {
-
-	public static void main(String[] args) throws Exception {
-	/*
-		ComponenteDAO cdao = new ComponenteDAO();
-		HashSet<Integer> depPneus1 = new HashSet<>();
-		depPneus1.add(2);
-		HashSet<Integer> incPneus1 = new HashSet<>();
-		incPneus1.add(3);
-		HashSet<Integer> depJantes1 = new HashSet<>();
-		HashSet<Integer> incJantes1 = new HashSet<>();
-		HashSet<Integer> depJantes2 = new HashSet<>();
-		HashSet<Integer> incJantes2 = new HashSet<>();
-		HashSet<Integer> depCarrocaria1 = new HashSet<>();
-		HashSet<Integer> incCarrocaria1 = new HashSet<>();
-		incCarrocaria1.add(3);
-		HashSet<Integer> depMotor1 = new HashSet<>();
-		depMotor1.add(4);
-		HashSet<Integer> incMotor1 = new HashSet<>();
-		HashSet<Integer> depPintura1 = new HashSet<>();
-		HashSet<Integer> incPintura1 = new HashSet<>();
-		incPintura1.add(4);
-		HashSet<Integer> depPintura2 = new HashSet<>();
-		depPintura2.add(4);
-		HashSet<Integer> incPintura2 = new HashSet<>();
-		cdao.add(new Componente(2, "Jantes 1", 10000, 3, depJantes1, incJantes1, new Jantes()));
-		cdao.add(new Componente(3, "Jantes 2", 15000, 20, depJantes2, incJantes2, new Jantes()));
-		cdao.add(new Componente(1, "Pneus 1", 20000, 5, depPneus1, depPneus1, new Pneus()));
-		cdao.add(new Componente(4, "Carrocaria 1", 50000, 5, depCarrocaria1, incCarrocaria1, new Carrocaria()));
-		cdao.add(new Componente(5, "Motor 1", 30000, 4, depMotor1, incMotor1, new Motor()));
-		cdao.add(new Componente(6, "Pitura 1", 10000, 99, depPintura1, incPintura1, new Pintura()));
-		cdao.add(new Componente(7, "Pintura 2", 20000, 0, depPintura2, incPintura2, new Pintura()));
-	*/
-	new ComponenteDAO().importCSV("/home/daniel/Transferências/Componente.csv");
-	}
 
 	public boolean add(Componente componente) throws SQLException {
 		Connection cn = Connect.connect();
@@ -300,7 +267,7 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public Set<Componente> atualizaStock(Set<Componente> componentes) throws SQLException {
+	public Set<Componente> atualizaStock(List<Componente> componentes) throws SQLException {
 		Connection cn = null;
 		HashSet<Componente> result = new HashSet<>();
 		try {
@@ -327,8 +294,8 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public void importCSV(String path) throws SQLException, IOException, CategoriaNaoExisteException {
-		BufferedReader br = new BufferedReader(new FileReader(path));
+	public void importCSV(File file) throws SQLException, IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		Connection cn = Connect.connect();
 		cn.setAutoCommit(false);
 		String str = br.readLine();
@@ -350,8 +317,20 @@ public class ComponenteDAO extends DAO {
 				for(String incompatibilidade:incompatibilidadesStrings){
 					incompatibilidades.add(Integer.parseInt(incompatibilidade));
 				}
-				String categoria = data[6];
-				add(new Componente(id, designacao, preco, stock, dependencias, incompatibilidades, new CategoriaDAO().get(categoria)));
+				String categoriaDesignacao = data[6];
+				Categoria categoria;
+				try {
+					categoria = new CategoriaDAO().get(categoriaDesignacao);
+				} catch (CategoriaNaoExisteException e) {
+					categoria = new CategoriaOpcional() {
+						@Override
+						public String getDesignacao() {
+							return categoriaDesignacao;
+						}
+					};
+					new CategoriaDAO().add(categoria);
+				}
+				add(new Componente(id, designacao, preco, stock, dependencias, incompatibilidades, categoria));
 				str = br.readLine();
 			}
 			cn.commit();
