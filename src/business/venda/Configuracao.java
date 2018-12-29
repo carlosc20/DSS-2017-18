@@ -153,7 +153,7 @@ public class Configuracao {
 
 		//Retira os componentes da config. e também o seu valor
 		for(Componente c : componentes){
-			if(componentes.contains(c)){
+			if(this.componentes.contains(c)){
 				valorRetirado+=c.getPreco();
 				componentes.remove(c);}
 		}
@@ -161,7 +161,7 @@ public class Configuracao {
 			found = false;
 			for (int id : p.getComponentes()) {
 				for (Componente c : componentes) {
-					if (componentes.contains(id)) {
+					if (this.componentes.contains(id)) {
 						//Se ficar assim pode ser otimizado
 						if(!found){
 							pacotes.remove(p);

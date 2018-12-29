@@ -387,6 +387,14 @@ public class ConfiguraFacil extends Observable {
      *
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
+    public Componente getC(int id){
+        try {
+            return todosComponentes.get(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     //Feito mas precisa de ser testado
     public Object[][] getPacotes() {
 
