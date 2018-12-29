@@ -267,7 +267,7 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public Set<Componente> atualizaStock(Set<Componente> componentes) throws SQLException {
+	public Set<Componente> atualizaStock(List<Componente> componentes) throws SQLException {
 		Connection cn = null;
 		HashSet<Componente> result = new HashSet<>();
 		try {
