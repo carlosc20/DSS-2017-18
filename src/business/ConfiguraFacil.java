@@ -268,6 +268,11 @@ public class ConfiguraFacil extends Observable {
         return componentesListToMatrix(componentes);
     }
 
+    // TODO: 29/12/2018 fazer
+    public Object [][] getPacotesConfig() throws Exception {
+        return new Object[][] {};
+    }
+
 
     // -------------------------------- Encomendas ---------------------------------------------------------------------
 

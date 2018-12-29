@@ -21,21 +21,30 @@ public class JNovaEncomenda implements Observer {
     private JPanel mainPanel;
     private JButton configOtimaButton;
     private JButton finalizarButton;
-    private JButton adicionarPacoteButton; // botão responsável por adicionar pacotes, está sempre ativo
-    private JButton adicionarOpcButton;
-    private JButton obrigatorioButton; // botão responsável por adicionar/remover componentes obrigatórios, está sempre ativo
 
     private JTable obrigatoriosTable;
     private DefaultTableModel modelObr;
+    private JButton obrigatorioButton;
 
     private JTable dependenciasTable;
     private DefaultTableModel modelDep;
+    private JButton adicionarDepButton;
 
     private JTable opcionaisTable;
-    private JButton adicionarDepButton;
-    private JButton cancelarButton;
-    private JButton removerOpcButton;
     private DefaultTableModel modelOpc;
+    private JButton removerOpcButton;
+    private JButton adicionarOpcButton;
+
+    private JTable pacotesTable;
+    private DefaultTableModel modelPac;
+    private JButton removerPacoteButton;
+    private JButton adicionarPacoteButton;
+
+    private JButton cancelarButton;
+
+
+
+
 
     private JFrame frame;
 
@@ -48,14 +57,14 @@ public class JNovaEncomenda implements Observer {
 
         frame = new JFrame("Nova encomenda");
         frame.setContentPane(mainPanel);
-        frame.setSize(500,600);
+        frame.setSize(1280,720);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
         facade.addObserver(this);
 
         colunasComponentes = ConfiguraFacil.colunasComponentes;
-
+        colunasPacotes = ConfiguraFacil.colunasPacotes;
 
         cancelarButton.addActionListener(new ActionListener() {
             /**
@@ -252,7 +261,15 @@ public class JNovaEncomenda implements Observer {
 
         // ----------- Pacotes -----------------------------------------------------------------------------------------
 
-        colunasPacotes = ConfiguraFacil.colunasPacotes;
+
+        modelPac = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        pacotesTable.setModel(modelPac);
+        updatePacotes();
 
         adicionarPacoteButton.addActionListener(new ActionListener() {
             /**
@@ -455,6 +472,16 @@ public class JNovaEncomenda implements Observer {
     private void updateOpcionais() {
         Object[][] data = facade.getComponentesOpcConfig();
         modelOpc.setDataVector(data, colunasComponentes);
+    }
+
+    private void updatePacotes() {
+        Object[][] data = new Object[0][];
+        try {
+            data = facade.getPacotesConfig();
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO: 29/12/2018 erro
+        }
+        modelPac.setDataVector(data, colunasPacotes);
     }
 
     private void updateDependencias() {
