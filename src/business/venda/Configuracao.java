@@ -360,7 +360,27 @@ public class Configuracao {
 		}
 	}
 	//Por fazer
-	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){throw new UnsupportedOperationException();}
+	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){
+		HashSet<Pacote> solucao = new HashSet<>();
+		HashSet<Integer> componentes = new HashSet<>();
+		ArrayList<Pacote> porAdicionar = new ArrayList<>(pacotes);
+		porAdicionar.sort(new Comparator<Pacote>() {
+			@Override
+			public int compare(Pacote p1, Pacote p2) {
+				return p2.getDesconto() - p1.getDesconto();
+			}
+		});
+
+		for(Pacote pacote:porAdicionar) {
+			Set<Integer> componentesPacote = pacote.getComponentes();
+			if (Collections.disjoint(componentesPacote, componentes)) {
+				solucao.add(pacote);
+				componentes.addAll(componentesPacote);
+			}
+		}
+
+		return solucao;
+	}
 
 	private boolean comparaPacotes(Set<Pacote> otimos){
 		int valAtual = 0;
