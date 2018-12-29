@@ -139,9 +139,10 @@ public class ConfiguraFacil extends Observable {
     }
 
     public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
+        Set<Integer> r = encomendaAtual.adicionaComponente(idComponente);
         setChanged();
         notifyObservers();
-        return encomendaAtual.adicionaComponente(idComponente);
+        return r;
     }
 
     public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
