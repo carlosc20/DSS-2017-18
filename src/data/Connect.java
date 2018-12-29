@@ -6,9 +6,9 @@ import java.sql.DriverManager;
 public class Connect {
 
     private static final String URL = "localhost";
-    private static final String SCHEMA = "mydb";
+    private static final String SCHEMA = "configuraFacil";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "censurado";
+    private static final String PASSWORD = "Hansolo20";
 
     static Connection connection = null;
 

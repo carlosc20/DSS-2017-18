@@ -594,9 +594,9 @@ public class ConfiguraFacil extends Observable {
         Object[][] data = new Object[componentes.size()][colunasComponentes.length];
         int i = 0;
         for(Componente c : componentes){
-            data[i][0] = c.getId();
-            data[i][1] = c.getDesignacao();
-            data[i][2] = c.getCategoria().getDesignacao();
+            data[i][0] = c.getCategoria().getDesignacao();
+            data[i][1] = c.getId();
+            data[i][2] = c.getDesignacao();
             data[i][3] = c.getStock();
             data[i][4] = c.getPreco();
             i++;

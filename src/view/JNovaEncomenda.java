@@ -436,6 +436,7 @@ public class JNovaEncomenda implements Observer {
     private void updateObrigatorios() {
         Object[][] data = facade.getComponentesObgConfig();
         modelObr.setDataVector(data, colunasComponentes);
+        obrigatoriosTable.setRowSelectionInterval(0, 0);
     }
 
     private void updateOpcionais() {
