@@ -125,19 +125,26 @@ public class Configuracao {
 	 *Vai buscar as incompatibilidades dos componentes que recebeu como argumento e remove-as
 	 *@param componentes Componentes cujas incompatibilidades serão removidas
 	 */
-	private Pair <Integer,Set<Integer>> tratarIncompatibilidades(Set<Componente> componentes) throws SQLException {
+	private Pair <Integer,Set<Integer>> tratarIncompatibilidades(Set<Componente> comp) throws SQLException {
 		HashSet<Integer> idDepInc = new HashSet<>();  //Id's dos componentes incompatíveis de todos os componentes
 		Set<Integer> aux;
 		Set<Integer> rem;
 		HashSet<Integer> idIncompativeis = new HashSet<>();
 
 		//Vai buscar todas as incompatibilidades dos componentes
-		for(Componente c : componentes){
+		for(Componente c : comp){
 			aux = c.getDependentesDasIncompatibilidades();
 			idDepInc.addAll(aux);
 			rem = c.getIncompatibilidades();
 			idIncompativeis.addAll(rem);
 		}
+		for(Componente c : comp){
+			for(Componente cf : componentes.values()){
+				if(cf.getCategoria().equals(c.getCategoria()))
+					idIncompativeis.add(cf.getId());
+			}
+		}
+
 		return removerComponentes(idIncompativeis, idDepInc);
 	}
 	/*
@@ -271,7 +278,6 @@ public class Configuracao {
 		}
 		return val;
 	}
-	private float tratarIncompatibilidades(Set<Componente> componentes, Pacote p){return 1;}
 
 	private boolean existeConflito(Set<Integer> componentes) {
 		boolean found = false;
