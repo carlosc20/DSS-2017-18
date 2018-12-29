@@ -293,7 +293,7 @@ public class ConfiguraFacil extends Observable {
     }
 
     private Object[][] buildCategObrigatorias (List<Categoria> categ) {
-        Object[][] data = new Object[5][5];
+        Object[][] data = new Object[categ.size()][5];
         int i = 0;
         for (Categoria cat : categ) {
             String des = cat.getDesignacao();
@@ -306,15 +306,49 @@ public class ConfiguraFacil extends Observable {
     }
 
     public Object [][] getComponentesOpcConfig() {
-        return new Object[][] {
-                {"Motor", 1, "Teste", 1, 20}
-        };
+        List<Componente> comp = encomendaAtual.getComponentes();
+        Object[][] data = new Object[comp.size()][5];
+        int i = 0;
+            for(Componente c : comp) {
+                Categoria cat = c.getCategoria();
+                if(cat instanceof CategoriaOpcional){
+                    data[i][0] = c.getCategoria();
+                    data[i][1] = c.getId();
+                    data[i][2] = c.getDesignacao();
+                    data[i][3] = c.getStock();
+                    data[i][4] = c.getPreco();
+                }
+                i++;
+            }
+        return data;
     }
 
     public Object [][] getComponentesDepConfig() {
-        return new Object[][] {
-                {"Motor", 1, "Teste", 1, 20}
-        };
+        Set<Integer> compIds = encomendaAtual.getDependentes();
+        ArrayList<Componente> comp = new ArrayList<>();
+
+        for(int id : compIds){
+            Componente c = null;
+            try {
+                c = todosComponentes.get(id);
+                comp.add(c);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Object[][] data = new Object[compIds.size()][5];
+        int i = 0;
+        for(Componente c : comp) {
+            Categoria cat = c.getCategoria();
+                data[i][0] = c.getCategoria();
+                data[i][1] = c.getId();
+                data[i][2] = c.getDesignacao();
+                data[i][3] = c.getStock();
+                data[i][4] = c.getPreco();
+                i++;
+            }
+        return data;
     }
 
 
