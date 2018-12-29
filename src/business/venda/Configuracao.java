@@ -344,20 +344,22 @@ public class Configuracao {
 		return incompARemover;
 		//return new Pair<>(incompARemover, pacotesARemover);
 	}
-	/*
+
 	protected void otimizarPacotes() throws SQLException {
 		Set<Pacote> todosPacotes = new HashSet<>();
-		for (Componente c : componentes){
+		for (Componente c : componentes.values()){
 			todosPacotes.addAll(pDAO.list(c));
 		}
 		Set<Pacote> otimos = calculaOtimos(todosPacotes);
 		boolean reotimizacao = comparaPacotes(otimos);
 		if(reotimizacao) {
 			pacotes.clear();
-			pacotes.addAll(otimos);
+			for (Pacote p : otimos) {
+				pacotes.put(p.getId(), p);
+			}
 		}
-	}*/
-	//Por fazer
+	}
+
 	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){
 		HashSet<Pacote> solucao = new HashSet<>();
 		HashSet<Integer> componentes = new HashSet<>();
