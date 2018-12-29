@@ -248,6 +248,11 @@ public class Configuracao {
 		Pair <Integer, Set<Integer>> temp = tratarIncompatibilidades(componentes);
 		int valorAcrescentado = tratarDependenciasPacote(componentes,p);
 
+		for(int id : p.getComponentes()){
+			Componente c = cDAO.get(id);
+			this.componentes.put(id,c);
+		}
+
 		Set<Integer> pac = temp.getValue();
 		int val = temp.getKey();
 
@@ -323,7 +328,7 @@ public class Configuracao {
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException {
 		Pacote pacote = pDAO.get(idPacote);
 
-		if(!pacotes.containsKey(idPacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
+		if(pacotes.containsKey(idPacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
 
 		if(existeConflito(pacote.getComponentes())) {
 			throw new PacoteGeraConflitosException("Já existe um pacote com algum dos componentes do que pretende adicionar");
@@ -432,6 +437,25 @@ public class Configuracao {
 
 	public List<Pacote> getPacotes() {
 		return new ArrayList<>(pacotes.values());
+	}
+
+	public List<Componente> getComponentesOpcionais (){
+		ArrayList<Componente> res = new ArrayList<>();
+			for(Componente c : componentes.values()){
+				if(!c.getCategoria().getObrigatoria()){
+					res.add(c);
+				}
+			}
+		return res;
+	}
+	public List<Componente> getComponentesObrigatórios (){
+		ArrayList<Componente> res = new ArrayList<>();
+		for(Componente c : componentes.values()){
+			if(c.getCategoria().getObrigatoria()){
+				res.add(c);
+			}
+		}
+		return res;
 	}
 
 	public void setcDAO(ComponenteDAO cDAO) {

@@ -77,6 +77,13 @@ public class EncomendaAtual {
 
 	public Set<Integer> getDependentes(){return configuracao.getDependentes();}
 
+	public List<Componente> getComponetesOpcionais() {
+		return configuracao.getComponentesOpcionais();
+	}
+	public List<Componente> getComponetesObrigatorios() {
+		return configuracao.getComponentesObrigatórios();
+	}
+
 	public int getId() {
 		return id;
 	}
