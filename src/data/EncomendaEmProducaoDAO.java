@@ -6,11 +6,27 @@ import business.produtos.Componente;
 import business.produtos.Pacote;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class EncomendaEmProducaoDAO extends DAO {
+
+    public static void main(String[] args) throws SQLException {
+        HashSet<Componente> componentes = new HashSet<>();
+        componentes.add(new ComponenteDAO().get(1));
+        componentes.add(new ComponenteDAO().get(2));
+        componentes.add(new ComponenteDAO().get(4));
+        componentes.add(new ComponenteDAO().get(5));
+        componentes.add(new ComponenteDAO().get(7));
+        HashSet<Pacote> pacotes = new HashSet<>();
+        pacotes.add(new PacoteDAO().get(3));
+        HashSet<Componente> componentesEmFalta = new HashSet<>();
+        componentesEmFalta.add(new ComponenteDAO().get(7));
+        new EncomendaEmProducaoDAO().add(new EncomendaEmProducao(1, "Cliente 1", 1, 1, LocalDate.now(), componentes, pacotes, componentesEmFalta));
+    }
 
     public boolean add(EncomendaEmProducao encomenda) throws SQLException {
         Connection cn = Connect.connect();

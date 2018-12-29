@@ -4,14 +4,12 @@ import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PacoteDAO extends DAO {
 
@@ -132,5 +130,34 @@ public class PacoteDAO extends DAO {
 
 	public int size() throws SQLException {
 		return super.size("Pacote");
+	}
+
+	public void importCSV(String path) throws SQLException, IOException {
+		BufferedReader br = new BufferedReader(new FileReader(path));
+		Connection cn = Connect.connect();
+		cn.setAutoCommit(false);
+		String str = br.readLine();
+		try {
+			while (str != null) {
+				System.out.println(str);
+				String[] data = str.substring(1, str.length() - 1).split("\",\"");
+				int id = Integer.parseInt(data[0]);
+				String designacao = data[1];
+				int desconto = Integer.parseInt(data[2]);
+				String[] componentesStrings = data[3].equals("") ? new String[0] : data[3].split(",");
+				HashSet<Integer> componentes = new HashSet<>();
+				for(String componente:componentesStrings){
+					componentes.add(Integer.parseInt(componente));
+				}
+				add(new Pacote(id, designacao, desconto, componentes));
+				str = br.readLine();
+			}
+			cn.commit();
+		} catch (Exception e){
+			cn.rollback();
+			throw e;
+		} finally {
+			Connect.close(cn);
+		}
 	}
 }

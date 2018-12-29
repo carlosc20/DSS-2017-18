@@ -6,6 +6,9 @@ import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +18,7 @@ import java.util.*;
 public class ComponenteDAO extends DAO {
 
 	public static void main(String[] args) throws Exception {
+	/*
 		ComponenteDAO cdao = new ComponenteDAO();
 		HashSet<Integer> depPneus1 = new HashSet<>();
 		depPneus1.add(2);
@@ -43,6 +47,8 @@ public class ComponenteDAO extends DAO {
 		cdao.add(new Componente(5, "Motor 1", 30000, 4, depMotor1, incMotor1, new Motor()));
 		cdao.add(new Componente(6, "Pitura 1", 10000, 99, depPintura1, incPintura1, new Pintura()));
 		cdao.add(new Componente(7, "Pintura 2", 20000, 0, depPintura2, incPintura2, new Pintura()));
+	*/
+	new ComponenteDAO().importCSV("/home/daniel/Transferências/Componente.csv");
 	}
 
 	public boolean add(Componente componente) throws SQLException {
@@ -311,14 +317,50 @@ public class ComponenteDAO extends DAO {
 					st.execute();
 				}
 			}
+			cn.commit();
 		} catch (SQLException e) {
 			cn.rollback();
 			throw e;
 		} finally {
-			cn.commit();
 			Connect.close(cn);
 		}
 		return result;
+	}
+
+	public void importCSV(String path) throws SQLException, IOException, CategoriaNaoExisteException {
+		BufferedReader br = new BufferedReader(new FileReader(path));
+		Connection cn = Connect.connect();
+		cn.setAutoCommit(false);
+		String str = br.readLine();
+		try {
+			while (str != null) {
+				System.out.println(str);
+				String[] data = str.substring(1, str.length() - 1).split("\",\"");
+				int id = Integer.parseInt(data[0]);
+				String designacao = data[1];
+				int preco = Integer.parseInt(data[2]);
+				int stock = Integer.parseInt(data[3]);
+				String[] dependenciasStrings = data[4].equals("") ? new String[0] : data[4].split(",");
+				HashSet<Integer> dependencias = new HashSet<>();
+				for(String dependencia:dependenciasStrings){
+					dependencias.add(Integer.parseInt(dependencia));
+				}
+				String[] incompatibilidadesStrings = data[5].equals("") ? new String[0] : data[5].split(",");
+				HashSet<Integer> incompatibilidades = new HashSet<>();
+				for(String incompatibilidade:incompatibilidadesStrings){
+					incompatibilidades.add(Integer.parseInt(incompatibilidade));
+				}
+				String categoria = data[6];
+				add(new Componente(id, designacao, preco, stock, dependencias, incompatibilidades, new CategoriaDAO().get(categoria)));
+				str = br.readLine();
+			}
+			cn.commit();
+		} catch (Exception e){
+			cn.rollback();
+			throw e;
+		} finally {
+			Connect.close(cn);
+		}
 	}
 
 	private Categoria criarCategoria(String designacao) {

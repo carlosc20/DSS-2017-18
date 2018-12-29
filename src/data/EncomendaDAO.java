@@ -11,6 +11,10 @@ import java.util.List;
 
 public class EncomendaDAO extends DAO {
 
+	public static void main(String[] args) {
+		
+	}
+
 	public boolean add(Encomenda encomenda) throws SQLException {
 		Connection cn = Connect.connect();
 		int id = encomenda.getId();
