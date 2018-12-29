@@ -74,6 +74,9 @@ public class EncomendaAtual {
 	public List<Componente> getComponentes(){
 		return configuracao.getComponentes();
 	}
+
+	public Set<Integer> getDependentes(){return configuracao.getDependentes();}
+
 	public int getId() {
 		return id;
 	}
