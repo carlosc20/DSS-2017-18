@@ -361,7 +361,7 @@ public class ConfiguraFacil extends Observable {
      */
     public void atualizaComponentes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 
-        // TODO: 27/12/2018 fazer
+        new ComponenteDAO().importCSV(file);
 
         setChanged();
         notifyObservers(0);
@@ -369,7 +369,7 @@ public class ConfiguraFacil extends Observable {
 
     public void atualizaPacotes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 
-        // TODO: 27/12/2018 fazer
+        new PacoteDAO().importCSV(file);
 
         setChanged();
         notifyObservers(1);
