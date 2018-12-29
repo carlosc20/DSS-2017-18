@@ -162,7 +162,7 @@ public class Configuracao {
 			for (int id : p.getComponentes()) {
 				for (Componente c : componentes) {
 					if (this.componentes.contains(id)) {
-						//Se ficar assim pode ser otimizado
+						//Se ficar assim pode ser otimizado !!!!!!!!!!FAZER ISTO
 						if(!found){
 							pacotes.remove(p);
 							pac.add(p.getId());
@@ -173,6 +173,7 @@ public class Configuracao {
 									pacotesDormentes.remove(key);
 							}
 							//PacoteDormente pd = new PacoteDormente(p,0);
+							found = true;
 						}
 						//pd.incr();
 						//pacotesDormentes.put(id,p);
