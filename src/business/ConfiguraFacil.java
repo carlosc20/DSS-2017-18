@@ -40,7 +40,7 @@ public class ConfiguraFacil extends Observable {
     }
 
     private ConfiguraFacil(){}
-
+  
     public EncomendaAtual getEncomendaAtual() {return encomendaAtual;}
     // -------------------------------- Encomendas ---------------------------------------------------------------------
 
@@ -139,9 +139,10 @@ public class ConfiguraFacil extends Observable {
     }
 
     public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
+        Set<Integer> r = encomendaAtual.adicionaComponente(idComponente);
         setChanged();
         notifyObservers();
-        return encomendaAtual.adicionaComponente(idComponente);
+        return r;
     }
 
     public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao {
@@ -387,14 +388,6 @@ public class ConfiguraFacil extends Observable {
      *
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
-    public Componente getC(int id){
-        try {
-            return todosComponentes.get(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
     //Feito mas precisa de ser testado
     public Object[][] getPacotes() {
 

@@ -117,10 +117,10 @@ public class JNovaEncomenda implements Observer {
                     try {
                         Set<Integer> pacotes = facade.removeComponente(id);
                         mostraPacotesDesfeitos(frame, pacotes);
+                        obrigatorioButton.setText("Adicionar componente");
                     } catch (ComponenteNaoExisteNaConfiguracao e1) {
                         e1.printStackTrace();
                     }
-                    obrigatorioButton.setText("Adicionar componente");
                 }
             }
         });
