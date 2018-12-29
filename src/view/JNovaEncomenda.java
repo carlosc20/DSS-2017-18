@@ -281,10 +281,23 @@ public class JNovaEncomenda implements Observer {
                         JOptionPane.PLAIN_MESSAGE);
 
                 if (option == JOptionPane.OK_OPTION) {
-                    int row = obrigatoriosTable.getSelectedRow();
-                    Integer id = (Integer) obrigatoriosTable.getValueAt(row, 0);
+                    int row = table.getSelectedRow();
+                    Integer id = (Integer) table.getValueAt(row, 0);
                     try {
-                        facade.adicionaPacote(id);
+                        Pair<Set<Integer>,Set<Integer>> efeitos = facade.getEfeitosAdicionarPacote(id);
+                        Set<Integer> incompativeis = efeitos.getKey();
+                        Set<Integer> dependencias = efeitos.getValue();
+
+                        // TODO: 29/12/2018 mudar com o que existir
+                        int op = JOptionPane.showConfirmDialog(frame,
+                                "Incompatibilidades: " + setToString(incompativeis)
+                                        + "\nDependencias: " +setToString(dependencias),
+                                "Incompatibilidades e dependencias",
+                                JOptionPane.OK_CANCEL_OPTION);
+
+                        if(op == JOptionPane.OK_OPTION) {
+                            facade.adicionaPacote(id);
+                        }
                     } catch (PacoteJaExisteNaConfiguracaoException e1) {
                         // TODO: 28/12/2018 faz cenas
                         e1.printStackTrace();

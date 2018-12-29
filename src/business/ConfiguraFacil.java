@@ -454,7 +454,7 @@ public class ConfiguraFacil extends Observable {
                 data[i][0] = p.getId();
                 data[i][1] = p.getDesignacao();
                 data[i][2] = p.getDesconto();
-                data[i][3] = "Por fazer"; // TODO: 29/12/2018 completar com lista de componentes
+                data[i][3] = p.getComponentes().toString();
                 i++;
             }
             return data;

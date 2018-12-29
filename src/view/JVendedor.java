@@ -27,8 +27,6 @@ public class JVendedor implements Observer {
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
-    // TODO: desativar janela enquanto se cria encomenda, ter as colunas ja guardadas
-
     public JVendedor() {
 
         frame = new JFrame("Vendedor");
