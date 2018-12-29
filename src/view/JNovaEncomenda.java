@@ -40,6 +40,7 @@ public class JNovaEncomenda implements Observer {
     private JFrame frame;
 
     private String[] colunasComponentes;
+    private String[] colunasPacotes;
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
@@ -84,7 +85,7 @@ public class JNovaEncomenda implements Observer {
 
         obrigatorioButton.addActionListener(new ActionListener() {
             /**
-             * Abre janela de adicionar componente da categoria selecionada ou remove componente selecionado
+             * Abre janela de adicionar componente da categoria selecionada ou remove componente selecionado.
              */
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -148,8 +149,11 @@ public class JNovaEncomenda implements Observer {
         opcionaisTable.setModel(modelOpc);
         updateOpcionais();
 
-        // abre janela para escolher categoria, se OK abre janela de adicionar componente
+
         adicionarOpcButton.addActionListener(new ActionListener() {
+            /**
+             *  Abre janela para escolher categoria, se OK abre janela de adicionar componente
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 JList<String> list = new JList<>(modelCatOpc);
@@ -159,15 +163,17 @@ public class JNovaEncomenda implements Observer {
                         "Escolher categoria",
                         JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE);
+
                 if (option == JOptionPane.OK_OPTION) {
                     mostraAdicionarComponente(list.getSelectedValue());
                 }
             }
         });
 
-
-        // remove componente selecionado
         removerOpcButton.addActionListener(new ActionListener() {
+            /**
+             * Remove componente selecionado
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = opcionaisTable.getSelectedRow();
@@ -182,9 +188,11 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
-
-        // ativa o botão de remover componente quando um componente é selecionado
         opcionaisTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            /**
+             * Ativa o botão de remover componente quando um componente é selecionado.
+             */
+            @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     removerOpcButton.setEnabled(true);
@@ -194,7 +202,7 @@ public class JNovaEncomenda implements Observer {
 
 
 
-        // ----------- Componentes Dependencias ------------------------------------------------------------------------
+        // ----------- Componentes dependencias ------------------------------------------------------------------------
 
         modelDep = new DefaultTableModel() {
             @Override
@@ -205,8 +213,10 @@ public class JNovaEncomenda implements Observer {
         dependenciasTable.setModel(modelDep);
         updateDependencias();
 
-        // adiciona componente opcional selecionado
         adicionarDepButton.addActionListener(new ActionListener() {
+            /**
+             * Adiciona componente opcional selecionado
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = dependenciasTable.getSelectedRow();
@@ -217,9 +227,11 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
-
-        // ativa/desativa o botão de adicionar dependencia consoante o comp selecionado estiver ou não adicionado
         dependenciasTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            /**
+             * Ativa/desativa o botão de adicionar dependencia consoante o comp selecionado estiver ou não adicionado
+             */
+            @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     // TODO: 28/12/2018 ve se está adicionado e da enable
@@ -236,13 +248,16 @@ public class JNovaEncomenda implements Observer {
 
         // ----------- Pacotes -----------------------------------------------------------------------------------------
 
-        // abre janela para escolher pacote
+        colunasPacotes = ConfiguraFacil.colunasPacotes;
+
         adicionarPacoteButton.addActionListener(new ActionListener() {
+            /**
+             * Abre janela para escolher pacote
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] columnNames = ConfiguraFacil.colunasPacotes;
                 Object[][] data = facade.getPacotes();
-                DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+                DefaultTableModel model = new DefaultTableModel(data, colunasPacotes) {
                     @Override
                     public boolean isCellEditable(int row, int column) {
                         return false;
@@ -316,15 +331,9 @@ public class JNovaEncomenda implements Observer {
      */
     private void mostraPacotesDesfeitos(Set<Integer> pacotes) {
         if(pacotes.size() > 0) {
-            Integer[] ids = new Integer[pacotes.size()];
-            int i = 0;
-            for (Integer p : pacotes) {
-                ids[i++] = p;
-            }
-
             JOptionPane.showMessageDialog(frame,
                     "Devido à remoção de componentes foram desfeitos os seguintes pacotes: "
-                            + Arrays.toString(ids),
+                            + setToString(pacotes),
                     "Pacotes desfeitos",
                     JOptionPane.INFORMATION_MESSAGE);
         }
@@ -375,15 +384,33 @@ public class JNovaEncomenda implements Observer {
     private int adicionaComponente(int id) {
         try {
             Pair<Set<Integer>,Set<Integer>> efeitos = facade.getEfeitosAdicionarComponente(id);
+            Set<Integer> incompativeis = efeitos.getKey();
+            Set<Integer> dependencias = efeitos.getValue();
 
-            // TODO: 28/12/2018 verificar outras cenas
+            int option = JOptionPane.showConfirmDialog(frame,
+                    "Incompatibilidades: " + setToString(incompativeis)
+                            + "\nDependencias: " +setToString(dependencias),
+                    "Incompatibilidades",
+                    JOptionPane.OK_CANCEL_OPTION);
 
-            Set<Integer> pacotes = facade.adicionaComponente(id);
-            mostraPacotesDesfeitos(pacotes);
+            if(option == JOptionPane.OK_OPTION) {
+                Set<Integer> pacotes = facade.adicionaComponente(id);
+                mostraPacotesDesfeitos(pacotes);
+            }
         } catch (SQLException| ComponenteJaExisteNaConfiguracaoException e) {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    // TODO: 29/12/2018 melhorar
+    private String setToString(Set<Integer> set) {
+        Integer[] ids = new Integer[set.size()];
+        int i = 0;
+        for (Integer p : set) {
+            ids[i++] = p;
+        }
+        return Arrays.toString(ids);
     }
 
     private void updateObrigatorios() {
