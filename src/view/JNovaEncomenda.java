@@ -136,8 +136,12 @@ public class JNovaEncomenda implements Observer {
         // ----------- Componentes opcionais ---------------------------------------------------------------------------
 
         DefaultListModel<String> modelCatOpc = new DefaultListModel<>();
-        for (String u : facade.getCategoriasOpcionais()) {
-            modelCatOpc.addElement(u);
+        try {
+            for (String u : facade.getCategoriasOpcionais()) {
+                modelCatOpc.addElement(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO: 29/12/2018 erro
         }
 
         modelOpc = new DefaultTableModel() {
@@ -256,7 +260,12 @@ public class JNovaEncomenda implements Observer {
              */
             @Override
             public void actionPerformed(ActionEvent e) {
-                Object[][] data = facade.getPacotes();
+                Object[][] data = new Object[0][];
+                try {
+                    data = facade.getPacotes();
+                } catch (Exception e1) {
+                    e1.printStackTrace();// TODO: 29/12/2018 erro
+                }
                 DefaultTableModel model = new DefaultTableModel(data, colunasPacotes) {
                     @Override
                     public boolean isCellEditable(int row, int column) {
@@ -298,7 +307,12 @@ public class JNovaEncomenda implements Observer {
              */
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<Integer> formados = facade.finalizarEncomenda();
+                List<Integer> formados = null;
+                try {
+                    formados = facade.finalizarEncomenda();
+                } catch (Exception e1) {
+                    e1.printStackTrace(); // TODO: 29/12/2018 erro
+                }
                 if(!formados.isEmpty()) {
                     // TODO: diz os pacotes formados
                     JOptionPane.showMessageDialog(frame,
@@ -348,7 +362,12 @@ public class JNovaEncomenda implements Observer {
     private int mostraAdicionarComponente(String categoria) {
 
         String[] columnNames = ConfiguraFacil.colunasComponentes;
-        Object[][] data = facade.getComponentes(categoria);
+        Object[][] data = new Object[0][];
+        try {
+            data = facade.getComponentes(categoria);
+        } catch (Exception e) {
+            e.printStackTrace();    // TODO: 29/12/2018 erro
+        }
 
         DefaultTableModel model = new DefaultTableModel(data, columnNames) {
             @Override
@@ -425,7 +444,12 @@ public class JNovaEncomenda implements Observer {
     }
 
     private void updateDependencias() {
-        Object[][] data = facade.getComponentesDepConfig();
+        Object[][] data = new Object[0][];
+        try {
+            data = facade.getComponentesDepConfig();
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO: 29/12/2018 erro
+        }
         modelDep.setDataVector(data, colunasComponentes);
     }
 

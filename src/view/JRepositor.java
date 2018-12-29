@@ -146,7 +146,12 @@ public class JRepositor implements Observer {
      *  Atualiza o modelo da tabela de componentes.
      */
     private void updateComponentes() {
-        Object[][] data = facade.getComponentes();
+        Object[][] data = new Object[0][];
+        try {
+            data = facade.getComponentes();
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO: 29/12/2018 erro
+        }
         modelC.setDataVector(data, colunasComponentes);
     }
 
@@ -154,7 +159,12 @@ public class JRepositor implements Observer {
      *  Atualiza o modelo da tabela de pacotes.
      */
     private void updatePacotes() {
-        Object[][] data = facade.getPacotes();
+        Object[][] data = new Object[0][];
+        try {
+            data = facade.getPacotes();
+        } catch (Exception e) {
+            e.printStackTrace();    // TODO: 29/12/2018 erro
+        }
         modelP.setDataVector(data, colunasPacotes);
     }
 

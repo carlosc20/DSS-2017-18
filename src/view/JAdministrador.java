@@ -98,7 +98,7 @@ public class JAdministrador implements Observer {
                         facade.criarUtilizador(nome, password, tipo);
                     } catch (Exception e1) {
                         JOptionPane.showMessageDialog(frame,
-                                "Erro ao criar utilizador.", // TODO: informaçao sobre erro
+                                "Tipo de utilizador não permitido.",
                                 "Erro",
                                 JOptionPane.ERROR_MESSAGE);
                     }
@@ -130,7 +130,7 @@ public class JAdministrador implements Observer {
      */
     private void updateModel() {
         try {
-            utilizadores = facade.getFuncionarios();
+            utilizadores = facade.getUtilizadores();
             for (String u : utilizadores) {
                 model.addElement(u);
             }
