@@ -40,7 +40,7 @@ public class EncomendaAtual {
 	}
 
 	public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
-		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
+		Pair <Integer,Set<Integer>> temp =  configuracao.removerComponente(idComponente);
 		this.valor += temp.getKey();
 		return temp.getValue();
 	}

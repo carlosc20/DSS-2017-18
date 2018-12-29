@@ -16,10 +16,14 @@ public class JVendedor implements Observer {
     private JButton criarEncomendaButton;
 
     private JTable filaProducaoTable;
+    private String[] colunasFilaProducao;
     private DefaultTableModel modelFP; // modelo dos conteúdos da tabela de fila de produção
 
     private JTable registoProduzidasTable;
+    private String[] colunasRegistoProduzidas;
     private DefaultTableModel modelRP; // modelo dos conteúdos da tabela de encomendas produzidas
+
+    private JFrame frame;
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
@@ -27,7 +31,7 @@ public class JVendedor implements Observer {
 
     public JVendedor() {
 
-        JFrame frame = new JFrame("Vendedor");
+        frame = new JFrame("Vendedor");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500,600);
@@ -36,7 +40,20 @@ public class JVendedor implements Observer {
 
         facade.addObserver(this);
 
-        //atualiza tabelas
+        sairButton.addActionListener(new ActionListener() {
+            /**
+             *  Fecha a janela atual e abre a Inicial.
+             */
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new Inicial();
+            }
+        });
+
+        //---------------- Fila producao -------------------------------------------------------------------------------
+
+        colunasFilaProducao = ConfiguraFacil.colunasFilaProducao;
         modelFP = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -46,6 +63,11 @@ public class JVendedor implements Observer {
         filaProducaoTable.setModel(modelFP);
         updateFilaProducao();
 
+
+
+        //---------------- Registo produzidas --------------------------------------------------------------------------
+
+        colunasRegistoProduzidas = ConfiguraFacil.colunasRegistoProduzidas;
         modelRP = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -56,19 +78,13 @@ public class JVendedor implements Observer {
         updateRegistoProduzidas();
 
 
-        // fecha a janela, abre a inicial
-        sairButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new Inicial();
-            }
-        });
 
-        // abre janela para inserir dados do cliente e depois janela de nova encomenda
+        //---------------- Criar encomenda -----------------------------------------------------------------------------
+
         criarEncomendaButton.addActionListener(new ActionListener() {
-
-            // TODO: 26/12/2018 da focus na janela se já existir
+            /**
+             * Abre janela para inserir dados do cliente e depois janela de nova encomenda, fechando a janela atual.
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
@@ -89,39 +105,47 @@ public class JVendedor implements Observer {
                     try {
                         int nif = Integer.parseInt(nifF.getText());
                         facade.criarEncomenda(nome, nif);
+                        frame.dispose();
                         new JNovaEncomenda();
-                    } catch (Exception e1) {
+                    } catch (NumberFormatException e1) {
                         JOptionPane.showMessageDialog(frame,
-                                "Erro", // TODO: informaçao sobre erro
+                                "O nif deve ser um número.",
                                 "Erro",
                                 JOptionPane.ERROR_MESSAGE);
                         e1.printStackTrace();
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(frame,
+                                "Mão foi possível criar encomenda", // TODO: informaçao sobre erro
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         });
     }
 
+    /**
+     *  Atualiza o modelo da tabela de encomendas na fila de produção.
+     */
     private void updateFilaProducao() {
-        String[] columnNames = ConfiguraFacil.colunasFilaProducao;
-        Object[][] data = new Object[0][];
         try {
-            data = facade.getFilaProducao();
+            Object[][] data = facade.getFilaProducao();
+            modelFP.setDataVector(data, colunasFilaProducao);
         } catch (Exception e) {
             e.printStackTrace(); // TODO: 28/12/2018 erro
         }
-        modelFP.setDataVector(data, columnNames);
     }
 
+    /**
+     *  Atualiza o modelo da tabela de endomendas no registo produzidas.
+     */
     private void updateRegistoProduzidas() {
-        String[] columnNames = ConfiguraFacil.colunasRegistoProduzidas;
-        Object[][] data = new Object[0][];
         try {
-            data = facade.getRegistoProduzidas();
+            Object[][] data = facade.getRegistoProduzidas();
+            modelRP.setDataVector(data, colunasRegistoProduzidas);
         } catch (Exception e) {
             e.printStackTrace(); // TODO: 28/12/2018 erro
         }
-        modelRP.setDataVector(data, columnNames);
     }
 
     @Override

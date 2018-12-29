@@ -42,6 +42,8 @@ public class ConfiguraFacil extends Observable {
     private ConfiguraFacil(){}
 
     public EncomendaAtual getEncomendaAtual() {return encomendaAtual;}
+
+
     // -------------------------------- Encomendas ---------------------------------------------------------------------
 
     /**
@@ -108,12 +110,31 @@ public class ConfiguraFacil extends Observable {
     /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
     public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
 
+
+
     // -------------------------------- Encomenda Atual ----------------------------------------------------------------
 
+    /**
+     * Cria uma encomenda com os dados do cliente
+     *
+     * @param cliente   nome do cliente
+     * @param nif       nif do cliente
+     * @throws Exception
+     */
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
         encomendaAtual = new EncomendaAtual(1,cliente, nif);
     }
 
+
+    /**
+     * Devolve um par com dois Sets de ids de componentes associados à adição de um componente.
+     * O primeiro Set tem os ids dos componentes incompatíveis.
+     * O segundo Set tem os ids dos componentes de que o componente adicionado depende.
+     *
+     * @param idComponente   id do componente a adicionar
+     *
+     * @return  Par com Sets de ids de componentes
+     */
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
         try {
             Pair<Set<Integer>,Set<Integer>> r = encomendaAtual.getEfeitosAdicionarComponente(idComponente);
@@ -126,6 +147,17 @@ public class ConfiguraFacil extends Observable {
         }
     }
 
+
+    /**
+     * Devolve um par com dois Sets de ids de componentes associados à adição de um pacote.
+     * O primeiro Set tem os ids dos componentes incompatíveis.
+     * O segundo Set tem os ids dos componentes de que o pacote adicionado depende.
+     *
+     * @param idPacote  id do pacote a adicionar
+     * @return
+     * @throws PacoteJaExisteNaConfiguracaoException
+     * @throws PacoteGeraConflitosException
+     */
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException{
         try {
             Pair<Set<Integer>,Set<Integer>> r = this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
@@ -284,12 +316,20 @@ public class ConfiguraFacil extends Observable {
      *
      * @param file ficheiro de formato CSV que contém as informações de stock (componentes e pacotes)
      */
-    public void atualizarStock(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
+    public void atualizaComponentes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
 
         // TODO: 27/12/2018 fazer
 
         setChanged();
-        notifyObservers();
+        notifyObservers(0);
+    }
+
+    public void atualizaPacotes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
+
+        // TODO: 27/12/2018 fazer
+
+        setChanged();
+        notifyObservers(1);
     }
 
     /**
@@ -529,7 +569,7 @@ public class ConfiguraFacil extends Observable {
 
 
     /** Array com todos os tipos possíveis de funcionário. */
-    public static String[] tiposUtilizadores = new String[] {"Administrador", "Repositor", "Vendedor"};
+    public static String[] tiposUtilizador = new String[] {"Administrador", "Repositor", "Vendedor"};
 
 
     /**

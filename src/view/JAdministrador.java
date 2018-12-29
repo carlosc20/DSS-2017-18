@@ -22,11 +22,13 @@ public class JAdministrador implements Observer {
     private DefaultListModel<String> model;
     private List<String> utilizadores;
 
+    private JFrame frame;
+
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
     public JAdministrador() {
 
-        JFrame frame = new JFrame("Administrador");
+        frame = new JFrame("Administrador");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500,600);
@@ -35,14 +37,11 @@ public class JAdministrador implements Observer {
 
         facade.addObserver(this);
 
-        model = new DefaultListModel<>();
-        updateModel();
-        utilizadoresList.setModel(model);
 
-        String[] tipos = ConfiguraFacil.tiposUtilizadores;
-
-        // fecha a janela, abre a inicial
         sairButton.addActionListener(new ActionListener() {
+            /**
+             *  Fecha a janela atual e abre a Inicial.
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
@@ -50,7 +49,16 @@ public class JAdministrador implements Observer {
             }
         });
 
+        //---------------- Utilizadores --------------------------------------------------------------------------------
+
+        model = new DefaultListModel<>();
+        updateModel();
+        utilizadoresList.setModel(model);
+
         removerUtilizadorButton.addActionListener(new ActionListener() {
+            /**
+             *  Remove o utilizador selecionado do sistema.
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 int index = utilizadoresList.getSelectedIndex();
@@ -59,14 +67,18 @@ public class JAdministrador implements Observer {
             }
         });
 
-        // abre janela para introduzir dados de utilizador
+        String[] tiposUtilizador = ConfiguraFacil.tiposUtilizador;
         criarUtilizadorButton.addActionListener(new ActionListener() {
+            /**
+             *  Abre janela de criação de utilizador.
+             *  OK -> Cria utilizador com os dados fornecidos.
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
-                JComboBox<String> tiposF = new JComboBox<>(tipos);
+                JComboBox<String> tiposF = new JComboBox<>(tiposUtilizador);
                 Object[] options = {
                         "Nome:", nomeF,
                         "Password:", passwordF,
@@ -81,7 +93,7 @@ public class JAdministrador implements Observer {
                 if (option == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
                     String password = passwordF.getText();
-                    String tipo = (String) tiposF.getSelectedItem(); //indice do array tipos
+                    String tipo = (String) tiposF.getSelectedItem();
                     try {
                         facade.criarUtilizador(nome, password, tipo);
                     } catch (Exception e1) {
@@ -94,8 +106,10 @@ public class JAdministrador implements Observer {
             }
         });
 
-        // desbloqueia/bloqueia o botão de remover quando está ou não selecionado um utilizador
         utilizadoresList.addListSelectionListener(new ListSelectionListener() {
+            /**
+             * Desbloqueia/bloqueia o botão de remover quando está ou não selecionado um utilizador.
+             */
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(!e.getValueIsAdjusting()) {
@@ -121,8 +135,7 @@ public class JAdministrador implements Observer {
                 model.addElement(u);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(frame,
                     "Não foi possível aceder à base de dados.",
                     "Erro",
                     JOptionPane.ERROR_MESSAGE);
