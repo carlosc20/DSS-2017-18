@@ -322,12 +322,7 @@ public class ComponenteDAO extends DAO {
 				try {
 					categoria = new CategoriaDAO().get(categoriaDesignacao);
 				} catch (CategoriaNaoExisteException e) {
-					categoria = new CategoriaOpcional() {
-						@Override
-						public String getDesignacao() {
-							return categoriaDesignacao;
-						}
-					};
+					categoria = new CategoriaOpcional(categoriaDesignacao);
 					new CategoriaDAO().add(categoria);
 				}
 				add(new Componente(id, designacao, preco, stock, dependencias, incompatibilidades, categoria));
