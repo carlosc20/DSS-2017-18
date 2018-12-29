@@ -41,6 +41,7 @@ public class ConfiguraFacil extends Observable {
 
     private ConfiguraFacil(){}
 
+    public EncomendaAtual getEncomendaAtual() {return encomendaAtual;}
     // -------------------------------- Encomendas ---------------------------------------------------------------------
 
     /**
@@ -115,7 +116,10 @@ public class ConfiguraFacil extends Observable {
 
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
         try {
-            return encomendaAtual.getEfeitosAdicionarComponente(idComponente);
+            Pair<Set<Integer>,Set<Integer>> r = encomendaAtual.getEfeitosAdicionarComponente(idComponente);
+            setChanged();
+            notifyObservers();
+            return r;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -124,7 +128,10 @@ public class ConfiguraFacil extends Observable {
 
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException{
         try {
-            return this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
+            Pair<Set<Integer>,Set<Integer>> r = this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
+            setChanged();
+            notifyObservers();
+            return r;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -132,6 +139,8 @@ public class ConfiguraFacil extends Observable {
     }
 
     public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
+        setChanged();
+        notifyObservers();
         return encomendaAtual.adicionaComponente(idComponente);
     }
 
@@ -139,6 +148,8 @@ public class ConfiguraFacil extends Observable {
         Set<Integer> res = new HashSet<>();
         try {
             res = encomendaAtual.removeComponente(idComponente);
+            setChanged();
+            notifyObservers();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -149,6 +160,8 @@ public class ConfiguraFacil extends Observable {
         Set<Integer> res = new HashSet<>();
         try {
             res = encomendaAtual.adicionaPacote(idPacote);
+            setChanged();
+            notifyObservers();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -158,18 +171,47 @@ public class ConfiguraFacil extends Observable {
     public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException {
         try {
             encomendaAtual.removePacote(idPacote);
+            setChanged();
+            notifyObservers();
         }catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void criarConfiguracaoOtima() { // muda nome
+        setChanged();
+        notifyObservers();
         throw new UnsupportedOperationException();
     }
 
-
+    //isto a meio duvidoso por causa do cast, e falta a parte dos pacotes formados
     public List<Integer> finalizarEncomenda() { // muda nome, devolve pacotes formados
-        throw new UnsupportedOperationException();
+
+        Encomenda feita = null;
+
+        try {
+            feita = encomendaAtual.finalizarEncomenda();
+        } catch (SQLException | FaltamDependentesException e){
+            e.printStackTrace();
+        }
+
+        if(feita.getFinalizada()){
+            try {
+                registoProduzidas.add(feita);
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                filaProducao.add((EncomendaEmProducao) feita);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+
     }
 
 
@@ -193,40 +235,43 @@ public class ConfiguraFacil extends Observable {
             }
         }
         Set<Componente> comp = encomendaAtual.getComponentes();
-        if (categ.size() == 0) return null;
+        //if (categ.size() == 0) return null;
 
         Object[][] data = buildCategObrigatorias(categ);
-        for(int i = 0; i<data.length; i++)
+        for(int i = 0; i<categ.size(); i++)
             for(Componente c : comp) {
                 if (c.getCategoria().getDesignacao().equals(data[i][0])) {
-                    data[i][1] = new Object[]{c.getId(), c.getDesignacao(), c.getStock(), c.getPreco()};
+                    data[i][1] = c.getId();
+                    data[i][2] = c.getDesignacao();
+                    data[i][3] = c.getStock();
+                    data[i][4] = c.getPreco();
                 }
             }
         return data;
     }
 
-        private Object[][] buildCategObrigatorias (List<Categoria> categ) {
-            Object[][] data = new Object[categ.size()][5];
-            int i = 0;
-            for (Categoria cat : categ) {
-                String des = cat.getDesignacao();
-                if (cat.getObrigatoria()) {
-                    data[i] = new Object[]{des, null, null, null, null};
-                    i++;
-                }
+    private Object[][] buildCategObrigatorias (List<Categoria> categ) {
+        Object[][] data = new Object[5][5];
+        int i = 0;
+        for (Categoria cat : categ) {
+            String des = cat.getDesignacao();
+            if (cat.getObrigatoria()) {
+                data[i] = new Object[]{des, null, null, null, null};
+                i++;
             }
-            return data;
         }
+        return data;
+    }
 
     public Object [][] getComponentesOpcConfig() {
         return new Object[][] {
-                {"Motor", 1, "Teste", 1, 20},
+                {"Motor", 1, "Teste", 1, 20}
         };
     }
 
     public Object [][] getComponentesDepConfig() {
         return new Object[][] {
-                {"Motor", 1, "Teste", 1, 20},
+                {"Motor", 1, "Teste", 1, 20}
         };
     }
 
@@ -272,7 +317,7 @@ public class ConfiguraFacil extends Observable {
             String catDesignacao = cat.getDesignacao();
             int qnt = c.getStock();
             int preco = c.getPreco();
-            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
+            componentesTodas[i] = new Object[]{catDesignacao,id,designacao,qnt,preco};
             i++;
         }
         return componentesTodas;
@@ -327,7 +372,7 @@ public class ConfiguraFacil extends Observable {
             String catDesignacao = cate.getDesignacao();
             int qnt = c.getStock();
             int preco = c.getPreco();
-            componentesTodas[i] = new Object[]{id,catDesignacao,designacao,qnt,preco};
+            componentesTodas[i] = new Object[]{catDesignacao,id,designacao,qnt,preco};
             i++;
         }
         return componentesTodas;
@@ -342,6 +387,14 @@ public class ConfiguraFacil extends Observable {
      *
      * @return Object [][] com todos os Pacotes no formato {id,designacao do pacote}
      */
+    public Componente getC(int id){
+        try {
+            return todosComponentes.get(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     //Feito mas precisa de ser testado
     public Object[][] getPacotes() {
 
@@ -369,6 +422,7 @@ public class ConfiguraFacil extends Observable {
     public static String[] colunasPacotes = new String[] {"Id", "Designação", "Desconto(€)", "Componentes"};
 
 
+    // TODO: 28/12/2018 getCategorias
     /**
      * Devolve uma lista de todas as categorias de componentes obrigatórios.
      *

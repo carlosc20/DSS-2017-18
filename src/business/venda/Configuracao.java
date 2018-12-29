@@ -113,10 +113,13 @@ public class Configuracao {
 		}
 
 		//É retirado o pacote com menor custo da estrutura auxiliar e adicionado à configuração
-		Pacote p = formados.first();
-		pacotes.add(p);
 
-		return p.getDesconto();
+		if(formados.size()!=0){
+			Pacote p = formados.first();
+			pacotes.add(p);
+			return p.getDesconto();}
+		else return 0;
+
 	}
 	/*
 	 *Vai buscar as incompatibilidades dos componentes que recebeu como argumento e remove-as
@@ -150,16 +153,16 @@ public class Configuracao {
 
 		//Retira os componentes da config. e também o seu valor
 		for(Componente c : componentes){
-			if(componentes.contains(c)){
+			if(this.componentes.contains(c)){
 				valorRetirado+=c.getPreco();
-				componentes.remove(c);}
+				this.componentes.remove(c);}
 		}
 		for(Pacote p : pacotes) {
 			found = false;
 			for (int id : p.getComponentes()) {
 				for (Componente c : componentes) {
-					if (componentes.contains(id)) {
-						//Se ficar assim pode ser otimizado
+					if (this.componentes.contains(id)) {
+						//Se ficar assim pode ser otimizado !!!!!!!!!!FAZER ISTO
 						if(!found){
 							pacotes.remove(p);
 							pac.add(p.getId());
@@ -170,6 +173,7 @@ public class Configuracao {
 									pacotesDormentes.remove(key);
 							}
 							//PacoteDormente pd = new PacoteDormente(p,0);
+							found = true;
 						}
 						//pd.incr();
 						//pacotesDormentes.put(id,p);
@@ -296,7 +300,7 @@ public class Configuracao {
 	//meter a dar throw de exceção que não existem incompatibilidades
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarComponente (int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
 		Componente c = cDAO.get(idComponente);
-		if(!componentes.contains(c)) throw new ComponenteJaExisteNaConfiguracaoException("Já existe");
+		if(componentes.contains(c)) throw new ComponenteJaExisteNaConfiguracaoException("Já existe");
 
 		Set<Integer> idIncompativeis = c.getIncompatibilidades();
 		Set<Integer> idDependentes = c.getDepedendencias();
@@ -387,7 +391,7 @@ public class Configuracao {
 	}
 
 	public Set<Componente> getComponentes() {
-		return new HashSet<>(componentes);
+		return componentes;
 	}
 
 	public Set<Integer> getDependentes() {
