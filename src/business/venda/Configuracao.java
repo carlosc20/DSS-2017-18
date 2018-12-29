@@ -126,15 +126,19 @@ public class Configuracao {
 	 *@param componentes Componentes cujas incompatibilidades serão removidas
 	 */
 	private Pair <Integer,Set<Integer>> tratarIncompatibilidades(Set<Componente> componentes) throws SQLException {
-		HashSet<Integer> idIncompativeis = new HashSet<>();  //Id's dos componentes incompatíveis de todos os componentes
-		Set<Integer> aux;									 //Id's dos componentes incompatíveis de cada um dos componentes
+		HashSet<Integer> idDepInc = new HashSet<>();  //Id's dos componentes incompatíveis de todos os componentes
+		Set<Integer> aux;
+		Set<Integer> rem;
+		HashSet<Integer> idIncompativeis = new HashSet<>();
 
 		//Vai buscar todas as incompatibilidades dos componentes
 		for(Componente c : componentes){
 			aux = c.getDependentesDasIncompatibilidades();
-			idIncompativeis.addAll(aux);
+			idDepInc.addAll(aux);
+			rem = c.getIncompatibilidades();
+			idIncompativeis.addAll(rem);
 		}
-		return removerComponentes(componentes, idIncompativeis);
+		return removerComponentes(idIncompativeis, idDepInc);
 	}
 	/*
 	 *Vai buscar as dependências dos componentes a remover e remóveas da lista dependentes.
@@ -143,7 +147,7 @@ public class Configuracao {
 	 *@param idComponentes Componentes a ser removidos
 	 *@returns valor a ser diminuido ao valor da encomenda
 	 */
-	private Pair<Integer,Set<Integer>> removerComponentes (Set<Componente> comp, Set<Integer> idDependentesInc){
+	private Pair<Integer,Set<Integer>> removerComponentes (Set<Integer> componentesARemover, Set<Integer> idDependentesInc){
 		int valorRetirado = 0; //valor a retirar da encomenda
 		HashSet<Integer> pac = new HashSet<>();
 		boolean found = false; //para não tirar o desconto várias vezes
@@ -152,16 +156,17 @@ public class Configuracao {
 		dependentes.removeAll(idDependentesInc);
 
 		//Retira os componentes da config. e também o seu valor
-		for(Componente c : comp){
-			if(componentes.containsKey(c.getId())){
+		for(int id : componentesARemover){
+			if(componentes.containsKey(id)){
+				Componente c = componentes.get(id);
 				valorRetirado+=c.getPreco();
-				componentes.remove(c.getId(),c);}
+				componentes.remove(id,c);}
 		}
 		for(Pacote p : pacotes.values()) {
 			found = false;
 			for (int id : p.getComponentes()) {
-				for (Componente c : comp) {
-					if (componentes.containsKey(id)) {
+				for (int idCR : componentesARemover) {
+					if (componentes.containsKey(idCR)) {
 						//Se ficar assim pode ser otimizado !!!!!!!!!!FAZER ISTO
 						if(!found){
 							pacotes.remove(p);
@@ -215,10 +220,10 @@ public class Configuracao {
 	public Pair <Integer,Set<Integer>> removerComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
 		if (!componentes.containsKey(idComponente)) throw new ComponenteNaoExisteNaConfiguracao("Componentes não existe");
 
-		HashSet<Componente> comp = new HashSet<>();
+		HashSet<Integer> comp = new HashSet<>();
 		Componente c = componentes.get(idComponente);
 		Set<Integer> aux = c.getDependentesDasIncompatibilidades();
-		comp.add(c);
+		comp.add(c.getId());
 
 		return removerComponentes(comp, aux);
 	}
@@ -285,14 +290,16 @@ public class Configuracao {
 		if(!pacotes.containsKey(idPacote)) throw new PacoteNaoExisteNaConfiguracaoException("Pacote não existe");
 
 		Pacote p = pacotes.get(idPacote);
-		Set<Componente> componentes = p.getComponentesRef();
+		Set<Componente> componentesPacote = p.getComponentesRef();
 		Set<Integer> aux = new HashSet<>();
+		Set<Integer> componentesARemover = new HashSet<>();
 
-			for(Componente c : componentes) {
+			for(Componente c : componentesPacote) {
 				aux.addAll(c.getDependentesDasIncompatibilidades());
+				componentesARemover.add(c.getId());
 			}
 
-		return removerComponentes(componentes, aux);
+		return removerComponentes(componentesARemover, aux);
 
 	}
 	//meter a dar throw de exceção que não existem incompatibilidades
