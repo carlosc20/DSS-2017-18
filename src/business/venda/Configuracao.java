@@ -155,7 +155,7 @@ public class Configuracao {
 		for(Componente c : componentes){
 			if(this.componentes.contains(c)){
 				valorRetirado+=c.getPreco();
-				componentes.remove(c);}
+				this.componentes.remove(c);}
 		}
 		for(Pacote p : pacotes) {
 			found = false;
