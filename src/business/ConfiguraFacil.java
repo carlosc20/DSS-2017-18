@@ -196,7 +196,7 @@ public class ConfiguraFacil extends Observable {
                 e.printStackTrace();
             }
         }
-        List<Componente> comp = encomendaAtual.getComponentes();
+        List<Componente> comp = encomendaAtual.getComponetesObrigatorios();
         Object[][] data = buildCategObrigatorias(categ);
         for(int i = 0; i<categ.size(); i++)
             for(Componente c : comp) {
@@ -224,7 +224,6 @@ public class ConfiguraFacil extends Observable {
         return data;
     }
 
-
     /**
      * Devolve uma matriz com informações dos componentes do sistema.
      * Cada linha corresponde a um componente e as colunas a {@link #colunasComponentes}.
@@ -232,7 +231,7 @@ public class ConfiguraFacil extends Observable {
      * @return matriz com uma linha por componente
      */
     public Object [][] getComponentesOpcConfig() {
-        List<Componente> comp = encomendaAtual.getComponentes(); // TODO: 29/12/2018 fazer getComponentesOpcionais
+        List<Componente> comp = encomendaAtual.getComponetesOpcionais(); // TODO: 29/12/2018 fazer getComponentesOpcionais
         Object[][] data = new Object[comp.size()][5];
         int i = 0;
         for(Componente c : comp) {

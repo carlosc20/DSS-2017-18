@@ -434,6 +434,25 @@ public class Configuracao {
 		return new ArrayList<>(pacotes.values());
 	}
 
+	public List<Componente> getComponentesOpcionais (){
+		ArrayList<Componente> res = new ArrayList<>();
+			for(Componente c : componentes.values()){
+				if(!c.getCategoria().getObrigatoria()){
+					res.add(c);
+				}
+			}
+		return res;
+	}
+	public List<Componente> getComponentesObrigatórios (){
+		ArrayList<Componente> res = new ArrayList<>();
+		for(Componente c : componentes.values()){
+			if(c.getCategoria().getObrigatoria()){
+				res.add(c);
+			}
+		}
+		return res;
+	}
+
 	public void setcDAO(ComponenteDAO cDAO) {
 		this.cDAO = cDAO;
 	}
