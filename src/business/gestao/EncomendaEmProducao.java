@@ -8,6 +8,7 @@ import data.EncomendaDAO;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public class EncomendaEmProducao extends Encomenda {
@@ -36,7 +37,7 @@ public class EncomendaEmProducao extends Encomenda {
 		this.componentesEmFalta = componentesEmFalta;
 	}
 
-	public void fornecerComponentes(Set<Componente> componentes) throws SQLException {
+	public void fornecerComponentes(List<Componente> componentes) throws SQLException {
 		this.componentesEmFalta = new ComponenteDAO().atualizaStock(componentes);
 		if(this.componentesEmFalta.isEmpty()) {
 			new EncomendaDAO().add(this);

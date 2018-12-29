@@ -9,6 +9,7 @@ import javafx.util.Pair;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public class EncomendaAtual {
@@ -40,7 +41,7 @@ public class EncomendaAtual {
 	}
 
 	public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
-		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
+		Pair <Integer,Set<Integer>> temp =  configuracao.removerComponente(idComponente);
 		this.valor += temp.getKey();
 		return temp.getValue();
 	}
@@ -52,7 +53,7 @@ public class EncomendaAtual {
 	}
 
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
-		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
+		Pair <Integer,Set<Integer>> temp =  configuracao.removerPacote(idPacote);
 		this.valor += temp.getKey();
 		//return temp.getValue();
 	}
@@ -70,7 +71,7 @@ public class EncomendaAtual {
 		throw new UnsupportedOperationException();
 	}
 
-	public Set<Componente> getComponentes(){
+	public List<Componente> getComponentes(){
 		return configuracao.getComponentes();
 	}
 	public int getId() {

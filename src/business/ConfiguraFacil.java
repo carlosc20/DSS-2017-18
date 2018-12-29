@@ -114,6 +114,15 @@ public class ConfiguraFacil extends Observable {
         encomendaAtual = new EncomendaAtual(1,cliente, nif);
     }
 
+    public Componente getC (int id){
+        try {
+            return todosComponentes.get(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
         try {
             Pair<Set<Integer>,Set<Integer>> r = encomendaAtual.getEfeitosAdicionarComponente(idComponente);
@@ -235,7 +244,7 @@ public class ConfiguraFacil extends Observable {
                 e.printStackTrace();
             }
         }
-        Set<Componente> comp = encomendaAtual.getComponentes();
+        List<Componente> comp = encomendaAtual.getComponentes();
         //if (categ.size() == 0) return null;
 
         Object[][] data = buildCategObrigatorias(categ);
