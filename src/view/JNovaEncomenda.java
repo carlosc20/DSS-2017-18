@@ -387,10 +387,11 @@ public class JNovaEncomenda implements Observer {
             Set<Integer> incompativeis = efeitos.getKey();
             Set<Integer> dependencias = efeitos.getValue();
 
+            // TODO: 29/12/2018 mudar com o que existir
             int option = JOptionPane.showConfirmDialog(frame,
                     "Incompatibilidades: " + setToString(incompativeis)
                             + "\nDependencias: " +setToString(dependencias),
-                    "Incompatibilidades",
+                    "Incompatibilidades e dependencias",
                     JOptionPane.OK_CANCEL_OPTION);
 
             if(option == JOptionPane.OK_OPTION) {
