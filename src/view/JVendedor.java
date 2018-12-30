@@ -17,11 +17,11 @@ public class JVendedor implements Observer {
 
     private JTable filaProducaoTable;
     private String[] colunasFilaProducao;
-    private DefaultTableModel modelFP; // modelo dos conteúdos da tabela de fila de produção
+    private DefaultTableModel modelFP;
 
     private JTable registoProduzidasTable;
     private String[] colunasRegistoProduzidas;
-    private DefaultTableModel modelRP; // modelo dos conteúdos da tabela de encomendas produzidas
+    private DefaultTableModel modelRP;
 
     private JFrame frame;
 
@@ -36,7 +36,9 @@ public class JVendedor implements Observer {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        facade.addObserver(this);
+        Observer isto = this;
+        facade.addObserver(isto);
+
 
         sairButton.addActionListener(new ActionListener() {
             /**
@@ -45,6 +47,7 @@ public class JVendedor implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
+                facade.deleteObserver(isto);
                 new Inicial();
             }
         });
@@ -87,35 +90,22 @@ public class JVendedor implements Observer {
             public void actionPerformed(ActionEvent e) {
                 JTextField nomeF = new JTextField();
                 JTextField nifF = new JTextField();
-                Object[] options = {
+                Object[] opcoes = {
                         "Nome:", nomeF,
                         "Nif:", nifF,
                 };
-
-                int option = JOptionPane.showConfirmDialog(frame,
-                        options,
-                        "Dados do cliente",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE);
-
-                if (option == JOptionPane.OK_OPTION) {
+                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Dados do cliente", opcoes);
+                if (opcao == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
                     try {
                         int nif = Integer.parseInt(nifF.getText());
                         facade.criarEncomenda(nome, nif);
-                        frame.dispose();
                         new JNovaEncomenda();
+                        frame.dispose();
                     } catch (NumberFormatException e1) {
-                        JOptionPane.showMessageDialog(frame,
-                                "O nif deve ser um número.",
-                                "Erro",
-                                JOptionPane.ERROR_MESSAGE);
-                        e1.printStackTrace();
+                        JanelaUtil.mostrarJanelaErro(frame, "Nif deve ser um número.");
                     } catch (Exception e1) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Mão foi possível criar encomenda", // TODO: informaçao sobre erro
-                                "Erro",
-                                JOptionPane.ERROR_MESSAGE);
+                        e1.printStackTrace();
                     }
                 }
             }
@@ -127,10 +117,9 @@ public class JVendedor implements Observer {
      */
     private void updateFilaProducao() {
         try {
-            Object[][] data = facade.getFilaProducao();
-            modelFP.setDataVector(data, colunasFilaProducao);
+            modelFP.setDataVector(facade.getFilaProducao(), colunasFilaProducao);
         } catch (Exception e) {
-            e.printStackTrace(); // TODO: 28/12/2018 erro
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
         }
     }
 
@@ -139,10 +128,9 @@ public class JVendedor implements Observer {
      */
     private void updateRegistoProduzidas() {
         try {
-            Object[][] data = facade.getRegistoProduzidas();
-            modelRP.setDataVector(data, colunasRegistoProduzidas);
+            modelRP.setDataVector(facade.getRegistoProduzidas(), colunasRegistoProduzidas);
         } catch (Exception e) {
-            e.printStackTrace(); // TODO: 28/12/2018 erro
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
         }
     }
 

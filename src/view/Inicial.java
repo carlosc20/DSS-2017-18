@@ -26,15 +26,15 @@ public class Inicial {
         frame.setVisible(true);
 
         entrarButton.addActionListener(new ActionListener() {
+            /**
+             * Abre a janela do menu correspondente ao tipo do utilizador cujos dados foram inseridos.
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 String nome =  nomeField.getText();
                 String password = String.valueOf(passwordField.getPassword());
                 try {
-                    //new JNovaEncomenda();
                     String cargo = facade.autenticar(nome, password);
-                    // TODO: 27/12/2018
                     switch (cargo) {
                         case "Administrador":
                             frame.dispose();
@@ -49,16 +49,10 @@ public class Inicial {
                             new JRepositor();
                             break;
                         default:
-                            JOptionPane.showMessageDialog(frame,
-                                    "Cargo não atribuído.",
-                                    "Erro",
-                                    JOptionPane.ERROR_MESSAGE);
+                            JanelaUtil.mostrarJanelaErro(frame, "Cargo não atribuído.");
                     }
                 } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(frame,
-                            "Dados incorretos, tente novamente.",
-                            "Erro",
-                            JOptionPane.ERROR_MESSAGE);
+                    JanelaUtil.mostrarJanelaErro(frame, "Dados incorretos.");
                     nomeField.requestFocusInWindow();
                     e1.printStackTrace();
                 }
