@@ -300,6 +300,8 @@ public class ComponenteDAO extends DAO {
 		cn.setAutoCommit(false);
 		String str = br.readLine();
 		try {
+			HashMap<Integer, HashSet<Integer>> dependenciasComponentes = new HashMap<>();
+			HashMap<Integer, HashSet<Integer>> incompatibilidadesComponentes = new HashMap<>();
 			while (str != null) {
 				System.out.println(str);
 				String[] data = str.substring(1, str.length() - 1).split("\",\"");
@@ -312,11 +314,13 @@ public class ComponenteDAO extends DAO {
 				for(String dependencia:dependenciasStrings){
 					dependencias.add(Integer.parseInt(dependencia));
 				}
+				dependenciasComponentes.put(id, dependencias);
 				String[] incompatibilidadesStrings = data[5].equals("") ? new String[0] : data[5].split(",");
 				HashSet<Integer> incompatibilidades = new HashSet<>();
 				for(String incompatibilidade:incompatibilidadesStrings){
 					incompatibilidades.add(Integer.parseInt(incompatibilidade));
 				}
+				incompatibilidadesComponentes.put(id, incompatibilidades);
 				String categoriaDesignacao = data[6];
 				Categoria categoria;
 				try {
@@ -325,8 +329,24 @@ public class ComponenteDAO extends DAO {
 					categoria = new CategoriaOpcional(categoriaDesignacao);
 					new CategoriaDAO().add(categoria);
 				}
-				add(new Componente(id, designacao, preco, stock, dependencias, incompatibilidades, categoria));
+				add(new Componente(id, designacao, preco, stock, new HashSet<>(), new HashSet<>(), categoria));
 				str = br.readLine();
+			}
+			for (Map.Entry<Integer, HashSet<Integer>> entry : dependenciasComponentes.entrySet()){
+				int componente = entry.getKey();
+				for (int dependencia : entry.getValue()) {
+					PreparedStatement st = cn.prepareStatement("INSERT INTO Componente_Dependente (id_componente, id_dependente) VALUES (?, ?)");
+					st.setInt(1, componente);
+					st.setInt(2, dependencia);
+				}
+			}
+			for (Map.Entry<Integer, HashSet<Integer>> entry : incompatibilidadesComponentes.entrySet()){
+				int componente = entry.getKey();
+				for (int incompatibilidade : entry.getValue()) {
+					PreparedStatement st = cn.prepareStatement("INSERT INTO Componente_Incompatibilidade (id_componente, id_dependente) VALUES (?, ?)");
+					st.setInt(1, componente);
+					st.setInt(2, incompatibilidade);
+				}
 			}
 			cn.commit();
 		} catch (Exception e){

@@ -4,6 +4,7 @@ import business.produtos.ComparaPacotesByDesconto;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.produtos.PacoteDormente;
+import business.venda.categorias.Categoria;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
@@ -387,7 +388,7 @@ public class Configuracao {
 		porAdicionar.sort(new Comparator<Pacote>() {
 			@Override
 			public int compare(Pacote p1, Pacote p2) {
-				return p2.getDesconto() - p1.getDesconto();
+				return -Integer.compare(p2.getDesconto(), p1.getDesconto());
 			}
 		});
 
@@ -432,8 +433,105 @@ public class Configuracao {
 		return val;
 	}
 
-	public void configuracaoOtima() {
-		throw new UnsupportedOperationException();
+	public boolean configuracaoOtima(Map<Categoria, Integer> precoMaximoCategorias, int precoMaximoTotal) throws SQLException {
+		Map<Categoria, List<Componente>> componentesCategorias = new HashMap<>();
+		Map<Categoria, Componente> solucaoCategoria = new HashMap<>();
+
+		for(Map.Entry<Categoria, Integer> entry : precoMaximoCategorias.entrySet()) {
+			Categoria categoria = entry.getKey();
+			int precoMax = entry.getValue();
+			List<Componente> componentesCategoria = new ComponenteDAO().list(categoria); //Lista componentes da categoria
+			//Filtra os componentes com preço dentro do limite
+			List<Componente> componentes = new ArrayList<>(componentesCategoria.size());
+			for (Componente c:componentesCategoria){
+				if(c.getPreco() <= precoMax){
+					componentes.add(c);
+				}
+			}
+			//Ordena-os por ordem crescente
+			componentes.sort(new Comparator<Componente>() {
+				@Override
+				public int compare(Componente c1, Componente c2) {
+					return Integer.compare(c1.getPreco(), c2.getPreco());
+				}
+			});
+			//Cada categoria tem a sua lista de componentes
+			componentesCategorias.put(categoria, componentes);
+			//Coloca o componente com maior preço
+			solucaoCategoria.put(categoria, componentes.get(componentes.size() - 1));
+		}
+
+		do {
+			Set<Componente> solucaoTodosComponentes = new HashSet<>(getComponentes());
+			Collection<Componente> solucaoComponente = solucaoCategoria.values();
+			solucaoTodosComponentes.addAll(solucaoCategoria.values());
+			Set<Pacote> solucaoPacote = calculaOtimos(getPacotesValidos(solucaoTodosComponentes));
+			// Calcula o preço total da configuração com os novos componentes
+			int precoTotal = 0;
+			for (Componente componente : solucaoComponente) {
+				precoTotal += componente.getPreco();
+			}
+			for (Pacote pacote : solucaoPacote) {
+				precoTotal -= pacote.getDesconto();
+			}
+			if(precoTotal <= precoMaximoTotal) {
+				componentes.clear();
+				for(Componente componente : solucaoTodosComponentes){
+					componentes.put(componente.getId(), componente);
+				}
+				if(comparaPacotes(solucaoPacote)){
+					//Adiciona o pacote se este for melhor
+					pacotes.clear();
+					for (Pacote pacote : solucaoPacote){
+						pacotes.put(pacote.getId(), pacote);
+					}
+				}
+				return true; // Encontrou-se a solução ótima
+			} else {
+				int minDiferencaDePreco = 0;
+				Pair<Categoria, Componente> proximoEntrar = null; //Próximo a entrar na solução
+				//Procura o componente com menor diferença de preço em relação ao anterior
+				for(Map.Entry<Categoria, List<Componente>> entry : componentesCategorias.entrySet()){
+					Categoria categoria = entry.getKey();
+					List<Componente> list = entry.getValue();
+					int size = list.size();
+					if(size >= 1){ // Tem proximo na categoria
+						Componente atual = list.get(size - 1);
+						Componente proximo = list.get(size - 2);
+						int diferencaDePreco = atual.getPreco() - proximo.getPreco();
+						if(diferencaDePreco <= minDiferencaDePreco) {
+							minDiferencaDePreco = diferencaDePreco;
+							proximoEntrar = new Pair<>(categoria, proximo);
+						}
+					}
+				}
+				if(proximoEntrar == null) {
+					return false; // Não encontrou solução ótima
+				} else {
+					List<Componente> list = componentesCategorias.get(proximoEntrar.getKey());
+					list.remove(list.size() - 1); // Remove o último elemento da lista
+					solucaoCategoria.put(proximoEntrar.getKey(), proximoEntrar.getValue());
+				}
+			}
+		} while (true);
+	}
+
+	private Set<Pacote> getPacotesValidos(Collection<Componente> componentes) throws SQLException {
+		Map<Pacote, Integer> numeroComponentesPacote = new HashMap<>();
+		Set<Pacote> pacotesValidos = new HashSet<>();
+		for (Componente componente : componentes){
+			List<Pacote> pacotesComponente = new PacoteDAO().list(componente);
+			for (Pacote pacote : pacotesComponente) {
+				int total = numeroComponentesPacote.getOrDefault(pacote, -1);
+				total++;
+				if(total == pacote.getComponentes().size()){
+					pacotesValidos.add(pacote);
+				} else {
+					numeroComponentesPacote.put(pacote, total);
+				}
+			}
+		}
+		return pacotesValidos;
 	}
 
 	public List<Componente> getComponentes() {

@@ -24,12 +24,14 @@ public class EncomendaDAO extends DAO {
 		Date data = Date.valueOf(encomenda.getData());
 		Collection<Componente> componentes = encomenda.getComponentes();
 		Collection<Pacote> pacotes = encomenda.getPacotes();
-		PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, 1)");
+		boolean finalizada = encomenda.getFinalizada();
+		PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, ?)");
 		st.setInt(1, id);
 		st.setString(2, cliente);
 		st.setInt(3, nif);
 		st.setInt(4, valor);
 		st.setDate(5, data);
+		st.setBoolean(6, finalizada);
 		int numRows = st.executeUpdate();
 		if(numRows != 1) {
 			st = cn.prepareStatement("DELETE FROM Encomenda_Componente WHERE id_encomenda = ?");

@@ -4,13 +4,14 @@ import business.gestao.EncomendaEmProducao;
 import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
+import business.venda.categorias.Categoria;
+import data.CategoriaDAO;
+import data.ComponenteDAO;
 import javafx.util.Pair;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EncomendaAtual {
 	private int id;
@@ -67,8 +68,8 @@ public class EncomendaAtual {
 		}
 	}
 
-	public void configuracaoOtima() {
-		throw new UnsupportedOperationException();
+	public void configuracaoOtima(Map<Categoria, Integer> precoMaximoCategorias, int precoMaximoTotal) throws SQLException {
+		configuracao.configuracaoOtima(precoMaximoCategorias, precoMaximoTotal);
 	}
 
 	public List<Componente> getComponentes(){
