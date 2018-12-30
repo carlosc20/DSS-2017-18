@@ -300,6 +300,9 @@ public class ComponenteDAO extends DAO {
 		cn.setAutoCommit(false);
 		String str = br.readLine();
 		try {
+			cn.createStatement().execute("DELETE FROM Componente_Dependente");
+			cn.createStatement().execute("DELETE FROM Componente_Incompativel");
+			cn.createStatement().execute("DELETE FROM Componente");
 			HashMap<Integer, HashSet<Integer>> dependenciasComponentes = new HashMap<>();
 			HashMap<Integer, HashSet<Integer>> incompatibilidadesComponentes = new HashMap<>();
 			while (str != null) {
@@ -332,25 +335,29 @@ public class ComponenteDAO extends DAO {
 				add(new Componente(id, designacao, preco, stock, new HashSet<>(), new HashSet<>(), categoria));
 				str = br.readLine();
 			}
+
 			for (Map.Entry<Integer, HashSet<Integer>> entry : dependenciasComponentes.entrySet()){
 				int componente = entry.getKey();
 				for (int dependencia : entry.getValue()) {
 					PreparedStatement st = cn.prepareStatement("INSERT INTO Componente_Dependente (id_componente, id_dependente) VALUES (?, ?)");
 					st.setInt(1, componente);
 					st.setInt(2, dependencia);
+					st.execute();
 				}
 			}
 			for (Map.Entry<Integer, HashSet<Integer>> entry : incompatibilidadesComponentes.entrySet()){
 				int componente = entry.getKey();
 				for (int incompatibilidade : entry.getValue()) {
-					PreparedStatement st = cn.prepareStatement("INSERT INTO Componente_Incompatibilidade (id_componente, id_dependente) VALUES (?, ?)");
+					PreparedStatement st = cn.prepareStatement("INSERT INTO Componente_Incompativel (id_componente, id_incompativel) VALUES (?, ?)");
 					st.setInt(1, componente);
 					st.setInt(2, incompatibilidade);
+					st.execute();
 				}
 			}
 			cn.commit();
 		} catch (Exception e){
 			cn.rollback();
+			e.printStackTrace();
 			throw e;
 		} finally {
 			Connect.close(cn);

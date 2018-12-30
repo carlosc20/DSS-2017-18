@@ -69,11 +69,17 @@ public class Componente {
 		return stock;
 	}
 
-	public Set<Integer> getDepedendencias() {
+	public Set<Integer> getDepedendencias() throws SQLException {
+		if(depedendencias == null){
+			depedendencias = componentes.getDependentes(id);
+		}
 		return depedendencias;
 	}
 
-	public Set<Integer> getIncompatibilidades() {
+	public Set<Integer> getIncompatibilidades() throws SQLException {
+		if(incompatibilidades == null){
+			incompatibilidades = componentes.getIncompativeis(id);
+		}
 		return incompatibilidades;
 	}
 

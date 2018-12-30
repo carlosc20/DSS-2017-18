@@ -205,7 +205,7 @@ public class Configuracao {
 	 *@param componentes Componentes cujas dependências terão de ser adicionadas
 	 *@returns val Valor dos componentes que vão ser adicionados a this.componentes ---- para aproveitar o ciclo
 	 */
-	private int tratarDependencias(Set<Componente> componentes){
+	private int tratarDependencias(Set<Componente> componentes) throws SQLException {
 		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
 		HashSet aux = new HashSet();					  //Id's dos componentes dependentes de cada um dos componentes do Set fornecido
 		int val = 0;
@@ -261,7 +261,7 @@ public class Configuracao {
 
 		return new Pair<Integer, Set<Integer>>((valorAcrescentado - val), pac);
 	}
-	private int tratarDependenciasPacote(Set<Componente> componentes, Pacote p){
+	private int tratarDependenciasPacote(Set<Componente> componentes, Pacote p) throws SQLException {
 		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
 		HashSet aux = new HashSet();					  //Id's dos componentes dependentes de cada um dos componentes do Set fornecido
 		int val = 0;

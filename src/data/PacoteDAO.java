@@ -63,7 +63,9 @@ public class PacoteDAO extends DAO {
 						"INNER JOIN Pacote_Componente ON Pacote.id = Pacote_Componente.id_pacote " +
 						"WHERE Pacote_Componente.id_componente = ?");
 		st.setInt(1, idComponente);
+		System.out.println("oi");
 		ResultSet res = st.executeQuery();
+		System.out.println("acabei");
 		while (res.next()){
 			int id = res.getInt("id");
 			String designacao = res.getString("designacao");
