@@ -37,6 +37,8 @@ public class JNovaEncomenda implements Observer {
     private DefaultTableModel modelPac;
     private JButton removerPacoteButton;
     private JButton adicionarPacoteButton;
+    private JLabel precoLabel;
+    private JLabel descontoLabel;
 
 
     private JFrame frame;
@@ -278,7 +280,8 @@ public class JNovaEncomenda implements Observer {
                         try {
                             int option = mostrarIncDep(facade.getEfeitosAdicionarPacote(id));
                             if(option == JOptionPane.OK_OPTION) {
-                                facade.adicionaPacote(id);
+                                Set<Integer> pacotes =  facade.adicionaPacote(id);
+                                mostraPacotesDesfeitos(pacotes);
                             }
                         } catch (PacoteJaExisteNaConfiguracaoException e1) {
                             JanelaUtil.mostrarJanelaErro(frame, "Pacote já existe na configuração.");
@@ -527,5 +530,7 @@ public class JNovaEncomenda implements Observer {
         updateOpcionais();
         updateDependencias();
         updatePacotes();
+        precoLabel.setText("Preco: " + facade.getValor() + "€");
+        descontoLabel.setText("Desconto: " + facade.getDesconto() + "€");
     }
 }
