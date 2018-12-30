@@ -326,8 +326,6 @@ public class JNovaEncomenda implements Observer {
 
         // ----------- Outros ------------------------------------------------------------------------------------------
 
-        // TODO: dar enable/disable no finalizar e configOtima
-
         finalizarButton.addActionListener(new ActionListener() {
             /**
              * Completa a encomenda e abre uma janela a informar sobre a formação de pacotes se necessário
@@ -344,6 +342,8 @@ public class JNovaEncomenda implements Observer {
                     new JVendedor();
                     frame.dispose();
                 } catch (Exception e1) {
+                    JanelaUtil.mostrarJanelaErro(frame,"Não foram cumpridos os requesitos para finalizar " +
+                            "a encomenda (Ter todos os componentes obrigatórios e dependências escolhidos).");
                     e1.printStackTrace(); // TODO: 29/12/2018 erro
                 }
             }
@@ -357,6 +357,7 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: 27/12/2018 acabar
+                JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
                 facade.criarConfiguracaoOtima();
             }
         });
@@ -365,7 +366,7 @@ public class JNovaEncomenda implements Observer {
 
 
     /**
-     * Abre janela que mostra os ids dos pacotes desfeitos com a remoção de componentes
+     * Abre janela que mostra os ids dos pacotes desfeitos com a remoção de componentes.
      *
      * @param pacotes Set com os ids dos pacotes desfeitos
      */
@@ -379,7 +380,7 @@ public class JNovaEncomenda implements Observer {
 
 
     /**
-     * Abre janela para adicionar componente da categoria indicada
+     * Abre janela para adicionar componente da categoria indicada.
      *
      * @param categoria     categoria do componente a adicionar
      */
@@ -410,7 +411,7 @@ public class JNovaEncomenda implements Observer {
 
 
     /**
-     * Abre janela para
+     * Abra janela de adicionar componente e adiciona-o se forem aceites as possíveis condições.
      *
      * @param id     categoria do componente a adicionar
      *
@@ -432,15 +433,24 @@ public class JNovaEncomenda implements Observer {
         return 0;
     }
 
+    /**
+     * Mostra uma janela que informa sobre as incompatibilidades e dependências da operação que deu origem
+     * ao parâmetro efeitos.
+     *
+     * @param efeitos par em que o primeiro elemento é um Set de ids de incompatibilidades e o segundo de dependências
+     *
+     * @return 0 se OK
+     */
     private int mostrarIncDep(Pair<Set<Integer>,Set<Integer>> efeitos) {
         Set<Integer> incompativeis = efeitos.getKey();
         Set<Integer> dependencias = efeitos.getValue();
 
         int option = JOptionPane.OK_OPTION;
-        StringBuilder builder = new StringBuilder();
+
         boolean temInc = !incompativeis.isEmpty();
         boolean temDep = !dependencias.isEmpty();
         if(temInc || temDep) {
+            StringBuilder builder = new StringBuilder();
             if (temInc) {
                 builder.append("Componentes incompativeis que têm de ser removidos: ");
                 builder.append(setToString(incompativeis));
@@ -458,25 +468,38 @@ public class JNovaEncomenda implements Observer {
         return option;
     }
 
-    // TODO: 29/12/2018 melhorar
+    /**
+     * Converte um set para uma string de números separados por vírgula, exemplo: "1, 2, 3"
+     */
     private String setToString(Set<Integer> set) {
-        Integer[] ids = new Integer[set.size()];
-        int i = 0;
-        for (Integer p : set) {
-            ids[i++] = p;
+        StringBuilder builder = new StringBuilder();
+        Iterator it = set.iterator();
+        builder.append(it.next());
+        while(it.hasNext()) {
+            builder.append(", ");
+            builder.append(it.next());
         }
-        return Arrays.toString(ids);
+        return builder.toString();
     }
 
+    /**
+     *  Atualiza o modelo da tabela de componentes obrigatórios, seleciona o primeiro elemento da tabela.
+     */
     private void updateObrigatorios() {
         modelObr.setDataVector(facade.getComponentesObgConfig(), colunasComponentes);
         obrigatoriosTable.setRowSelectionInterval(0, 0);
     }
 
+    /**
+     *  Atualiza o modelo da tabela de componentes opcionais.
+     */
     private void updateOpcionais() {
         modelOpc.setDataVector(facade.getComponentesOpcConfig(), colunasComponentes);
     }
 
+    /**
+     *  Atualiza o modelo da tabela de pacotes, desativa o botão de remover pacote.
+     */
     private void updatePacotes() {
         try {
             modelPac.setDataVector(facade.getPacotesConfig(), colunasPacotes);
@@ -486,6 +509,9 @@ public class JNovaEncomenda implements Observer {
         }
     }
 
+    /**
+     *  Atualiza o modelo da tabela de dependencias, desativa o botão de adicionar componente das dependências.
+     */
     private void updateDependencias() {
         try {
             modelDep.setDataVector(facade.getComponentesDepConfig(), colunasComponentes);
