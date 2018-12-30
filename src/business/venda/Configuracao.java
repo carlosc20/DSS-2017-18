@@ -175,13 +175,13 @@ public class Configuracao {
 			found = false;
 			for (int id : p.getComponentes()) {
 				for (int idCR : componentesARemover) {
-					if (componentes.containsKey(idCR)) {
-						//Se ficar assim pode ser otimizado !!!!!!!!!!FAZER ISTO
+					if (id  == idCR && componentes.containsKey(idCR)) {
 						if(!found){
-							pacotes.remove(p);
-							pac.add(p.getId());
+							int idP = p.getId();
+							pacotes.remove(idP,p);
+							pac.add(idP);
 							valorRetirado -= p.getDesconto();
-							// Ver melhor isto !!!!
+							// Ver melhor isto !!!!!!!!!!!
 							for(int key : pacotesDormentes.keySet()){
 								if(p.getComponentes().contains(key))
 									pacotesDormentes.remove(key);
@@ -274,6 +274,7 @@ public class Configuracao {
 		}
 		//Se houver adiciona à lista de dependências da configuração
 		if (idDependentes.size() == 0) {
+			this.pacotes.put(p.getId(),p);
 			return val-=p.getDesconto();
 		}
 		this.dependentes.addAll(idDependentes);
@@ -330,7 +331,7 @@ public class Configuracao {
 	public Pair<Set<Integer>,Set<Integer>> getEfeitosSecundariosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException {
 		Pacote pacote = pDAO.get(idPacote);
 
-		if(pacotes.containsKey(idPacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
+		if(pacotes.containsKey(idPacote) || pacotesDormentes.containsValue(pacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
 
 		if(existeConflito(pacote.getComponentes())) {
 			throw new PacoteGeraConflitosException("Já existe um pacote com algum dos componentes do que pretende adicionar");
