@@ -268,11 +268,43 @@ public class ConfiguraFacil extends Observable {
         return componentesListToMatrix(componentes);
     }
 
-    // TODO: 29/12/2018 fazer
+    /**
+     * Devolve uma matriz com informações dos pacotes da encomenda atual.
+     * Cada linha corresponde a um pacote e as colunas a {@link #colunasPacotes}.
+     *
+     * @return matriz com uma linha por pacote
+     */
     public Object [][] getPacotesConfig() throws Exception {
-        return new Object[][] {};
+        List<Pacote> pac = encomendaAtual.getPacotes();
+        Object[][] data = new Object[pac.size()][4];
+        int i = 0;
+        for (Pacote p : pac) {
+            data[i][0] = p.getId();
+            data[i][1] = p.getDesignacao();
+            data[i][2] = p.getDesconto();
+            data[i][3] = p.getComponentes().toString();
+            i++;
+        }
+        return data;
     }
 
+    /**
+     * Devolve o preço da encomenda Atual
+     *
+     * @return inteiro com valor da encomenda
+     */
+    public int getValor(){
+        return encomendaAtual.getValor();
+    }
+
+    /**
+     * Devolve o desconto total da encomenda Atual que é formado pelos seus pacotes
+     *
+     * @return inteiro com valor do desconto
+     */
+    public int getDesconto(){
+        return encomendaAtual.getDesconto();
+    }
 
     // -------------------------------- Encomendas ---------------------------------------------------------------------
 
@@ -490,8 +522,11 @@ public class ConfiguraFacil extends Observable {
             throw new Exception(); // TODO: 29/12/2018 exception fixe
         }
     }
-
-
+    /**
+     * Devolve uma lista de todas as categorias de componentes opcionais.
+     *
+     * @return lista de categorias
+     */
     // -------------------------------- Utilizadores -------------------------------------------------------------------
 
     /**

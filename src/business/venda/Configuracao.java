@@ -60,12 +60,14 @@ public class Configuracao {
 		//estes componentes estão reservados a pacotes inativos
 		//Pacotes inativos podem ser de componentes removidos normalmente e não de dependentes, mas também parece-me indicado
 		//dar prioridade a estes.
+
 		if (pacotesDormentes.containsKey(idComponente)){
 			descontoAcrescentado = ativaPacote(idComponente);
 		}
 		else {
 			descontoAcrescentado = formacaoPacote(componente);
 		}
+		System.out.println(descontoAcrescentado);
 		Set<Integer> pac = temp.getValue();
 		int val = temp.getKey();
 
@@ -97,19 +99,19 @@ public class Configuracao {
 		HashSet<Integer> aux;    //Componentes de um pacote
 		TreeSet<Pacote> formados = new TreeSet<>(new ComparaPacotesByDesconto()); // pacotes que podem ser formados
 		pac = pDAO.list(componente);
-		boolean flag;            //Irá indicar se pode ser formado o pacote
+		int count;            	//Irá indicar se pode ser formado o pacote
 
 		//!!!Talvez possa otimizar e trazer os pacotes para a memória, mas não sei se vale a pena
 		//Por cada pacote que na sua constituição tem o componente vamos verificar se temos todos os componentes necessários
 		for (Pacote p : pac) {
 			aux = (HashSet<Integer>) p.getComponentes();
-			flag = true;
+			count = 0;
 			for (int id : aux) {
 				for (int key : componentes.keySet())
-					if (id != key)
-						flag = false;
+					if (id == key)
+						count++;
 			}
-			if (flag) formados.add(p);
+			if (count == aux.size()) formados.add(p);
 		}
 
 		//É retirado o pacote com menor custo da estrutura auxiliar e adicionado à configuração
@@ -421,6 +423,13 @@ public class Configuracao {
 		}
 
 		return cDAO.atualizaStock(new ArrayList<Componente>(componentes.values()));
+	}
+	public int getDesconto(){
+		int val = 0;
+		for(Pacote p : pacotes.values()){
+			val+= p.getDesconto();
+		}
+		return val;
 	}
 
 	public void configuracaoOtima() {

@@ -84,6 +84,13 @@ public class EncomendaAtual {
 		return configuracao.getComponentesObrigatórios();
 	}
 
+	public int getDesconto(){
+		return configuracao.getDesconto();
+	}
+	public List<Pacote> getPacotes(){
+		return configuracao.getPacotes();
+	}
+
 	public int getId() {
 		return id;
 	}
