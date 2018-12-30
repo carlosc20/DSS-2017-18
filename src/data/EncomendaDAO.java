@@ -42,9 +42,10 @@ public class EncomendaDAO extends DAO {
 			st.execute();
 		}
 		for (Componente componente:componentes) {
-			st = cn.prepareStatement("INSERT INTO Encomenda_Componente (id_encomenda, id_componente) VALUES (?, ?)");
+			st = cn.prepareStatement("INSERT INTO Encomenda_Componente (id_encomenda, id_componente, preco) VALUES (?, ?, ?)");
 			st.setInt(1, id);
 			st.setInt(2, componente.getId());
+			st.setInt(3, componente.getPreco());
 			st.execute();
 		}
 		for (Pacote pacote:pacotes) {

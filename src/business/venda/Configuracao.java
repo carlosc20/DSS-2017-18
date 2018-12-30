@@ -418,10 +418,9 @@ public class Configuracao {
 	}
 
 	public Set<Componente> atualizaStock() throws SQLException, FaltamDependentesException {
-		boolean flag = false;
-		for(int id : componentes.keySet()){
-			if (!dependentes.contains(id))
-				throw new FaltamDependentesException("Insira os restantes dependentes");
+		for(int id : dependentes){
+			if (!componentes.keySet().contains(id))
+				throw new FaltamDependentesException("Insira a seguinte dependência: " + Integer.toString(id));
 		}
 
 		return cDAO.atualizaStock(new ArrayList<Componente>(componentes.values()));
