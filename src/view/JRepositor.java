@@ -30,8 +30,7 @@ public class JRepositor implements Observer {
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
-    // TODO: 26/12/2018 dar sort?,  ver mais sobre o componente?, ir buscar dados por paginas
-    // https://docs.oracle.com/javase/tutorial/uiswing/examples/components/TableSortDemoProject/src/components/TableSortDemo.java
+    // TODO: ver mais sobre o componente?, ir buscar dados por paginas
     // https://docs.oracle.com/javase/tutorial/uiswing/examples/components/TableFilterDemoProject/src/components/TableFilterDemo.java
     // modelC.getValueAt(componentesTable.getSelectedRow(), 1);
 

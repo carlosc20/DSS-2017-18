@@ -232,6 +232,17 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
+        dependenciasTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            /**
+             * Ativa o botão de adicionar dependencia quando um componente é selecionado.
+             */
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    adicionarDepButton.setEnabled(true);
+                }
+            }
+        });
 
         // ----------- Pacotes -----------------------------------------------------------------------------------------
 
@@ -265,18 +276,8 @@ public class JNovaEncomenda implements Observer {
                         int row = table.getSelectedRow();
                         Integer id = (Integer) table.getValueAt(row, 0);
                         try {
-                            Pair<Set<Integer>,Set<Integer>> efeitos = facade.getEfeitosAdicionarPacote(id);
-                            Set<Integer> incompativeis = efeitos.getKey();
-                            Set<Integer> dependencias = efeitos.getValue();
-
-                            // TODO: 29/12/2018 mudar com o que existir
-                            int op = JOptionPane.showConfirmDialog(frame,
-                                    "Incompatibilidades: " + setToString(incompativeis)
-                                            + "\nDependencias: " +setToString(dependencias),
-                                    "Incompatibilidades e dependencias",
-                                    JOptionPane.OK_CANCEL_OPTION);
-
-                            if(op == JOptionPane.OK_OPTION) {
+                            int option = mostrarIncDep(facade.getEfeitosAdicionarPacote(id));
+                            if(option == JOptionPane.OK_OPTION) {
                                 facade.adicionaPacote(id);
                             }
                         } catch (PacoteJaExisteNaConfiguracaoException e1) {
@@ -417,17 +418,7 @@ public class JNovaEncomenda implements Observer {
      */
     private int adicionaComponente(int id) {
         try {
-            Pair<Set<Integer>,Set<Integer>> efeitos = facade.getEfeitosAdicionarComponente(id);
-            Set<Integer> incompativeis = efeitos.getKey();
-            Set<Integer> dependencias = efeitos.getValue();
-
-            // TODO: 29/12/2018 mudar com o que existir
-            int option = JOptionPane.showConfirmDialog(frame,
-                    "Incompatibilidades: " + setToString(incompativeis)
-                            + "\nDependencias: " +setToString(dependencias),
-                    "Incompatibilidades e dependencias",
-                    JOptionPane.OK_CANCEL_OPTION);
-
+            int option = mostrarIncDep(facade.getEfeitosAdicionarComponente(id));
             if(option == JOptionPane.OK_OPTION) {
                 Set<Integer> pacotes = facade.adicionaComponente(id);
                 mostraPacotesDesfeitos(pacotes);
@@ -439,6 +430,32 @@ public class JNovaEncomenda implements Observer {
         }
 
         return 0;
+    }
+
+    private int mostrarIncDep(Pair<Set<Integer>,Set<Integer>> efeitos) {
+        Set<Integer> incompativeis = efeitos.getKey();
+        Set<Integer> dependencias = efeitos.getValue();
+
+        int option = JOptionPane.OK_OPTION;
+        StringBuilder builder = new StringBuilder();
+        boolean temInc = !incompativeis.isEmpty();
+        boolean temDep = !dependencias.isEmpty();
+        if(temInc || temDep) {
+            if (temInc) {
+                builder.append("Componentes incompativeis que têm de ser removidos: ");
+                builder.append(setToString(incompativeis));
+            }
+            if (temDep) {
+                if (temInc) builder.append("\n");
+                builder.append("Dependências que serão formadas: ");
+                builder.append(setToString(dependencias));
+            }
+            option = JOptionPane.showConfirmDialog(frame,
+                    builder.toString(),
+                    "Aviso",
+                    JOptionPane.OK_CANCEL_OPTION);
+        }
+        return option;
     }
 
     // TODO: 29/12/2018 melhorar
