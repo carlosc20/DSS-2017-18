@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="10" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="964" height="531"/>
+      <xy x="20" y="20" width="972" height="531"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -30,15 +30,6 @@
           <text value="Adicionar componente"/>
         </properties>
       </component>
-      <component id="3d0e9" class="javax.swing.JButton" binding="adicionarDepButton">
-        <constraints>
-          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-          <text value=" Adicionar componente selecionado"/>
-        </properties>
-      </component>
       <vspacer id="afb1a">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="4" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
@@ -46,23 +37,6 @@
           </grid>
         </constraints>
       </vspacer>
-      <component id="c274e" class="javax.swing.JButton" binding="adicionarOpcButton">
-        <constraints>
-          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Adicionar componente"/>
-        </properties>
-      </component>
-      <component id="3a07c" class="javax.swing.JButton" binding="removerOpcButton">
-        <constraints>
-          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <enabled value="false"/>
-          <text value="Remover componente selecionado"/>
-        </properties>
-      </component>
       <component id="80418" class="javax.swing.JLabel">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -184,6 +158,32 @@
           </grid>
         </constraints>
       </vspacer>
+      <component id="3d0e9" class="javax.swing.JButton" binding="adicionarDepButton">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value=" Adicionar componente selecionado"/>
+        </properties>
+      </component>
+      <component id="c274e" class="javax.swing.JButton" binding="adicionarOpcButton">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Adicionar componente"/>
+        </properties>
+      </component>
+      <component id="3a07c" class="javax.swing.JButton" binding="removerOpcButton">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="false"/>
+          <text value="Remover componente selecionado"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

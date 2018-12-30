@@ -15,12 +15,11 @@ public class JAdministrador implements Observer {
 
     private JPanel mainPanel;
     private JButton sairButton;
-    private JButton criarUtilizadorButton;
-    private JButton removerUtilizadorButton;
 
     private JList<String> utilizadoresList;
     private DefaultListModel<String> model;
-    private List<String> utilizadores;
+    private JButton criarUtilizadorButton;
+    private JButton removerUtilizadorButton;
 
     private JFrame frame;
 
@@ -35,7 +34,8 @@ public class JAdministrador implements Observer {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        facade.addObserver(this);
+        Observer isto = this;
+        facade.addObserver(isto);
 
 
         sairButton.addActionListener(new ActionListener() {
@@ -45,6 +45,7 @@ public class JAdministrador implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
+                facade.deleteObserver(isto);
                 new Inicial();
             }
         });
@@ -63,7 +64,7 @@ public class JAdministrador implements Observer {
             public void actionPerformed(ActionEvent e) {
                 int index = utilizadoresList.getSelectedIndex();
                 utilizadoresList.ensureIndexIsVisible(index);
-                facade.removerUtilizador(utilizadores.get(index));
+                facade.removerUtilizador(model.get(index));
             }
         });
 
@@ -79,28 +80,21 @@ public class JAdministrador implements Observer {
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
                 JComboBox<String> tiposF = new JComboBox<>(tiposUtilizador);
-                Object[] options = {
+                Object[] opcoes = {
                         "Nome:", nomeF,
                         "Password:", passwordF,
                         "Tipo", tiposF
                 };
 
-                int option = JOptionPane.showConfirmDialog(frame, options,
-                        "Criar utilizador",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE);
-
-                if (option == JOptionPane.OK_OPTION) {
+                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Criar utilizador", opcoes);
+                if (opcao == JanelaUtil.OK) {
                     String nome = nomeF.getText();
                     String password = passwordF.getText();
                     String tipo = (String) tiposF.getSelectedItem();
                     try {
                         facade.criarUtilizador(nome, password, tipo);
                     } catch (Exception e1) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Tipo de utilizador não permitido.",
-                                "Erro",
-                                JOptionPane.ERROR_MESSAGE);
+                        e1.printStackTrace();
                     }
                 }
             }
@@ -130,15 +124,11 @@ public class JAdministrador implements Observer {
      */
     private void updateModel() {
         try {
-            utilizadores = facade.getUtilizadores();
-            for (String u : utilizadores) {
+            for (String u : facade.getUtilizadores()) {
                 model.addElement(u);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(frame,
-                    "Não foi possível aceder à base de dados.",
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE);
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
         }
     }
 

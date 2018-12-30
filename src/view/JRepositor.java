@@ -14,17 +14,17 @@ import java.util.Observer;
 public class JRepositor implements Observer {
 
     private JPanel mainPanel;
-    private JButton atualizarComponentesButton;
-    private JButton atualizarPacotesButton;
     private JButton sairButton;
 
     private JTable componentesTable;
     private String[] colunasComponentes;
-    private DefaultTableModel modelC; // modelo dos conteúdos da tabela de componentes
+    private DefaultTableModel modelC;
+    private JButton atualizarComponentesButton;
 
     private JTable pacotesTable;
     private String[] colunasPacotes;
-    private DefaultTableModel modelP; // modelo dos conteúdos da tabela de pacotes
+    private DefaultTableModel modelP;
+    private JButton atualizarPacotesButton;
 
     private JFrame frame;
 
@@ -44,7 +44,8 @@ public class JRepositor implements Observer {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        facade.addObserver(this);
+        Observer isto = this;
+        facade.addObserver(isto);
 
 
         sairButton.addActionListener(new ActionListener() {
@@ -54,6 +55,7 @@ public class JRepositor implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
+                facade.deleteObserver(isto);
                 new Inicial();
             }
         });
@@ -76,24 +78,16 @@ public class JRepositor implements Observer {
              */
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 JFileChooser chooser = new JFileChooser();
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "Ficheiros CSV", "csv");
                 chooser.setFileFilter(filter);
-                int returnVal = chooser.showOpenDialog(frame);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                if(chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                     try {
                         facade.atualizaComponentes(chooser.getSelectedFile());
-                        JOptionPane.showMessageDialog(frame,
-                                "Componentes atualizados com sucesso.",
-                                "Confirmação",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JanelaUtil.mostraJanelaInformacao(frame, "Componentes atualizados com sucesso");
                     } catch (Exception e1) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Falha ao atualizar.", // TODO: informaçao sobre erro
-                                "Erro",
-                                JOptionPane.ERROR_MESSAGE);
+                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
@@ -123,51 +117,45 @@ public class JRepositor implements Observer {
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "Ficheiros CSV", "csv");
                 chooser.setFileFilter(filter);
-                int returnVal = chooser.showOpenDialog(frame);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                if(chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                     try {
                         facade.atualizaPacotes(chooser.getSelectedFile());
-                        JOptionPane.showMessageDialog(frame,
-                                "Pacotes atualizados com sucesso.",
-                                "Confirmação",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JanelaUtil.mostraJanelaInformacao(frame, "Pacotes atualizados com sucesso");
                     } catch (Exception e1) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Falha ao atualizar.", // TODO: informaçao sobre erro
-                                "Erro",
-                                JOptionPane.ERROR_MESSAGE);
+                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
         });
     }
 
+
     /**
      *  Atualiza o modelo da tabela de componentes.
      */
     private void updateComponentes() {
-        Object[][] data = new Object[0][];
         try {
-            data = facade.getComponentes();
+            modelC.setDataVector(facade.getComponentes(), colunasComponentes);
         } catch (Exception e) {
-            e.printStackTrace(); // TODO: 29/12/2018 erro
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
         }
-        modelC.setDataVector(data, colunasComponentes);
+
     }
 
     /**
      *  Atualiza o modelo da tabela de pacotes.
      */
     private void updatePacotes() {
-        Object[][] data = new Object[0][];
         try {
-            data = facade.getPacotes();
+            modelP.setDataVector(facade.getPacotes(), colunasPacotes);
         } catch (Exception e) {
-            e.printStackTrace();    // TODO: 29/12/2018 erro
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
         }
-        modelP.setDataVector(data, colunasPacotes);
     }
 
+    /**
+     * @param arg do tipo int, se for 0 os componentes foram modificados, se 1 os pacotes foram modificados
+     */
     @Override
     public void update(Observable o, Object arg) {
         if((int) arg == 0) {
@@ -176,5 +164,4 @@ public class JRepositor implements Observer {
             updatePacotes();
         }
     }
-
 }
