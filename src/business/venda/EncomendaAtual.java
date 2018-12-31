@@ -67,8 +67,8 @@ public class EncomendaAtual {
 		}
 	}
 
-	public void configuracaoOtima(Map<Categoria, Integer> precoMaximoCategorias, int precoMaximoTotal) throws SQLException {
-		configuracao.configuracaoOtima(precoMaximoCategorias, precoMaximoTotal);
+	public boolean configuracaoOtima(Map<Categoria, Integer> precoMaximoCategorias, int precoMaximoTotal) throws SQLException {
+		return configuracao.configuracaoOtima(precoMaximoCategorias, precoMaximoTotal);
 	}
 
 	public List<Componente> getComponentes(){

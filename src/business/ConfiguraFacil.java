@@ -16,6 +16,7 @@ import business.venda.EncomendaAtual;
 import business.venda.categorias.Categoria;
 import javafx.util.Pair;
 
+import javax.swing.*;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
@@ -187,15 +188,32 @@ public class ConfiguraFacil extends Observable {
             encomendaAtual.removePacote(idPacote);
             setChanged();
             notifyObservers();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void criarConfiguracaoOtima(Map<Categoria, Integer> precoMaximoCategoria, int precoMaximoTotal) throws SQLException { // muda nome
-        encomendaAtual.configuracaoOtima(precoMaximoCategoria, precoMaximoTotal);
+    public boolean criarConfiguracaoOtima(Map<String, Integer> precoMaximoCategoria, int precoMaximoTotal) throws SQLException, CategoriaNaoExisteException, FaltamComponenteObrigatorioException { // muda nome
+        HashSet<Categoria> categoriasDaConfiguracao = new HashSet<>();
+        for(Componente componente : encomendaAtual.getConfiguracao().getComponentes()){
+            categoriasDaConfiguracao.add(componente.getCategoria());
+        }
+        for(Categoria categoria: new CategoriaDAO().list()){
+            if(categoria.getObrigatoria()){
+                if(!categoriasDaConfiguracao.contains(categoria)){
+                    throw new FaltamComponenteObrigatorioException(categoria.getDesignacao());
+                }
+            }
+        }
+        Map<Categoria, Integer> precoMaximoCategoriaNovo = new HashMap<>(precoMaximoCategoria.size());
+        for (Map.Entry<String, Integer> entry: precoMaximoCategoria.entrySet()) {
+            Categoria categoria = new CategoriaDAO().get(entry.getKey());
+            precoMaximoCategoriaNovo.put(categoria, entry.getValue());
+        }
+        boolean encontrouSolucaoOtima = encomendaAtual.configuracaoOtima(precoMaximoCategoriaNovo, precoMaximoTotal);
         setChanged();
         notifyObservers();
+        return encontrouSolucaoOtima;
     }
 
     /**

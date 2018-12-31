@@ -142,7 +142,6 @@ public class Configuracao {
 		Set<Integer> pac;
 		Iterator<Integer> it;
 
-		removeDependentes(idDependentesInc);
 		pac = desfazPacotes(componentesARemover);
 
 		//Retira os componentes da config. e também o seu valor
@@ -151,6 +150,7 @@ public class Configuracao {
 				Componente c = componentes.get(id);
 				componentes.remove(id,c);}
 			}
+		removeDependentes(idDependentesInc);
 		return pac;
 	}
 	private void removeDependentes (Set<Integer> idDependentesInc) throws SQLException {
@@ -218,7 +218,7 @@ public class Configuracao {
 	 *@param idComponente Id componente a ser retirado
 	 */
 	public Set<Integer> removerComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
-		if (!componentes.containsKey(idComponente)) throw new ComponenteNaoExisteNaConfiguracao("Componentes não existe");
+		if (!componentes.containsKey(idComponente)) throw new ComponenteNaoExisteNaConfiguracao("");
 
 		HashSet<Integer> comp = new HashSet<>();
 		Componente c = componentes.get(idComponente);
