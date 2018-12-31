@@ -52,7 +52,7 @@ public class ConfiguraFacil extends Observable {
      * @param nif       nif do cliente
      * @throws Exception
      */
-    public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
+    public void criarEncomenda(String cliente, int nif) throws FaltamComponenteObrigatorioException, Exception { //muda nome
         int id = new EncomendaDAO().size() + 1;
         for (Categoria categoria : new CategoriaDAO().list()){
             if(categoria.getObrigatoria()){

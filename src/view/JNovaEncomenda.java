@@ -2,6 +2,7 @@ package view;
 
 import business.ConfiguraFacil;
 import business.venda.*;
+import business.venda.categorias.CategoriaNaoExisteException;
 import javafx.util.Pair;
 
 import javax.swing.*;
@@ -383,7 +384,6 @@ public class JNovaEncomenda implements Observer {
                     String[] cats = list.getSelectedValuesList().toArray(new String[0]);
                     int n = cats.length;
                     JSlider[] opcoes = new JSlider[n];
-
                     for (int i = 0; i < n; i++) {
                         opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: 31/12/2018 por labels
                     }
@@ -393,8 +393,14 @@ public class JNovaEncomenda implements Observer {
                         for (int i = 0; i < n; i++) {
                             catMax.put(cats[i] , opcoes[i].getValue());
                         }
-                        // facade.criarConfiguracaoOtima(catMax ,precoMax); // TODO: 31/12/2018 acabar
-                        JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
+                        try {
+                            facade.criarConfiguracaoOtima(catMax ,precoMax);
+                        } catch (FaltamComponenteObrigatorioException e1) {
+                            JanelaUtil.mostrarJanelaErro(frame,
+                                    "Todos os componentes obrigatórios devem estar escolhidos");
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                     }
                 }
             }

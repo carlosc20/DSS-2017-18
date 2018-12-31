@@ -1,6 +1,7 @@
 package view;
 
 import business.ConfiguraFacil;
+import business.venda.FaltamComponenteObrigatorioException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -104,6 +105,8 @@ public class JVendedor implements Observer {
                         frame.dispose();
                     } catch (NumberFormatException e1) {
                         JanelaUtil.mostrarJanelaErro(frame, "Nif deve ser um número.");
+                    } catch (FaltamComponenteObrigatorioException e1) {
+                        JanelaUtil.mostrarJanelaErro(frame, "Não existem componentes obrigatórios suficientes.");
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
