@@ -53,6 +53,13 @@ public class ConfiguraFacil extends Observable {
      */
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
         int id = new EncomendaDAO().size() + 1;
+        for (Categoria categoria : new CategoriaDAO().list()){
+            if(categoria.getObrigatoria()){
+                if(new ComponenteDAO().list(categoria).isEmpty()){
+                    throw new FaltamComponenteObrigatorioException(categoria.getDesignacao());
+                }
+            }
+        }
         encomendaAtual = new EncomendaAtual(id,cliente, nif);
     }
 
@@ -186,7 +193,7 @@ public class ConfiguraFacil extends Observable {
     }
 
     public void criarConfiguracaoOtima(Map<Categoria, Integer> precoMaximoCategoria, int precoMaximoTotal) throws SQLException { // muda nome
-        this.encomendaAtual.configuracaoOtima(precoMaximoCategoria, precoMaximoTotal);
+        encomendaAtual.configuracaoOtima(precoMaximoCategoria, precoMaximoTotal);
         setChanged();
         notifyObservers();
     }
