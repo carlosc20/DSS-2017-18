@@ -320,14 +320,16 @@ public class ConfiguraFacil extends Observable {
             Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasRegistoProduzidas.length];
             int i = 0;
             for (Encomenda e : encs) {
-                int id = e.getId();
-
-                data[i] = new Object[]{id, };
+                data[i][0] = e.getId();
+                data[i][1] = e.getCliente();
+                data[i][2] = e.getNif();
+                data[i][3] = e.getValor();
+                data[i][4] = e.getComponentes().toString();
+                data[i][5] = e.getPacotes().toString();
                 i++;
             }
             return data;
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new Exception();
         }
     }
@@ -337,8 +339,7 @@ public class ConfiguraFacil extends Observable {
             "Id",
             "Cliente",
             "Nif",
-            "Preço sem descontos (€)",
-            "Descontos (€)",
+            "Preço total (€)",
             "Componentes",
             "Pacotes"
     };
@@ -356,10 +357,13 @@ public class ConfiguraFacil extends Observable {
             Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasFilaProducao.length];
             int i = 0;
             for (EncomendaEmProducao e : encs) {
-                int id = e.getId();
-                Collection<Componente> comps = e.getComponentesEmFalta();
-                String c = comps.toString(); // TODO: 27/12/2018 completar
-                data[i] = new Object[]{id, c};
+                data[i][0] = e.getId();
+                data[i][1] = e.getCliente();
+                data[i][2] = e.getNif();
+                data[i][3] = e.getValor();
+                data[i][4] = e.getComponentes().toString();
+                data[i][5] = e.getPacotes().toString();
+                data[i][6] = e.getComponentesEmFalta().toString();
                 i++;
             }
             return data;
@@ -370,7 +374,15 @@ public class ConfiguraFacil extends Observable {
     }
 
     /** Array com os nomes das colunas da matriz devolvida em {@link #getFilaProducao()}. */
-    public static String[] colunasFilaProducao = new String[] {"Id", "Componentes em falta"};
+    public static String[] colunasFilaProducao = new String[] {
+            "Id",
+            "Cliente",
+            "Nif",
+            "Preço total (€)",
+            "Componentes",
+            "Pacotes",
+            "Componentes em falta"
+    };
 
 
     // -------------------------------- Stock --------------------------------------------------------------------------
