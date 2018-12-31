@@ -77,8 +77,7 @@ public class EncomendaEmProducaoDAO extends DAO {
 
     public List<EncomendaEmProducao> list() throws SQLException {
         Connection cn = Connect.connect();
-        PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 0");
-        st.setString(1, "id");
+        PreparedStatement st = cn.prepareStatement("SELECT id, cliente, nif, valor, data FROM Encomenda WHERE finalizada = 0");
         ResultSet res = st.executeQuery();
         List<EncomendaEmProducao> list = new ArrayList<>();
         while (res.next()){

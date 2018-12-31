@@ -11,8 +11,9 @@ import java.util.List;
 
 public class EncomendaDAO extends DAO {
 
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws Exception {
+		System.out.println(new EncomendaDAO().list());
+		System.out.println(new EncomendaEmProducaoDAO().list());
 	}
 
 	public boolean add(Encomenda encomenda) throws SQLException {
@@ -70,8 +71,7 @@ public class EncomendaDAO extends DAO {
 
 	public List<Encomenda> list() throws SQLException {
 		Connection cn = Connect.connect();
-		PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 1");
-		st.setString(1, "id");
+		PreparedStatement st = cn.prepareStatement("SELECT id, cliente, nif, valor, data FROM Encomenda WHERE finalizada = 1");
 		ResultSet res = st.executeQuery();
 		List<Encomenda> list = new ArrayList<>();
 		while (res.next()){
