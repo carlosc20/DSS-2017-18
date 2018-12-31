@@ -595,8 +595,8 @@ public class JNovaEncomenda implements Observer {
             modelPac.setDataVector(facade.getPacotesConfig(), colunasPacotes);
             removerPacoteButton.setEnabled(false);
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
             e.printStackTrace();
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
         }
     }
 
@@ -608,8 +608,8 @@ public class JNovaEncomenda implements Observer {
             modelDep.setDataVector(facade.getComponentesDepConfig(), colunasComponentes);
             adicionarDepButton.setEnabled(false);
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
             e.printStackTrace();
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Dependencias).");
         }
     }
 

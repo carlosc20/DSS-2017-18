@@ -86,8 +86,8 @@ public class JRepositor implements Observer {
                         facade.atualizaComponentes(chooser.getSelectedFile());
                         JanelaUtil.mostraJanelaInformacao(frame, "Componentes atualizados com sucesso");
                     } catch (Exception e1) {
-                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
                         e1.printStackTrace();
+                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
@@ -122,8 +122,8 @@ public class JRepositor implements Observer {
                         facade.atualizaPacotes(chooser.getSelectedFile());
                         JanelaUtil.mostraJanelaInformacao(frame, "Pacotes atualizados com sucesso");
                     } catch (Exception e1) {
-                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
                         e1.printStackTrace();
+                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
@@ -138,10 +138,9 @@ public class JRepositor implements Observer {
         try {
             modelC.setDataVector(facade.getComponentes(), colunasComponentes);
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
             e.printStackTrace();
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Componentes).");
         }
-
     }
 
     /**
@@ -151,8 +150,8 @@ public class JRepositor implements Observer {
         try {
             modelP.setDataVector(facade.getPacotes(), colunasPacotes);
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
             e.printStackTrace();
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
         }
     }
 

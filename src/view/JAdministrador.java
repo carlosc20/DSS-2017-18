@@ -93,6 +93,7 @@ public class JAdministrador implements Observer {
                         facade.criarUtilizador(nome, password, tipo);
                     } catch (Exception e1) {
                         e1.printStackTrace();
+                        JanelaUtil.mostrarJanelaErro(frame, "Não foi possível criar o utilizador.");
                     }
                 }
             }
@@ -126,8 +127,8 @@ public class JAdministrador implements Observer {
                 model.addElement(u);
             }
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
             e.printStackTrace();
+            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Utilizadores).");
         }
     }
 
