@@ -80,7 +80,7 @@ public class CategoriaDAO extends DAO {
             case "Pneus":
                 return new Pneus();
             default:
-                throw new CategoriaNaoExisteException(designacao);
+                return new CategoriaOpcional(designacao);
         }
     }
 }

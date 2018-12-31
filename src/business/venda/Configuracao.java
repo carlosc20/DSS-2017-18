@@ -70,7 +70,7 @@ public class Configuracao {
 		else {
 			formacaoPacote(componente);
 		}
-
+		otimizarPacotes();
 		return pac;
 	}
 	/*
@@ -245,6 +245,7 @@ public class Configuracao {
 			Componente c = cDAO.get(id);
 			this.componentes.put(id,c);
 		}
+		otimizarPacotes();
 		return pac;
 	}
 	private int tratarDependenciasPacote(Set<Componente> componentes, Pacote p) throws SQLException {
@@ -357,11 +358,7 @@ public class Configuracao {
 	}
 
 	public List<Integer> otimizarPacotes() throws SQLException {
-		Set<Pacote> todosPacotes = new HashSet<>();
-		for (Componente c : componentes.values()){
-			todosPacotes.addAll(pDAO.list(c));
-		}
-		Set<Pacote> otimos = calculaOtimos(todosPacotes);
+		Set<Pacote> otimos = calculaOtimos(getPacotesValidos(componentes.values()));
 		boolean reotimizacao = comparaPacotes(otimos);
 		if(reotimizacao) {
 			pacotes.clear();
