@@ -21,41 +21,51 @@ public class EncomendaDAO extends DAO {
 		String cliente = encomenda.getCliente();
 		int nif = encomenda.getNif();
 		int valor = encomenda.getValor();
-		Date data = Date.valueOf(encomenda.getData());
-		Collection<Componente> componentes = encomenda.getComponentes();
-		Collection<Pacote> pacotes = encomenda.getPacotes();
-		boolean finalizada = encomenda.getFinalizada();
-		PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, ?)");
-		st.setInt(1, id);
-		st.setString(2, cliente);
-		st.setInt(3, nif);
-		st.setInt(4, valor);
-		st.setDate(5, data);
-		st.setBoolean(6, finalizada);
-		int numRows = st.executeUpdate();
-		if(numRows != 1) {
-			st = cn.prepareStatement("DELETE FROM Encomenda_Componente WHERE id_encomenda = ?");
+		try {
+			cn.setAutoCommit(false);
+			Date data = Date.valueOf(encomenda.getData());
+			Collection<Componente> componentes = encomenda.getComponentes();
+			Collection<Pacote> pacotes = encomenda.getPacotes();
+			boolean finalizada = encomenda.getFinalizada();
+			PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, ?)");
 			st.setInt(1, id);
-			st.execute();
-			st = cn.prepareStatement("DELETE FROM Encomenda_Pacote WHERE id_encomenda = ?");
-			st.setInt(1, id);
-			st.execute();
+			st.setString(2, cliente);
+			st.setInt(3, nif);
+			st.setInt(4, valor);
+			st.setDate(5, data);
+			st.setBoolean(6, finalizada);
+			int numRows = st.executeUpdate();
+			if (numRows != 1) {
+				st = cn.prepareStatement("DELETE FROM Encomenda_Componente WHERE id_encomenda = ?");
+				st.setInt(1, id);
+				st.execute();
+				st = cn.prepareStatement("DELETE FROM Encomenda_Pacote WHERE id_encomenda = ?");
+				st.setInt(1, id);
+				st.execute();
+			}
+			for (Componente componente : componentes) {
+				st = cn.prepareStatement("INSERT INTO Encomenda_Componente (id_encomenda, id_componente, preco) VALUES (?, ?, ?)");
+				st.setInt(1, id);
+				st.setInt(2, componente.getId());
+				st.setInt(3, componente.getPreco());
+				st.execute();
+			}
+			for (Pacote pacote : pacotes) {
+				st = cn.prepareStatement("INSERT INTO Encomenda_Pacote (id_encomenda, id_pacote, desconto) VALUES (?, ?, ?)");
+				st.setInt(1, id);
+				st.setInt(2, pacote.getId());
+				st.setInt(3, pacote.getDesconto());
+				st.execute();
+			}
+			cn.commit();
+			return numRows == 1;
+		} catch (Exception e) {
+			cn.rollback();
+			e.printStackTrace();
+			throw e;
+		} finally {
+			Connect.close(cn);
 		}
-		for (Componente componente:componentes) {
-			st = cn.prepareStatement("INSERT INTO Encomenda_Componente (id_encomenda, id_componente, preco) VALUES (?, ?, ?)");
-			st.setInt(1, id);
-			st.setInt(2, componente.getId());
-			st.setInt(3, componente.getPreco());
-			st.execute();
-		}
-		for (Pacote pacote:pacotes) {
-			st = cn.prepareStatement("INSERT INTO Encomenda_Pacote (id_encomenda, id_pacote) VALUES (?, ?)");
-			st.setInt(1, id);
-			st.setInt(2, pacote.getId());
-			st.execute();
-		}
-		Connect.close(cn);
-		return numRows == 1;
 	}
 
 	public List<Encomenda> list() throws SQLException {

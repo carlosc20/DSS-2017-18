@@ -367,7 +367,7 @@ public class Configuracao {
 		//return new Pair<>(incompARemover, pacotesARemover);
 	}
 
-	protected void otimizarPacotes() throws SQLException {
+	public List<Integer> otimizarPacotes() throws SQLException {
 		Set<Pacote> todosPacotes = new HashSet<>();
 		for (Componente c : componentes.values()){
 			todosPacotes.addAll(pDAO.list(c));
@@ -380,6 +380,7 @@ public class Configuracao {
 				pacotes.put(p.getId(), p);
 			}
 		}
+		return new ArrayList<>(pacotes.keySet());
 	}
 
 	private Set<Pacote> calculaOtimos(Set<Pacote> pacotes){
