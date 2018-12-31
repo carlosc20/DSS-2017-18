@@ -64,16 +64,6 @@ public class ConfiguraFacil extends Observable {
         encomendaAtual = new EncomendaAtual(id,cliente, nif);
     }
 
-
-    public Componente getC (int id){
-        try {
-            return todosComponentes.get(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     /**
      * Devolve um Set de ids de componentes que serão removidos.
      * O Set tem os ids dos componentes incompatíveis.
@@ -109,7 +99,15 @@ public class ConfiguraFacil extends Observable {
         }
     }
 
-
+    public String getDesignacao(int idComponente){
+        try {
+            Componente c = todosComponentes.get(idComponente);
+            return c.getDesignacao();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     /**
      * Devolve um Set de ids de componentes a remover.
      * O Set tem os ids dos componentes incompatíveis.
