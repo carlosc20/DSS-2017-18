@@ -150,10 +150,10 @@ public class ConfiguraFacil extends Observable {
         }
     }
 
-    public void criarConfiguracaoOtima() { // muda nome
+    public void criarConfiguracaoOtima(Map<Categoria, Integer> precoMaximoCategoria, int precoMaximoTotal) throws SQLException { // muda nome
+        this.encomendaAtual.configuracaoOtima(precoMaximoCategoria, precoMaximoTotal);
         setChanged();
         notifyObservers();
-        throw new UnsupportedOperationException();
     }
 
     /**
