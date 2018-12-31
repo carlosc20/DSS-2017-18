@@ -199,12 +199,12 @@ public class ConfiguraFacil extends Observable {
     public List<Integer> finalizarEncomenda() throws Exception { // muda nome, devolve pacotes formados
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
-            if(feita.getFinalizada()){
+            if(feita.getFinalizada()) {
                 registoProduzidas.add(feita);
             } else {
                 filaProducao.add((EncomendaEmProducao) feita);
             }
-            return null; // TODO: 29/12/2018 pacotes formados // tem de ser antes de chamar o finalizar da config.
+            return new ArrayList<>(); // TODO: 29/12/2018 pacotes formados
         } catch (SQLException | FaltamDependentesException e){
             e.printStackTrace();
             throw new Exception(); // TODO: 29/12/2018 exceçao fixe
