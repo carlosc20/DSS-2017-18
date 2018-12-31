@@ -58,7 +58,6 @@ public class Inicial {
                 }
             }
         });
-        // TODO: enable/disable do botao conforme preenchimento dos fields
     }
 
 }

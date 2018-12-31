@@ -393,7 +393,7 @@ public class JNovaEncomenda implements Observer {
                         for (int i = 0; i < n; i++) {
                             catMax.put(cats[i] , opcoes[i].getValue());
                         }
-                        // facade.criarConfiguracaoOtima(catMax ,precoMax);
+                        // facade.criarConfiguracaoOtima(catMax ,precoMax); // TODO: 31/12/2018 acabar
                         JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
                     }
                 }

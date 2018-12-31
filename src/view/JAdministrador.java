@@ -76,17 +76,15 @@ public class JAdministrador implements Observer {
              */
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
                 JComboBox<String> tiposF = new JComboBox<>(tiposUtilizador);
-                Object[] opcoes = {
-                        "Nome:", nomeF,
-                        "Password:", passwordF,
-                        "Tipo", tiposF
-                };
-
-                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Criar utilizador", opcoes);
+                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Criar utilizador",
+                        new Object[]{
+                                "Nome:", nomeF,
+                                "Password:", passwordF,
+                                "Tipo", tiposF}
+                                );
                 if (opcao == JanelaUtil.OK) {
                     String nome = nomeF.getText();
                     String password = passwordF.getText();
