@@ -95,7 +95,7 @@ public class Configuracao {
 					if (id == key)
 						count++;
 			}
-			if (count == aux.size()) formados.add(p);
+			if (count == aux.size() && !existeConflito(p.getComponentes())) formados.add(p);
 		}
 
 		//É retirado o pacote com menor custo da estrutura auxiliar e adicionado à configuração
