@@ -127,6 +127,7 @@ public class JAdministrador implements Observer {
             }
         } catch (Exception e) {
             JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            e.printStackTrace();
         }
     }
 

@@ -123,6 +123,7 @@ public class JVendedor implements Observer {
             modelFP.setDataVector(facade.getFilaProducao(), colunasFilaProducao);
         } catch (Exception e) {
             JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            e.printStackTrace();
         }
     }
 
@@ -134,6 +135,7 @@ public class JVendedor implements Observer {
             modelRP.setDataVector(facade.getRegistoProduzidas(), colunasRegistoProduzidas);
         } catch (Exception e) {
             JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            e.printStackTrace();
         }
     }
 

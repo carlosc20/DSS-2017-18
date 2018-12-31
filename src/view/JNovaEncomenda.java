@@ -596,6 +596,7 @@ public class JNovaEncomenda implements Observer {
             removerPacoteButton.setEnabled(false);
         } catch (Exception e) {
             JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            e.printStackTrace();
         }
     }
 
@@ -608,6 +609,7 @@ public class JNovaEncomenda implements Observer {
             adicionarDepButton.setEnabled(false);
         } catch (Exception e) {
             JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            e.printStackTrace();
         }
     }
 
