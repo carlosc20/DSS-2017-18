@@ -52,7 +52,8 @@ public class ConfiguraFacil extends Observable {
      * @throws Exception
      */
     public void criarEncomenda(String cliente, int nif) throws Exception { //muda nome
-        encomendaAtual = new EncomendaAtual(1,cliente, nif);
+        int id = new EncomendaDAO().size() + 1;
+        encomendaAtual = new EncomendaAtual(id,cliente, nif);
     }
 
 
@@ -66,17 +67,15 @@ public class ConfiguraFacil extends Observable {
     }
 
     /**
-     * Devolve um par com dois Sets de ids de componentes associados à adição de um componente.
-     * O primeiro Set tem os ids dos componentes incompatíveis.
-     * O segundo Set tem os ids dos componentes de que o componente adicionado depende.
-     *
+     * Devolve um Set de ids de componentes que serão removidos.
+     * O Set tem os ids dos componentes incompatíveis.
      * @param idComponente   id do componente a adicionar
      *
-     * @return  Par com Sets de ids de componentes
+     * @return  Set de ids de componentes
      */
-    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
+    public Set<Integer> getIncompatibilidadesComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException{
         try {
-            Pair<Set<Integer>,Set<Integer>> r = encomendaAtual.getEfeitosAdicionarComponente(idComponente);
+            Set<Integer> r = encomendaAtual.getIncompatibilidades(idComponente);
             setChanged();
             notifyObservers();
             return r;
@@ -85,24 +84,60 @@ public class ConfiguraFacil extends Observable {
             return null;
         }
     }
+    /**
+     * Devolve um Set de ids de componentes que serão adicionados.
+     * O Set tem os ids dos componentes dependentes.
+     * @param idComponente   id do componente a adicionar
+     *
+     * @return  Set de ids de componentes
+     */
+    public Set<Integer> getDependenciasComponente(int idComponente){
+        try {
+            Componente c = todosComponentes.get(idComponente);
+            return c.getDepedendencias();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
     /**
-     * Devolve um par com dois Sets de ids de componentes associados à adição de um pacote.
-     * O primeiro Set tem os ids dos componentes incompatíveis.
-     * O segundo Set tem os ids dos componentes de que o pacote adicionado depende.
+     * Devolve um Set de ids de componentes a remover.
+     * O Set tem os ids dos componentes incompatíveis.
      *
      * @param idPacote  id do pacote a adicionar
      * @return
      * @throws PacoteJaExisteNaConfiguracaoException
      * @throws PacoteGeraConflitosException
      */
-    public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException{
+    public Set<Integer> getIncompatibilidadesPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException{
         try {
-            Pair<Set<Integer>,Set<Integer>> r = this.encomendaAtual.getEfeitosAdicionarPacote(idPacote);
+            Set<Integer> r = this.encomendaAtual.getIncompatibilidadesPacote(idPacote);
             setChanged();
             notifyObservers();
             return r;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    /**
+     * Devolve um Set de ids de componentes que serão adicionados.
+     * O Set tem os ids dos componentes dependentes de cada componente do pacote.
+     * @param idPacote   id do componente a adicionar
+     *
+     * @return  Set de ids de componentes
+     */
+    public Set<Integer> getDependenciasPacote(int idPacote){
+        HashSet<Integer> res = new HashSet<>();
+        try {
+            Pacote p = todosPacotes.get(idPacote);
+            for(int id : p.getComponentes()){
+                Componente c = todosComponentes.get(id);
+                res.addAll(c.getDepedendencias());
+            }
+            return res;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

@@ -34,9 +34,15 @@ public class Pacote {
 		this.designacao = p.getDesignacao();
 		this.desconto = p.getDesconto();
 		this.componentes = p.getComponentes();
-		this.cDAO = p.getcDAO();
+		this.cDAO = new ComponenteDAO();
 	}
-
+	public Pacote(PacoteDormente pd) {
+		this.id = pd.getId();
+		this.designacao = pd.getDesignacao();
+		this.desconto = pd.getDesconto();
+		this.componentes = pd.getComponentes();
+		this.cDAO = new ComponenteDAO();
+	}
 	@Override
 	public boolean equals(Object o){
 		if (this == o)

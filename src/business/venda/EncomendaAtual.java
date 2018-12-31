@@ -28,35 +28,34 @@ public class EncomendaAtual {
 		this.configuracao = new Configuracao();
 	}
 
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarComponente(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
-		return configuracao.getEfeitosSecundariosAdicionarComponente(idComponente);
+	public Set<Integer> getIncompatibilidades(int idComponente) throws ComponenteJaExisteNaConfiguracaoException, SQLException {
+		return configuracao.getIncompatibilidadesComponente(idComponente);
 	}
-	public Pair<Set<Integer>,Set<Integer>> getEfeitosAdicionarPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, SQLException, PacoteGeraConflitosException {
-		return configuracao.getEfeitosSecundariosAdicionarPacote(idPacote);
+	public Set<Integer> getIncompatibilidadesPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, SQLException, PacoteGeraConflitosException {
+		return configuracao.getIncompatibilidadesPacote(idPacote);
 	}
 
 	public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
-		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarComponente(idComponente);
-		this.valor += temp.getKey();
-		return temp.getValue();
+		Set<Integer> pac =  configuracao.adicionarComponente(idComponente);
+		this.valor = configuracao.getValorConfiguracao();
+		return pac;
 	}
 
 	public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
-		Pair <Integer,Set<Integer>> temp =  configuracao.removerComponente(idComponente);
-		this.valor += temp.getKey();
-		return temp.getValue();
+		Set<Integer> pac = configuracao.removerComponente(idComponente);
+		this.valor = configuracao.getValorConfiguracao();
+		return pac;
 	}
 
 	public Set<Integer> adicionaPacote(int idPacote) throws PacoteGeraConflitosException, SQLException {
-		Pair <Integer,Set<Integer>> temp =  configuracao.adicionarPacote(idPacote);
-		this.valor += temp.getKey();
-		return temp.getValue();
+		Set<Integer> pac =  configuracao.adicionarPacote(idPacote);
+		this.valor = configuracao.getValorConfiguracao();
+		return pac;
 	}
 
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
-		Pair <Integer,Set<Integer>> temp =  configuracao.removerPacote(idPacote);
-		this.valor += temp.getKey();
-		//return temp.getValue();
+		configuracao.removerPacote(idPacote);
+		this.valor = configuracao.getValorConfiguracao();
 	}
 
 	public Encomenda finalizarEncomenda() throws SQLException, FaltamDependentesException {
