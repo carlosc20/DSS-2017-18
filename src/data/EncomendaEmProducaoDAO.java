@@ -59,7 +59,7 @@ public class EncomendaEmProducaoDAO extends DAO {
                 st.execute();
             }
             for (Componente componente : componentesEmFalta) {
-                st = cn.prepareStatement("INSERT INTO Encomenda_Falta (id_encomenda, id_pacote) VALUES (?, ?)");
+                st = cn.prepareStatement("INSERT INTO Encomenda_Falta (id_encomenda, id_componente) VALUES (?, ?)");
                 st.setInt(1, id);
                 st.setInt(2, componente.getId());
                 st.execute();
@@ -77,8 +77,7 @@ public class EncomendaEmProducaoDAO extends DAO {
 
     public List<EncomendaEmProducao> list() throws SQLException {
         Connection cn = Connect.connect();
-        PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 0");
-        st.setString(1, "id");
+        PreparedStatement st = cn.prepareStatement("SELECT id, cliente, nif, valor, data FROM Encomenda WHERE finalizada = 0");
         ResultSet res = st.executeQuery();
         List<EncomendaEmProducao> list = new ArrayList<>();
         while (res.next()){
