@@ -380,19 +380,21 @@ public class JNovaEncomenda implements Observer {
                         JOptionPane.PLAIN_MESSAGE);
                 if(opcao == JOptionPane.OK_OPTION) {
                     int precoMax = Integer.parseInt(precoF.getText()); // TODO: 31/12/2018 erro
-                    List<String> cats = list.getSelectedValuesList();
+                    String[] cats = list.getSelectedValuesList().toArray(new String[0]);
+                    int n = cats.length;
+                    JSlider[] opcoes = new JSlider[n];
 
-                    Object[] opcoes = new Object[cats.size()];
-                    int i = 0;
-                    for (String cat : cats) {
-                        opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0);
-                        i++;
+                    for (int i = 0; i < n; i++) {
+                        opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: 31/12/2018 por labels
                     }
                     opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
                     if (opcao == JanelaUtil.OK) {
-                        // TODO: 31/12/2018 acabar
+                        Map<String, Integer> catMax = new HashMap<>();
+                        for (int i = 0; i < n; i++) {
+                            catMax.put(cats[i] , opcoes[i].getValue());
+                        }
+                        // facade.criarConfiguracaoOtima(catMax ,precoMax);
                         JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
-                        facade.criarConfiguracaoOtima();
                     }
                 }
             }
