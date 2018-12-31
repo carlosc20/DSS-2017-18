@@ -284,7 +284,9 @@ public class ComponenteDAO extends DAO {
 					st.execute();
 				}
 			}
-			cn.commit();
+			if(cn != null) {
+				cn.commit();
+			}
 		} catch (SQLException e) {
 			cn.rollback();
 			throw e;
