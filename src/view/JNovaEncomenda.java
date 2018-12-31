@@ -284,8 +284,10 @@ public class JNovaEncomenda implements Observer {
                         int row = table.getSelectedRow();
                         Integer id = (Integer) table.getValueAt(row, 0);
                         try {
-                            int option = mostrarIncDep(facade.getEfeitosAdicionarPacote(id));
-
+                            int option = mostrarIncompatibilidades(facade.getIncompatibilidadesPacote(id));
+                            if(option == JOptionPane.OK_OPTION) {
+                                option = mostrarDependencias(facade.getDependenciasPacote(id));
+                            }
                             if(option == JOptionPane.OK_OPTION) {
                                 Set<Integer> pacotes =  facade.adicionaPacote(id);
                                 mostraPacotesDesfeitos(pacotes);
@@ -371,28 +373,27 @@ public class JNovaEncomenda implements Observer {
                 list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 list.setSelectedIndex(0);
                 JTextField precoF = new JTextField();
-                int op1 = JOptionPane.showConfirmDialog(frame,
+                int opcao = JOptionPane.showConfirmDialog(frame,
                         new Object[] {"Componentes opcionais:", new JScrollPane(list), "Preço total máximo:", precoF},
                         "Configuração ótima",
                         JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE);
+                if(opcao == JOptionPane.OK_OPTION) {
+                    int precoMax = Integer.parseInt(precoF.getText()); // TODO: 31/12/2018 erro
+                    List<String> cats = list.getSelectedValuesList();
 
-                int precoMax = Integer.parseInt(precoF.getText()); // TODO: 31/12/2018 erro
-                List<String> cats = list.getSelectedValuesList();
-
-
-                Object[] opcoes = new Object[cats.size()];
-                int i = 0;
-                for (String cat : cats) {
-                    opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0);
-                    i++;
-                }
-
-                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
-                if (opcao == JanelaUtil.OK) {
-                    // TODO: 31/12/2018 acabar
-                    JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
-                    facade.criarConfiguracaoOtima();
+                    Object[] opcoes = new Object[cats.size()];
+                    int i = 0;
+                    for (String cat : cats) {
+                        opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0);
+                        i++;
+                    }
+                    opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
+                    if (opcao == JanelaUtil.OK) {
+                        // TODO: 31/12/2018 acabar
+                        JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
+                        facade.criarConfiguracaoOtima();
+                    }
                 }
             }
         });
@@ -457,7 +458,10 @@ public class JNovaEncomenda implements Observer {
      */
     private int adicionaComponente(int id) {
         try {
-            int option = mostrarIncDep(facade.getEfeitosAdicionarComponente(id));
+            int option = mostrarIncompatibilidades(facade.getIncompatibilidadesComponente(id));
+            if(option == JOptionPane.OK_OPTION) {
+                option = mostrarDependencias(facade.getDependenciasComponente(id));
+            }
             if(option == JOptionPane.OK_OPTION) {
                 Set<Integer> pacotes = facade.adicionaComponente(id);
                 mostraPacotesDesfeitos(pacotes);
@@ -472,34 +476,35 @@ public class JNovaEncomenda implements Observer {
     }
 
     /**
-     * Mostra uma janela que informa sobre as incompatibilidades e dependências da operação que deu origem
-     * ao parâmetro efeitos.
-     *
-     * @param efeitos par em que o primeiro elemento é um Set de ids de incompatibilidades e o segundo de dependências
+     * Mostra uma janela que informa sobre as incompatibilidades da operação que deu origem ao parâmetro
+     * incompatibilidades.
      *
      * @return 0 se OK
      */
-    private int mostrarIncDep(Pair<Set<Integer>,Set<Integer>> efeitos) {
-        Set<Integer> incompativeis = efeitos.getKey();
-        Set<Integer> dependencias = efeitos.getValue();
-
+    private int mostrarIncompatibilidades(Set<Integer> incompatibiliddades) {
         int option = JOptionPane.OK_OPTION;
+        if (!incompatibiliddades.isEmpty()) {
+            return  JOptionPane.showConfirmDialog(frame,
+                    "Serão removidos os seguintes componentes incompatíveis: "
+                            + setToString(incompatibiliddades),
+                    "Aviso",
+                    JOptionPane.OK_CANCEL_OPTION);
+        }
+        return option;
+    }
 
-        boolean temInc = !incompativeis.isEmpty();
-        boolean temDep = !dependencias.isEmpty();
-        if(temInc || temDep) {
-            StringBuilder builder = new StringBuilder();
-            if (temInc) {
-                builder.append("Componentes incompativeis que têm de ser removidos: ");
-                builder.append(setToString(incompativeis));
-            }
-            if (temDep) {
-                if (temInc) builder.append("\n");
-                builder.append("Dependências que serão formadas: ");
-                builder.append(setToString(dependencias));
-            }
-            option = JOptionPane.showConfirmDialog(frame,
-                    builder.toString(),
+    /**
+     * Mostra uma janela que informa sobre as dependências que serão criadas pela operação que deu origem ao parâmetro
+     * dependencias.
+     *
+     * @return 0 se OK
+     */
+    private int mostrarDependencias(Set<Integer> dependencias) {
+        int option = JOptionPane.OK_OPTION;
+        if (!dependencias.isEmpty()) {
+            return  JOptionPane.showConfirmDialog(frame,
+                    "Serão formadas as seguintes dependências: "
+                            + setToString(dependencias),
                     "Aviso",
                     JOptionPane.OK_CANCEL_OPTION);
         }
