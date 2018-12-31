@@ -380,27 +380,36 @@ public class JNovaEncomenda implements Observer {
                         JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE);
                 if(opcao == JOptionPane.OK_OPTION) {
-                    int precoMax = Integer.parseInt(precoF.getText()); // TODO: 31/12/2018 erro
-                    String[] cats = list.getSelectedValuesList().toArray(new String[0]);
-                    int n = cats.length;
-                    JSlider[] opcoes = new JSlider[n];
-                    for (int i = 0; i < n; i++) {
-                        opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: 31/12/2018 por labels
-                    }
-                    opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
-                    if (opcao == JanelaUtil.OK) {
-                        Map<String, Integer> catMax = new HashMap<>();
+                    try {
+                        int precoMax = Integer.parseInt(precoF.getText());
+                        String[] cats = list.getSelectedValuesList().toArray(new String[0]);
+                        int n = cats.length;
+                        JSlider[] opcoes = new JSlider[n];
+                        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+                        labelTable.put( 0, new JLabel("0") );
+                        labelTable.put( precoMax, new JLabel(Integer.toString(precoMax)));
                         for (int i = 0; i < n; i++) {
-                            catMax.put(cats[i] , opcoes[i].getValue());
+                            opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: dizer a qual corresponde
+                            opcoes[i].setLabelTable(labelTable);
+                            opcoes[i].setPaintLabels(true);
                         }
-                        try {
-                            facade.criarConfiguracaoOtima(catMax ,precoMax);
-                        } catch (FaltamComponenteObrigatorioException e1) {
-                            JanelaUtil.mostrarJanelaErro(frame,
-                                    "Todos os componentes obrigatórios devem estar escolhidos");
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
+                        opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
+                        if (opcao == JanelaUtil.OK) {
+                            Map<String, Integer> catMax = new HashMap<>();
+                            for (int i = 0; i < n; i++) {
+                                catMax.put(cats[i], opcoes[i].getValue());
+                            }
+                            try {
+                                facade.criarConfiguracaoOtima(catMax, precoMax);
+                            } catch (FaltamComponenteObrigatorioException e1) {
+                                JanelaUtil.mostrarJanelaErro(frame,
+                                        "Todos os componentes obrigatórios devem estar escolhidos");
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
                         }
+                    } catch (NumberFormatException e1) {
+                        JanelaUtil.mostrarJanelaErro(frame, "O preço máximo deve ser um número");
                     }
                 }
             }
