@@ -33,7 +33,7 @@ public class JVendedor implements Observer {
         frame = new JFrame("Vendedor");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500,600);
+        frame.setSize(1000,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 

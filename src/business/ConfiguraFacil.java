@@ -65,12 +65,21 @@ public class ConfiguraFacil extends Observable {
     }
 
 
-    public Componente getC (int id){
+    public String getDesignacaoComponente (int id) throws Exception {
         try {
-            return todosComponentes.get(id);
+            return todosComponentes.get(id).getDesignacao();
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            throw new Exception();
+        }
+    }
+
+    public String getDesignacaoPacote (int id) throws Exception {
+        try {
+            return todosPacotes.get(id).getDesignacao();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception();
         }
     }
 
@@ -242,7 +251,7 @@ public class ConfiguraFacil extends Observable {
      *
      * @return tabela com uma linha por cada categoria obrigatória
      */
-    public Object [][] getComponentesObgConfig() { //novo
+    public Object[][] getComponentesObgConfig() { //novo
 
         List<Categoria> categ = new ArrayList<>();
         try {

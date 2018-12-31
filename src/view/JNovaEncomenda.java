@@ -2,14 +2,11 @@ package view;
 
 import business.ConfiguraFacil;
 import business.venda.*;
-import business.venda.categorias.CategoriaNaoExisteException;
-import javafx.util.Pair;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -120,7 +117,7 @@ public class JNovaEncomenda implements Observer {
                         Set<Integer> pacotes = facade.removeComponente(id);
                         mostraPacotesDesfeitos(pacotes);
                         obrigatorioButton.setText("Adicionar componente");
-                    } catch (ComponenteNaoExisteNaConfiguracao e1) {
+                    } catch (Exception e1) {
                         e1.printStackTrace();
                     }
                 }
@@ -196,7 +193,7 @@ public class JNovaEncomenda implements Observer {
                     Set<Integer> pacotes = facade.removeComponente(id);
                     mostraPacotesDesfeitos(pacotes);
                     removerOpcButton.setEnabled(false);
-                } catch (ComponenteNaoExisteNaConfiguracao e1) {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             }
@@ -426,11 +423,11 @@ public class JNovaEncomenda implements Observer {
      *
      * @param pacotes Set com os ids dos pacotes desfeitos
      */
-    private void mostraPacotesDesfeitos(Set<Integer> pacotes) {
+    private void mostraPacotesDesfeitos(Set<Integer> pacotes) throws Exception {
         if(!pacotes.isEmpty()) {
             JanelaUtil.mostraJanelaInformacao(frame,
                     "Devido à remoção de componentes foram desfeitos os seguintes pacotes: "
-                    + setToString(pacotes));
+                    + setToStringPacotes(pacotes));
         }
     }
 
@@ -487,6 +484,8 @@ public class JNovaEncomenda implements Observer {
             JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
         } catch (ComponenteJaExisteNaConfiguracaoException e) {
             JanelaUtil.mostrarJanelaErro(frame, "Componente já foi adicionado.");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return 0;
@@ -498,12 +497,12 @@ public class JNovaEncomenda implements Observer {
      *
      * @return 0 se OK
      */
-    private int mostrarIncompatibilidades(Set<Integer> incompatibiliddades) {
+    private int mostrarIncompatibilidades(Set<Integer> incompatibiliddades) throws Exception {
         int option = JOptionPane.OK_OPTION;
         if (!incompatibiliddades.isEmpty()) {
             return  JOptionPane.showConfirmDialog(frame,
                     "Serão removidos os seguintes componentes incompatíveis: "
-                            + setToString(incompatibiliddades),
+                            + setToStringComponentes(incompatibiliddades),
                     "Aviso",
                     JOptionPane.OK_CANCEL_OPTION);
         }
@@ -516,12 +515,12 @@ public class JNovaEncomenda implements Observer {
      *
      * @return 0 se OK
      */
-    private int mostrarDependencias(Set<Integer> dependencias) {
+    private int mostrarDependencias(Set<Integer> dependencias) throws Exception {
         int option = JOptionPane.OK_OPTION;
         if (!dependencias.isEmpty()) {
             return  JOptionPane.showConfirmDialog(frame,
                     "Serão formadas as seguintes dependências: "
-                            + setToString(dependencias),
+                            + setToStringComponentes(dependencias),
                     "Aviso",
                     JOptionPane.OK_CANCEL_OPTION);
         }
@@ -531,13 +530,44 @@ public class JNovaEncomenda implements Observer {
     /**
      * Converte um set para uma string de números separados por vírgula, exemplo: "1, 2, 3"
      */
-    private String setToString(Set<Integer> set) {
+    private String setToStringPacotes(Set<Integer> set) throws Exception {
         StringBuilder builder = new StringBuilder();
         Iterator it = set.iterator();
-        builder.append(it.next());
+        Integer id = (Integer) it.next();
+        String d = facade.getDesignacaoPacote(id);
+        builder.append(d);
+        builder.append(" (");
+        builder.append(id);
+        builder.append(")");
         while(it.hasNext()) {
             builder.append(", ");
-            builder.append(it.next());
+            id = (Integer) it.next();
+            d = facade.getDesignacaoPacote(id);
+            builder.append(d);
+            builder.append(" (");
+            builder.append(id);
+            builder.append(")");
+        }
+        return builder.toString();
+    }
+
+    private String setToStringComponentes(Set<Integer> set) throws Exception {
+        StringBuilder builder = new StringBuilder();
+        Iterator it = set.iterator();
+        Integer id = (Integer) it.next();
+        String d = facade.getDesignacaoComponente(id);
+        builder.append(d);
+        builder.append(" (");
+        builder.append(id);
+        builder.append(")");
+        while(it.hasNext()) {
+            builder.append(", ");
+            id = (Integer) it.next();
+            d = facade.getDesignacaoComponente(id);
+            builder.append(d);
+            builder.append(" (");
+            builder.append(id);
+            builder.append(")");
         }
         return builder.toString();
     }
