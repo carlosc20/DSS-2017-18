@@ -161,7 +161,7 @@ public class ConfiguraFacil extends Observable {
      *
      * @return lista de pacotes formados
      */
-    public List<Integer> finalizarEncomenda() throws Exception { // muda nome, devolve pacotes formados
+    public List<Integer> finalizarEncomenda() throws FaltamDependentesException, Exception { // muda nome, devolve pacotes formados
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
             if(feita.getFinalizada()) {
@@ -170,7 +170,7 @@ public class ConfiguraFacil extends Observable {
                 filaProducao.add((EncomendaEmProducao) feita);
             }
             return new ArrayList<>(); // TODO: 29/12/2018 pacotes formados
-        } catch (SQLException | FaltamDependentesException e){
+        } catch (SQLException e){
             e.printStackTrace();
             throw new Exception(); // TODO: 29/12/2018 exceçao fixe
         }
@@ -196,7 +196,7 @@ public class ConfiguraFacil extends Observable {
                 e.printStackTrace();
             }
         }
-        List<Componente> comp = encomendaAtual.getComponetesObrigatorios();
+        List<Componente> comp = encomendaAtual.getComponentesObrigatorios();
         Object[][] data = buildCategObrigatorias(categ);
         for(int i = 0; i<categ.size(); i++)
             for(Componente c : comp) {
@@ -231,21 +231,7 @@ public class ConfiguraFacil extends Observable {
      * @return matriz com uma linha por componente
      */
     public Object [][] getComponentesOpcConfig() {
-        List<Componente> comp = encomendaAtual.getComponetesOpcionais(); // TODO: 29/12/2018 fazer getComponentesOpcionais
-        Object[][] data = new Object[comp.size()][5];
-        int i = 0;
-        for(Componente c : comp) {
-            Categoria cat = c.getCategoria();
-            if(cat instanceof CategoriaOpcional){
-                data[i][0] = c.getCategoria();
-                data[i][1] = c.getId();
-                data[i][2] = c.getDesignacao();
-                data[i][3] = c.getStock();
-                data[i][4] = c.getPreco();
-            }
-            i++;
-        }
-        return data;
+        return componentesListToMatrix(encomendaAtual.getComponetesOpcionais());
     }
 
 

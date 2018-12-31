@@ -81,7 +81,7 @@ public class EncomendaAtual {
 	public List<Componente> getComponetesOpcionais() {
 		return configuracao.getComponentesOpcionais();
 	}
-	public List<Componente> getComponetesObrigatorios() {
+	public List<Componente> getComponentesObrigatorios() {
 		return configuracao.getComponentesObrigatórios();
 	}
 

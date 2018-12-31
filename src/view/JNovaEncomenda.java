@@ -246,8 +246,10 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
-        // ----------- Pacotes -----------------------------------------------------------------------------------------
 
+
+
+        // ----------- Pacotes -----------------------------------------------------------------------------------------
 
         modelPac = new DefaultTableModel() {
             @Override
@@ -344,9 +346,10 @@ public class JNovaEncomenda implements Observer {
                     }
                     new JVendedor();
                     frame.dispose();
+                } catch (FaltamDependentesException e1) {
+                    JanelaUtil.mostrarJanelaErro(frame,"Existem dependências não adicionadas: "
+                            +  e1.getMessage());
                 } catch (Exception e1) {
-                    JanelaUtil.mostrarJanelaErro(frame,"Não foram cumpridos os requesitos para finalizar " +
-                            "a encomenda (Ter todos os componentes obrigatórios e dependências escolhidos).");
                     e1.printStackTrace(); // TODO: 29/12/2018 erro
                 }
             }
@@ -365,6 +368,9 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
+
+
+        // -------------------------------------------------------------------------------------------------------------
     }
 
 
