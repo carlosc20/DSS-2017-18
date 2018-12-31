@@ -8,10 +8,12 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
 
 public class JNovaEncomenda implements Observer {
 
@@ -64,7 +66,7 @@ public class JNovaEncomenda implements Observer {
 
         cancelarButton.addActionListener(new ActionListener() {
             /**
-             *  Fecha a janela atual e abre a Inicial.
+             *  Fecha a janela atual e abre a Vendedor.
              */
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -75,6 +77,9 @@ public class JNovaEncomenda implements Observer {
         });
 
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            /**
+             *  Ao fechar a janela abre a Vendedor.
+             */
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 facade.deleteObserver(isto);
@@ -103,10 +108,9 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = obrigatoriosTable.getSelectedRow();
-                String cat = (String) obrigatoriosTable.getValueAt(row, 0);
                 Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
-
                 if(id == null) { // se o componente dessa categoria não está escolhido abre a janela de adicionar
+                    String cat = (String) obrigatoriosTable.getValueAt(row, 0);
                     if(mostraAdicionarComponente(cat) == JOptionPane.OK_OPTION) {
                         obrigatorioButton.setText("Remover componente");
                     }
@@ -281,6 +285,7 @@ public class JNovaEncomenda implements Observer {
                         Integer id = (Integer) table.getValueAt(row, 0);
                         try {
                             int option = mostrarIncDep(facade.getEfeitosAdicionarPacote(id));
+
                             if(option == JOptionPane.OK_OPTION) {
                                 Set<Integer> pacotes =  facade.adicionaPacote(id);
                                 mostraPacotesDesfeitos(pacotes);
@@ -362,9 +367,33 @@ public class JNovaEncomenda implements Observer {
              */
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: 27/12/2018 acabar
-                JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
-                facade.criarConfiguracaoOtima();
+                JList<String> list = new JList<>(modelCatOpc);
+                list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                list.setSelectedIndex(0);
+                JTextField precoF = new JTextField();
+                int op1 = JOptionPane.showConfirmDialog(frame,
+                        new Object[] {"Componentes opcionais:", new JScrollPane(list), "Preço total máximo:", precoF},
+                        "Configuração ótima",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE);
+
+                int precoMax = Integer.parseInt(precoF.getText()); // TODO: 31/12/2018 erro
+                List<String> cats = list.getSelectedValuesList();
+
+
+                Object[] opcoes = new Object[cats.size()];
+                int i = 0;
+                for (String cat : cats) {
+                    opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0);
+                    i++;
+                }
+
+                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
+                if (opcao == JanelaUtil.OK) {
+                    // TODO: 31/12/2018 acabar
+                    JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
+                    facade.criarConfiguracaoOtima();
+                }
             }
         });
 
