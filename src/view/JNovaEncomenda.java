@@ -8,10 +8,12 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
 
 public class JNovaEncomenda implements Observer {
 
@@ -64,7 +66,7 @@ public class JNovaEncomenda implements Observer {
 
         cancelarButton.addActionListener(new ActionListener() {
             /**
-             *  Fecha a janela atual e abre a Inicial.
+             *  Fecha a janela atual e abre a Vendedor.
              */
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -75,6 +77,9 @@ public class JNovaEncomenda implements Observer {
         });
 
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            /**
+             *  Ao fechar a janela abre a Vendedor.
+             */
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 facade.deleteObserver(isto);
@@ -103,10 +108,9 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = obrigatoriosTable.getSelectedRow();
-                String cat = (String) obrigatoriosTable.getValueAt(row, 0);
                 Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
-
                 if(id == null) { // se o componente dessa categoria não está escolhido abre a janela de adicionar
+                    String cat = (String) obrigatoriosTable.getValueAt(row, 0);
                     if(mostraAdicionarComponente(cat) == JOptionPane.OK_OPTION) {
                         obrigatorioButton.setText("Remover componente");
                     }
@@ -246,8 +250,10 @@ public class JNovaEncomenda implements Observer {
             }
         });
 
-        // ----------- Pacotes -----------------------------------------------------------------------------------------
 
+
+
+        // ----------- Pacotes -----------------------------------------------------------------------------------------
 
         modelPac = new DefaultTableModel() {
             @Override
@@ -278,7 +284,10 @@ public class JNovaEncomenda implements Observer {
                         int row = table.getSelectedRow();
                         Integer id = (Integer) table.getValueAt(row, 0);
                         try {
-                            int option = mostrarIncDep(facade.getEfeitosAdicionarPacote(id));
+                            int option = mostrarIncompatibilidades(facade.getIncompatibilidadesPacote(id));
+                            if(option == JOptionPane.OK_OPTION) {
+                                option = mostrarDependencias(facade.getDependenciasPacote(id));
+                            }
                             if(option == JOptionPane.OK_OPTION) {
                                 Set<Integer> pacotes =  facade.adicionaPacote(id);
                                 mostraPacotesDesfeitos(pacotes);
@@ -344,9 +353,10 @@ public class JNovaEncomenda implements Observer {
                     }
                     new JVendedor();
                     frame.dispose();
+                } catch (FaltamDependentesException e1) {
+                    JanelaUtil.mostrarJanelaErro(frame,"Existem dependências não adicionadas: "
+                            +  e1.getMessage());
                 } catch (Exception e1) {
-                    JanelaUtil.mostrarJanelaErro(frame,"Não foram cumpridos os requesitos para finalizar " +
-                            "a encomenda (Ter todos os componentes obrigatórios e dependências escolhidos).");
                     e1.printStackTrace(); // TODO: 29/12/2018 erro
                 }
             }
@@ -359,12 +369,40 @@ public class JNovaEncomenda implements Observer {
              */
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: 27/12/2018 acabar
-                JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
-                facade.criarConfiguracaoOtima();
+                JList<String> list = new JList<>(modelCatOpc);
+                list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                list.setSelectedIndex(0);
+                JTextField precoF = new JTextField();
+                int opcao = JOptionPane.showConfirmDialog(frame,
+                        new Object[] {"Componentes opcionais:", new JScrollPane(list), "Preço total máximo:", precoF},
+                        "Configuração ótima",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE);
+                if(opcao == JOptionPane.OK_OPTION) {
+                    int precoMax = Integer.parseInt(precoF.getText()); // TODO: 31/12/2018 erro
+                    String[] cats = list.getSelectedValuesList().toArray(new String[0]);
+                    int n = cats.length;
+                    JSlider[] opcoes = new JSlider[n];
+
+                    for (int i = 0; i < n; i++) {
+                        opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: 31/12/2018 por labels
+                    }
+                    opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
+                    if (opcao == JanelaUtil.OK) {
+                        Map<String, Integer> catMax = new HashMap<>();
+                        for (int i = 0; i < n; i++) {
+                            catMax.put(cats[i] , opcoes[i].getValue());
+                        }
+                        // facade.criarConfiguracaoOtima(catMax ,precoMax);
+                        JanelaUtil.mostraJanelaInformacao(frame, "Função não disponível.");
+                    }
+                }
             }
         });
 
+
+
+        // -------------------------------------------------------------------------------------------------------------
     }
 
 
@@ -422,7 +460,10 @@ public class JNovaEncomenda implements Observer {
      */
     private int adicionaComponente(int id) {
         try {
-            int option = mostrarIncDep(facade.getEfeitosAdicionarComponente(id));
+            int option = mostrarIncompatibilidades(facade.getIncompatibilidadesComponente(id));
+            if(option == JOptionPane.OK_OPTION) {
+                option = mostrarDependencias(facade.getDependenciasComponente(id));
+            }
             if(option == JOptionPane.OK_OPTION) {
                 Set<Integer> pacotes = facade.adicionaComponente(id);
                 mostraPacotesDesfeitos(pacotes);
@@ -437,34 +478,35 @@ public class JNovaEncomenda implements Observer {
     }
 
     /**
-     * Mostra uma janela que informa sobre as incompatibilidades e dependências da operação que deu origem
-     * ao parâmetro efeitos.
-     *
-     * @param efeitos par em que o primeiro elemento é um Set de ids de incompatibilidades e o segundo de dependências
+     * Mostra uma janela que informa sobre as incompatibilidades da operação que deu origem ao parâmetro
+     * incompatibilidades.
      *
      * @return 0 se OK
      */
-    private int mostrarIncDep(Pair<Set<Integer>,Set<Integer>> efeitos) {
-        Set<Integer> incompativeis = efeitos.getKey();
-        Set<Integer> dependencias = efeitos.getValue();
-
+    private int mostrarIncompatibilidades(Set<Integer> incompatibiliddades) {
         int option = JOptionPane.OK_OPTION;
+        if (!incompatibiliddades.isEmpty()) {
+            return  JOptionPane.showConfirmDialog(frame,
+                    "Serão removidos os seguintes componentes incompatíveis: "
+                            + setToString(incompatibiliddades),
+                    "Aviso",
+                    JOptionPane.OK_CANCEL_OPTION);
+        }
+        return option;
+    }
 
-        boolean temInc = !incompativeis.isEmpty();
-        boolean temDep = !dependencias.isEmpty();
-        if(temInc || temDep) {
-            StringBuilder builder = new StringBuilder();
-            if (temInc) {
-                builder.append("Componentes incompativeis que têm de ser removidos: ");
-                builder.append(setToString(incompativeis));
-            }
-            if (temDep) {
-                if (temInc) builder.append("\n");
-                builder.append("Dependências que serão formadas: ");
-                builder.append(setToString(dependencias));
-            }
-            option = JOptionPane.showConfirmDialog(frame,
-                    builder.toString(),
+    /**
+     * Mostra uma janela que informa sobre as dependências que serão criadas pela operação que deu origem ao parâmetro
+     * dependencias.
+     *
+     * @return 0 se OK
+     */
+    private int mostrarDependencias(Set<Integer> dependencias) {
+        int option = JOptionPane.OK_OPTION;
+        if (!dependencias.isEmpty()) {
+            return  JOptionPane.showConfirmDialog(frame,
+                    "Serão formadas as seguintes dependências: "
+                            + setToString(dependencias),
                     "Aviso",
                     JOptionPane.OK_CANCEL_OPTION);
         }
