@@ -95,7 +95,7 @@ public class Configuracao {
 					if (id == key)
 						count++;
 			}
-			if (count == aux.size() && !existeConflito(p.getComponentes())) formados.add(p);
+			if (count == aux.size() && !existeConflito(aux)) formados.add(p);
 		}
 
 		//É retirado o pacote com menor custo da estrutura auxiliar e adicionado à configuração
@@ -239,7 +239,7 @@ public class Configuracao {
 
 		//tratamentos
 		Set<Integer> pac = tratarIncompatibilidades(componentes);
-		int valorAcrescentado = tratarDependenciasPacote(componentes,p);
+		tratarDependenciasPacote(componentes,p);
 
 		for(int id : p.getComponentes()){
 			Componente c = cDAO.get(id);
@@ -248,10 +248,9 @@ public class Configuracao {
 		otimizarPacotes();
 		return pac;
 	}
-	private int tratarDependenciasPacote(Set<Componente> componentes, Pacote p) throws SQLException {
+	private void tratarDependenciasPacote(Set<Componente> componentes, Pacote p) throws SQLException {
 		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
 		HashSet aux = new HashSet();					  //Id's dos componentes dependentes de cada um dos componentes do Set fornecido
-		int val = 0;
 
 		//Vai buscar todas as dependências
 		for(Componente c : componentes){
@@ -270,7 +269,6 @@ public class Configuracao {
 			pd.incr();
 			pacotesDormentes.put(id, pd);
 		}
-		return val;
 	}
 
 	private boolean existeConflito(Set<Integer> componentes) {
