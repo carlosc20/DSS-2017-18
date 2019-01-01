@@ -32,7 +32,6 @@ public class ConfiguraFacil extends Observable {
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
 	private PacoteDAO todosPacotes = new PacoteDAO();
 	private EncomendaDAO registoProduzidas = new EncomendaDAO();
-	private CategoriaDAO categorias = new CategoriaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
 
@@ -54,11 +53,9 @@ public class ConfiguraFacil extends Observable {
      */
     public void criarEncomenda(String cliente, int nif) throws FaltamComponenteObrigatorioException, Exception { //muda nome
         int id = new EncomendaDAO().size() + 1;
-        for (Categoria categoria : new CategoriaDAO().list()){
-            if(categoria.getObrigatoria()){
-                if(new ComponenteDAO().list(categoria).isEmpty()){
-                    throw new FaltamComponenteObrigatorioException(categoria.getDesignacao());
-                }
+        for (Categoria categoria : CategoriaManager.getInstance().getAllCategoriasObrigatorias()){
+            if(new ComponenteDAO().list(categoria).isEmpty()){
+                throw new FaltamComponenteObrigatorioException(categoria.getDesignacao());
             }
         }
         encomendaAtual = new EncomendaAtual(id,cliente, nif);
@@ -207,16 +204,14 @@ public class ConfiguraFacil extends Observable {
         for(Componente componente : encomendaAtual.getConfiguracao().getComponentes()){
             categoriasDaConfiguracao.add(componente.getCategoria());
         }
-        for(Categoria categoria: new CategoriaDAO().list()){
-            if(categoria.getObrigatoria()){
-                if(!categoriasDaConfiguracao.contains(categoria)){
-                    throw new FaltamComponenteObrigatorioException(categoria.getDesignacao());
-                }
+        for(Categoria categoria: CategoriaManager.getInstance().getAllCategoriasObrigatorias()){
+            if(!categoriasDaConfiguracao.contains(categoria)){
+                throw new FaltamComponenteObrigatorioException(categoria.getDesignacao());
             }
         }
         Map<Categoria, Integer> precoMaximoCategoriaNovo = new HashMap<>(precoMaximoCategoria.size());
         for (Map.Entry<String, Integer> entry: precoMaximoCategoria.entrySet()) {
-            Categoria categoria = new CategoriaDAO().get(entry.getKey());
+            Categoria categoria = CategoriaManager.getInstance().getCategoria(entry.getKey());
             precoMaximoCategoriaNovo.put(categoria, entry.getValue());
         }
         boolean encontrouSolucaoOtima = encomendaAtual.configuracaoOtima(precoMaximoCategoriaNovo, precoMaximoTotal);
@@ -232,7 +227,7 @@ public class ConfiguraFacil extends Observable {
      */
     public List<Integer> finalizarEncomenda() throws FaltamDependentesException, Exception { // muda nome, devolve pacotes formados
         boolean flag = encomendaAtual.dependentesEmFalta();
-        flag = encomendaAtual.obrigatoriosEmFalta(getCategoriasObrigatorias());
+        flag = encomendaAtual.obrigatoriosEmFalta(new ArrayList<>(CategoriaManager.getInstance().getAllCategoriasObrigatorias()));
         //otimos = encomendaAtual.otimizaPacotes()
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
@@ -256,20 +251,10 @@ public class ConfiguraFacil extends Observable {
      */
     public Object[][] getComponentesObgConfig() { //novo
 
-        List<Categoria> categ = new ArrayList<>();
-        try {
-            categ = categorias.list();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (CategoriaNaoExisteException categoriaNaoExiste) {
-            try {
-                categorias.remove(categoriaNaoExiste.getMessage());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        Collection<CategoriaObrigatoria> categ = new ArrayList<>();
+        categ = CategoriaManager.getInstance().getAllCategoriasObrigatorias();
         List<Componente> comp = encomendaAtual.getComponentesObrigatorios();
-        Object[][] data = buildCategObrigatorias(categ);
+        Object[][] data = buildCategObrigatorias(new ArrayList<>(categ));
         for(int i = 0; i<categ.size(); i++)
             for(Componente c : comp) {
                 if (c.getCategoria().getDesignacao().equals(data[i][0])) {
@@ -502,25 +487,7 @@ public class ConfiguraFacil extends Observable {
      * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
      */
     public Object[][] getComponentes(String categoria) throws Exception { //novo
-        Categoria cat;
-        switch (categoria){
-            case "Carrocaria":
-                cat = new Carrocaria();
-                break;
-            case "Jantes":
-                cat = new Jantes();
-                break;
-            case "Motor":
-                cat = new Motor();
-                break;
-            case "Pintura":
-                cat = new Pintura();
-                break;
-            case "Pneus":
-                cat = new Pneus();
-                break;
-            default: return null;
-        }
+        Categoria cat = CategoriaManager.getInstance().getCategoria(categoria);
 
         try {
             List<Componente> componentes = todosComponentes.list(cat);
@@ -572,45 +539,24 @@ public class ConfiguraFacil extends Observable {
     /** Array com os nomes das colunas da matriz devolvida em {@link #getPacotes()}. */
     public static String[] colunasPacotes = new String[] {"Id", "Designação", "Desconto(€)", "Componentes"};
 
+    /**
+     * Devolve uma lista de todas as categorias de componentes opcionais.
+     *
+     * @return lista de categorias
+     */
+    public List<String> getCategoriasOpcionais() {
+        return new ArrayList<>(CategoriaManager.getInstance().getAllCategoriasOpcionaisDesignacao());
+    }
 
     /**
      * Devolve uma lista de todas as categorias de componentes opcionais.
      *
      * @return lista de categorias
      */
-    public List<String> getCategoriasOpcionais() throws Exception {
-        try {
-            List<String> nomes = new ArrayList<>();
-            for(Categoria c : categorias.list()){
-                if(!c.getObrigatoria()){
-                    nomes.add(c.getDesignacao());
-                }
-            }
-            return nomes;
-        } catch (CategoriaNaoExisteException | SQLException e) {
-            e.printStackTrace();
-            throw new Exception(); // TODO: 29/12/2018 exception fixe
-        }
+    public List<String> getCategoriasObrigatorias() {
+        return new ArrayList<>(CategoriaManager.getInstance().getAllCategoriasObrigatoriasDesignacao());
     }
-    public List<Categoria> getCategoriasObrigatorias() throws Exception {
-        try {
-            List<Categoria> cat = new ArrayList<>();
-            for(Categoria c : categorias.list()){
-                if(c.getObrigatoria()){
-                    cat.add(c);
-                }
-            }
-            return cat;
-        } catch (CategoriaNaoExisteException | SQLException e) {
-            e.printStackTrace();
-            throw new Exception(); // TODO: 29/12/2018 exception fixe
-        }
-    }
-    /**
-     * Devolve uma lista de todas as categorias de componentes opcionais.
-     *
-     * @return lista de categorias
-     */
+
     // -------------------------------- Utilizadores -------------------------------------------------------------------
 
     /**

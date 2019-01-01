@@ -1,8 +1,8 @@
 package business.venda.categorias;
 
-public class SensoresLuzChuva extends CategoriaOpcional {
+public class Radio extends CategoriaOpcional {
     public String getDesignacao() {
-        return "SensoresLuzLuva";
+        return "Rádio";
     }
 
     @Override
@@ -13,8 +13,7 @@ public class SensoresLuzChuva extends CategoriaOpcional {
         if ((o==null) || (this.getClass() != o.getClass()))
             return false;
 
-        SensoresLuzChuva c = (SensoresLuzChuva) o;
+        Radio c = (Radio) o;
         return (this.getDesignacao().equals(c.getDesignacao()));
     }
 }
-

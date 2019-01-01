@@ -70,7 +70,7 @@ public class ComponenteDAO extends DAO {
 			Set<Integer> dep = getDependentes(id);
 			Set<Integer> inc = getIncompativeis(id);
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = criarCategoria(categoriaDesignacao);
+			Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
 			list.add(new Componente(id, designacao, preco, stock, dep, inc, categoria));
 		}
 		Connect.close(cn);
@@ -130,7 +130,7 @@ public class ComponenteDAO extends DAO {
 			Set<Integer> dep = getDependentes(id);
 			Set<Integer> inc = getIncompativeis(id);
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = criarCategoria(categoriaDesignacao);
+			Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
 			result.add(new Componente(id, designacao, preco, stock, dep, inc, categoria));
 		}
 		return result;
@@ -155,7 +155,7 @@ public class ComponenteDAO extends DAO {
 			Set<Integer> dep = getDependentes(id);
 			Set<Integer> inc = getIncompativeis(id);
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = criarCategoria(categoriaDesignacao);
+			Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
 			result.add(new Componente(id, designacao, preco, stock, dep, inc, categoria));
 		}
 		return result;
@@ -180,7 +180,7 @@ public class ComponenteDAO extends DAO {
 			Set<Integer> dep = getDependentes(id);
 			Set<Integer> inc = getIncompativeis(id);
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = criarCategoria(categoriaDesignacao);
+			Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
 			result.add(new Componente(id, designacao, preco, stock, dep, inc, categoria));
 		}
 		return result;
@@ -206,7 +206,7 @@ public class ComponenteDAO extends DAO {
 			Set<Integer> dep = getDependentes(id);
 			Set<Integer> inc = getIncompativeis(id);
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = criarCategoria(categoriaDesignacao);
+			Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
 			result.add(new Componente(id, designacao, preco, stock, dep, inc, categoria));
 		}
 		return result;
@@ -224,7 +224,7 @@ public class ComponenteDAO extends DAO {
 			Set<Integer> dep = getDependentes(id);
 			Set<Integer> inc = getIncompativeis(id);
 			String categoriaDesignacao = res.getString("categoria");
-			Categoria categoria = criarCategoria(categoriaDesignacao);
+			Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
 			Connect.close(cn);
 			return new Componente(id, designacao, preco, stock, dep, inc, categoria);
 		} else {
@@ -327,16 +327,7 @@ public class ComponenteDAO extends DAO {
 				}
 				incompatibilidadesComponentes.put(id, incompatibilidades);
 				String categoriaDesignacao = data[6];
-				Categoria categoria;
-				try {
-					categoria = new CategoriaDAO().get(categoriaDesignacao);
-				} catch (CategoriaNaoExisteException e) {
-					categoria = null;
-				}
-				if(categoria == null) {
-					categoria = new CategoriaOpcional(categoriaDesignacao);
-					new CategoriaDAO().add(categoria);
-				}
+				Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
 				add(new Componente(id, designacao, preco, stock, new HashSet<>(), new HashSet<>(), categoria));
 				str = br.readLine();
 			}
@@ -369,23 +360,4 @@ public class ComponenteDAO extends DAO {
 		}
 	}
 
-	private Categoria criarCategoria(String designacao) {
-		if(designacao == null){
-			return null;
-		}
-		switch (designacao){
-			case "Carrocaria":
-				return new Carrocaria();
-			case "Jantes":
-				return new Jantes();
-			case "Motor":
-				return new Motor();
-			case "Pintura":
-				return new Pintura();
-			case "Pneus":
-				return new Pneus();
-			default:
-				return null;
-		}
-	}
 }

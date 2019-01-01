@@ -5,9 +5,6 @@ import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.Categoria;
-import data.CategoriaDAO;
-import data.ComponenteDAO;
-import javafx.util.Pair;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

@@ -1,8 +1,8 @@
 package business.venda.categorias;
 
-public class RadioTatil7 extends CategoriaOpcional {
+public class SistemaDeSom extends CategoriaOpcional {
     public String getDesignacao() {
-        return "RadioTatil7";
+        return "Sistema de som";
     }
 
     @Override
@@ -13,7 +13,7 @@ public class RadioTatil7 extends CategoriaOpcional {
         if ((o==null) || (this.getClass() != o.getClass()))
             return false;
 
-        RadioTatil7 c = (RadioTatil7) o;
+        SistemaDeSom c = (SistemaDeSom) o;
         return (this.getDesignacao().equals(c.getDesignacao()));
     }
 }

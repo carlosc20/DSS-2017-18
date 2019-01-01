@@ -1,8 +1,8 @@
 package business.venda.categorias;
 
-public class EstofosPeleVermelha extends CategoriaOpcional {
+public class Tablier extends CategoriaOpcional {
     public String getDesignacao() {
-        return "EstofosPeleVermelha";
+        return "Tablier";
     }
 
     @Override
@@ -13,8 +13,7 @@ public class EstofosPeleVermelha extends CategoriaOpcional {
         if ((o==null) || (this.getClass() != o.getClass()))
             return false;
 
-        EstofosPeleVermelha c = (EstofosPeleVermelha) o;
+        Tablier c = (Tablier) o;
         return (this.getDesignacao().equals(c.getDesignacao()));
     }
 }
-

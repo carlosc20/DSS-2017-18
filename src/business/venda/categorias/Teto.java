@@ -1,8 +1,8 @@
 package business.venda.categorias;
 
-public class TablierCarbono extends CategoriaOpcional {
+public class Teto extends CategoriaOpcional {
     public String getDesignacao() {
-        return "TablierCarbono";
+        return "Teto";
     }
 
     @Override
@@ -13,7 +13,8 @@ public class TablierCarbono extends CategoriaOpcional {
         if ((o==null) || (this.getClass() != o.getClass()))
             return false;
 
-        TablierCarbono c = (TablierCarbono) o;
+        Teto c = (Teto) o;
         return (this.getDesignacao().equals(c.getDesignacao()));
     }
 }
+

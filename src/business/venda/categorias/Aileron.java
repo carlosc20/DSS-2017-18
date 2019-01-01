@@ -1,8 +1,8 @@
 package business.venda.categorias;
 
-public class CintoAmarelo extends CategoriaOpcional {
+public class Aileron extends CategoriaOpcional {
     public String getDesignacao() {
-        return "CintoAmarelo";
+        return "Aileron";
     }
 
     @Override
@@ -13,8 +13,7 @@ public class CintoAmarelo extends CategoriaOpcional {
         if ((o==null) || (this.getClass() != o.getClass()))
             return false;
 
-        CintoAmarelo c = (CintoAmarelo) o;
+        Aileron c = (Aileron) o;
         return (this.getDesignacao().equals(c.getDesignacao()));
     }
 }
-

@@ -1,8 +1,8 @@
 package business.venda.categorias;
 
-public class FaroisXenon extends CategoriaOpcional {
+public class Farois extends CategoriaOpcional {
     public String getDesignacao() {
-        return "FaroisXenon";
+        return "Farois";
     }
 
     @Override
@@ -13,7 +13,7 @@ public class FaroisXenon extends CategoriaOpcional {
         if ((o==null) || (this.getClass() != o.getClass()))
             return false;
 
-        FaroisXenon c = (FaroisXenon) o;
+        Farois c = (Farois) o;
         return (this.getDesignacao().equals(c.getDesignacao()));
     }
 }
