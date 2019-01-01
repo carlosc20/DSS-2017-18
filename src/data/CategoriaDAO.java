@@ -18,6 +18,14 @@ public class CategoriaDAO extends DAO {
         cdao.add(new Motor());
         cdao.add(new Pintura());
         cdao.add(new Pneus());
+        cdao.add(new CintoAmarelo());
+        cdao.add(new EstofosPelePreto());
+        cdao.add(new EstofosPeleVermelha());
+        cdao.add(new FaroisXenon());
+        cdao.add(new RadioTatil5());
+        cdao.add(new RadioTatil7());
+        cdao.add(new SensoresLuzChuva());
+        cdao.add(new TablierCarbono());
     }
 
     public boolean add(Categoria categoria) throws SQLException {
@@ -63,7 +71,31 @@ public class CategoriaDAO extends DAO {
     public int size() throws SQLException {
         return super.size("Categoria");
     }
-
+    private Categoria opcionais(String designacao) throws CategoriaNaoExisteException{
+        if(designacao == null){
+            throw new CategoriaNaoExisteException(null);
+        }
+        switch (designacao) {
+            case "CintoAmarelo":
+                return new CintoAmarelo();
+            case "EstofosPelePreto":
+                return new EstofosPelePreto();
+            case "EstofosPeleVermelha":
+                return new EstofosPeleVermelha();
+            case "FaroisXenon":
+                return new FaroisXenon();
+            case "RadioTatil5":
+                return new RadioTatil5();
+            case "RadioTatil7":
+                return new RadioTatil7();
+            case "SensoresLuzChuva":
+                return new SensoresLuzChuva();
+            case "TablierCarbono":
+                return new TablierCarbono();
+            default:
+                throw new CategoriaNaoExisteException(null);
+        }
+    }
     private Categoria criarCategoria(String designacao) throws CategoriaNaoExisteException {
         if(designacao == null){
             throw new CategoriaNaoExisteException(null);
@@ -80,7 +112,8 @@ public class CategoriaDAO extends DAO {
             case "Pneus":
                 return new Pneus();
             default:
-                return new CategoriaOpcional(designacao);
+                return opcionais(designacao);
         }
     }
+
 }
