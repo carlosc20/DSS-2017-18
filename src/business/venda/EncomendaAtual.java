@@ -83,7 +83,12 @@ public class EncomendaAtual {
 	public List<Componente> getComponentesObrigatorios() {
 		return configuracao.getComponentesObrigatórios();
 	}
-
+	public boolean dependentesEmFalta() throws FaltamDependentesException {
+		return configuracao.dependentesEmFalta();
+	}
+	public boolean obrigatoriosEmFalta(List<Categoria> obr) throws FaltamComponenteObrigatorioException {
+		return configuracao.obrigatoriosEmFalta(obr);
+	}
 	public int getDesconto(){
 		return configuracao.getDesconto();
 	}

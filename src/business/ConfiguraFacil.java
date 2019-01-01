@@ -231,6 +231,9 @@ public class ConfiguraFacil extends Observable {
      * @return lista de pacotes formados
      */
     public List<Integer> finalizarEncomenda() throws FaltamDependentesException, Exception { // muda nome, devolve pacotes formados
+        boolean flag = encomendaAtual.dependentesEmFalta();
+        flag = encomendaAtual.obrigatoriosEmFalta(getCategoriasObrigatorias());
+        //otimos = encomendaAtual.otimizaPacotes()
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
             if(feita.getFinalizada()) {
@@ -584,6 +587,20 @@ public class ConfiguraFacil extends Observable {
                 }
             }
             return nomes;
+        } catch (CategoriaNaoExisteException | SQLException e) {
+            e.printStackTrace();
+            throw new Exception(); // TODO: 29/12/2018 exception fixe
+        }
+    }
+    public List<Categoria> getCategoriasObrigatorias() throws Exception {
+        try {
+            List<Categoria> cat = new ArrayList<>();
+            for(Categoria c : categorias.list()){
+                if(c.getObrigatoria()){
+                    cat.add(c);
+                }
+            }
+            return cat;
         } catch (CategoriaNaoExisteException | SQLException e) {
             e.printStackTrace();
             throw new Exception(); // TODO: 29/12/2018 exception fixe

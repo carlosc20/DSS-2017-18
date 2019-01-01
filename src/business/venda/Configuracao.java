@@ -405,13 +405,28 @@ public class Configuracao {
 	}
 
 	public Set<Componente> atualizaStock() throws SQLException, FaltamDependentesException {
-		for(int id : dependentes){
-			if (!componentes.keySet().contains(id))
-				throw new FaltamDependentesException("Insira a seguinte dependência: " + Integer.toString(id));
-		}
-
 		return cDAO.atualizaStock(new ArrayList<Componente>(componentes.values()));
 	}
+	public boolean dependentesEmFalta() throws FaltamDependentesException {
+		for(int id : dependentes){
+			if (!componentes.keySet().contains(id))
+				throw new FaltamDependentesException(Integer.toString(id));
+		}
+		return false;
+	}
+
+	public boolean obrigatoriosEmFalta(List<Categoria> obr) throws FaltamComponenteObrigatorioException {
+		int count = 0;
+		for (Componente c : componentes.values()){
+			for(Categoria cat : obr){
+				if(c.getCategoria().equals(cat))
+					count++;
+			}
+		}
+		if(count == obr.size()) throw new FaltamComponenteObrigatorioException("");
+		return false;
+	}
+
 	public int getDesconto(){
 		int val = 0;
 		for(Pacote p : pacotes.values()){
