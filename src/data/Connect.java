@@ -5,10 +5,10 @@ import java.sql.DriverManager;
 
 public class Connect {
 
-    private static final String URL = "localhost";
-    private static final String SCHEMA = "configuraFacil";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "Hansolo20";
+    private static final String URL = "db4free.net:3306";
+    private static final String SCHEMA = "configfacil";
+    private static final String USERNAME = "configfacil";
+    private static final String PASSWORD = "configfacil";
 
     static Connection connection = null;
 
