@@ -56,7 +56,6 @@ public class Configuracao {
 		//if (escolha) dependentes.remove(idComponente);
 
 		//Formação de pacote
-		int descontoAcrescentado;
 		//Damos prioridade aos dormentes. Podiam haver mais pacotes possíveis a ser formados, mas como não aceitamos conflitos
 		//estes componentes estão reservados a pacotes inativos
 		//Pacotes inativos podem ser de componentes removidos normalmente e não de dependentes, mas também parece-me indicado
@@ -65,7 +64,8 @@ public class Configuracao {
 		if (pacotesDormentes.containsKey(idComponente)){
 			PacoteDormente pd = pacotesDormentes.get(idComponente);
 			boolean flag = pd.decr();
-			pacotes.put(pd.getId(), new Pacote(pd));
+			if(flag){
+			pacotes.put(pd.getId(), new Pacote(pd));}
 		}
 		else {
 			formacaoPacote(componente);
