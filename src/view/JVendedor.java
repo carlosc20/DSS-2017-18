@@ -95,7 +95,7 @@ public class JVendedor implements Observer {
                         "Nome:", nomeF,
                         "Nif:", nifF,
                 };
-                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Dados do cliente", opcoes);
+                int opcao = JanelaUtil.mostraJanelaOpcoes(frame, "Dados do cliente", opcoes);
                 if (opcao == JOptionPane.OK_OPTION) {
                     String nome = nomeF.getText();
                     try {
@@ -104,9 +104,9 @@ public class JVendedor implements Observer {
                         new JNovaEncomenda();
                         frame.dispose();
                     } catch (NumberFormatException e1) {
-                        JanelaUtil.mostrarJanelaErro(frame, "Nif deve ser um número.");
+                        JanelaUtil.mostraJanelaErro(frame, "Nif deve ser um número.");
                     } catch (FaltamComponenteObrigatorioException e1) {
-                        JanelaUtil.mostrarJanelaErro(frame, "Não existem componentes obrigatórios suficientes.");
+                        JanelaUtil.mostraJanelaErro(frame, "Não existem componentes obrigatórios suficientes.");
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -122,7 +122,7 @@ public class JVendedor implements Observer {
         try {
             modelFP.setDataVector(facade.getFilaProducao(), colunasFilaProducao);
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados.");
             e.printStackTrace();
         }
     }
@@ -134,7 +134,7 @@ public class JVendedor implements Observer {
         try {
             modelRP.setDataVector(facade.getRegistoProduzidas(), colunasRegistoProduzidas);
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados.");
             e.printStackTrace();
         }
     }

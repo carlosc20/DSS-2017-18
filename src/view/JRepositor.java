@@ -8,9 +8,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -96,7 +93,7 @@ public class JRepositor implements Observer {
                         JanelaUtil.mostraJanelaInformacao(frame, "Componentes atualizados com sucesso");
                     } catch (Exception e1) {
                         e1.printStackTrace();
-                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
+                        JanelaUtil.mostraJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
@@ -131,7 +128,7 @@ public class JRepositor implements Observer {
                         JanelaUtil.mostraJanelaInformacao(frame, "Pacotes atualizados com sucesso");
                     } catch (Exception e1) {
                         e1.printStackTrace();
-                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
+                        JanelaUtil.mostraJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
@@ -147,7 +144,7 @@ public class JRepositor implements Observer {
             modelC.setDataVector(facade.getComponentes(), colunasComponentes);
         } catch (Exception e) {
             e.printStackTrace();
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Componentes).");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados (Componentes).");
         }
     }
 
@@ -159,7 +156,7 @@ public class JRepositor implements Observer {
             modelP.setDataVector(facade.getPacotes(), colunasPacotes);
         } catch (Exception e) {
             e.printStackTrace();
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
         }
     }
 

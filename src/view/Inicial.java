@@ -3,7 +3,6 @@ package view;
 import business.ConfiguraFacil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -49,15 +48,17 @@ public class Inicial {
                             new JRepositor();
                             break;
                         default:
-                            JanelaUtil.mostrarJanelaErro(frame, "Cargo não atribuído.");
+                            JanelaUtil.mostraJanelaErro(frame, "Cargo não atribuído.");
                     }
                 } catch (Exception e1) {
-                    JanelaUtil.mostrarJanelaErro(frame, "Dados incorretos.");
+                    JanelaUtil.mostraJanelaErro(frame, "Dados incorretos.");
                     nomeField.requestFocusInWindow();
                     e1.printStackTrace();
                 }
             }
         });
     }
-
+    public static void main(String[] args) {
+        new Inicial();
+    }
 }
