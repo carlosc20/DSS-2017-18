@@ -1,15 +1,12 @@
 package data;
 
 import business.gestao.EncomendaEmProducao;
-import business.gestao.Encomenda;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 public class EncomendaEmProducaoDAO extends DAO {

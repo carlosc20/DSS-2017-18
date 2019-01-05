@@ -16,7 +16,6 @@ public class Configuracao {
 	private HashMap<Integer,Componente> componentes; //Componentes da configuração
 	private Set<Integer> dependentes; 	 //Id's dos componentes que precisam de ser adicionados
 	private HashMap<Integer, Pacote> pacotes;		 //Pacotes da configuração
-	private HashMap<Integer, PacoteDormente> pacotesDormentes;  //Pacotes que deixaram de estar ativos, mas podem voltar.
 	private ComponenteDAO cDAO;
 	private PacoteDAO pDAO;
 
@@ -24,7 +23,6 @@ public class Configuracao {
 		this.componentes = new HashMap<>();
 		this.dependentes = new HashSet<>();
 		this.pacotes = new HashMap<>();
-		this.pacotesDormentes = new HashMap<>();
 		this.cDAO = new ComponenteDAO();
 		this.pDAO = new PacoteDAO();
 	}
@@ -61,16 +59,7 @@ public class Configuracao {
 		//Pacotes inativos podem ser de componentes removidos normalmente e não de dependentes, mas também parece-me indicado
 		//dar prioridade a estes.
 
-		if (pacotesDormentes.containsKey(idComponente)){
-			PacoteDormente pd = pacotesDormentes.get(idComponente);
-			boolean flag = pd.decr();
-			if(flag){
-			pacotes.put(pd.getId(), new Pacote(pd));}
-		}
-		else {
 			formacaoPacote(componente);
-		}
-		otimizarPacotes();
 		return pac;
 	}
 	/*
@@ -79,14 +68,12 @@ public class Configuracao {
 	 *@returns val valor a descontar para o total da encomenda
 	 */
 	public void formacaoPacote(Componente componente) throws SQLException {
-		List<Pacote> pac;    //Pacotes que tem na sua constituição o componente fornecido como parámetro
-		HashSet<Integer> aux;    //Componentes de um pacote
-		TreeSet<Pacote> formados = new TreeSet<>(new ComparaPacotesByDesconto()); // pacotes que podem ser formados
+		List<Pacote> pac;
+		HashSet<Integer> aux;
+		TreeSet<Pacote> formados = new TreeSet<>(new ComparaPacotesByDesconto());
 		pac = pDAO.list(componente);
-		int count;            	//Irá indicar se pode ser formado o pacote
+		int count;
 
-		//!!!Talvez possa otimizar e trazer os pacotes para a memória, mas não sei se vale a pena
-		//Por cada pacote que na sua constituição tem o componente vamos verificar se temos todos os componentes necessários
 		for (Pacote p : pac) {
 			aux = (HashSet<Integer>) p.getComponentes();
 			count = 0;
@@ -98,13 +85,10 @@ public class Configuracao {
 			if (count == aux.size() && !existeConflito(aux)) formados.add(p);
 		}
 
-		//É retirado o pacote com menor custo da estrutura auxiliar e adicionado à configuração
-
 		if(formados.size()!=0){
 			Pacote p = formados.first();
 			pacotes.put(p.getId(), p);
 			}
-
 	}
 	/*
 	 *Vai buscar as incompatibilidades dos componentes que recebeu como argumento e remove-as
@@ -245,30 +229,19 @@ public class Configuracao {
 			Componente c = cDAO.get(id);
 			this.componentes.put(id,c);
 		}
-		otimizarPacotes();
 		return pac;
 	}
 	private void tratarDependenciasPacote(Set<Componente> componentes, Pacote p) throws SQLException {
 		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
 		HashSet aux = new HashSet();					  //Id's dos componentes dependentes de cada um dos componentes do Set fornecido
 
-		//Vai buscar todas as dependências
 		for(Componente c : componentes){
 			int id = c.getId();
 			aux = (HashSet) c.getDepedendencias();
 			idDependentes.addAll(aux);
 		}
-		//Se houver adiciona à lista de dependências da configuração
-		if (idDependentes.size() == 0) {
-			this.pacotes.put(p.getId(),p);
-		}
+		this.pacotes.put(p.getId(),p);
 		this.dependentes.addAll(idDependentes);
-
-		PacoteDormente pd = new PacoteDormente(p,0);
-		for(int id : idDependentes) {
-			pd.incr();
-			pacotesDormentes.put(id, pd);
-		}
 	}
 
 	private boolean existeConflito(Set<Integer> componentes) {
@@ -314,7 +287,7 @@ public class Configuracao {
 	public Set<Integer> getIncompatibilidadesPacote(int idPacote) throws PacoteJaExisteNaConfiguracaoException, PacoteGeraConflitosException, SQLException {
 		Pacote pacote = pDAO.get(idPacote);
 
-		if(pacotes.containsKey(idPacote) || pacotesDormentes.containsValue(pacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
+		if(pacotes.containsKey(idPacote)) throw new PacoteJaExisteNaConfiguracaoException("Já existe");
 
 		if(existeConflito(pacote.getComponentes())) {
 			throw new PacoteGeraConflitosException("Já existe um pacote com algum dos componentes do que pretende adicionar");
@@ -356,6 +329,7 @@ public class Configuracao {
 	}
 
 	public List<Integer> otimizarPacotes() throws SQLException {
+		System.out.println("A otimizar pacotes");
 		Set<Pacote> otimos = calculaOtimos(getPacotesValidos(componentes.values()));
 		boolean reotimizacao = comparaPacotes(otimos);
 		if(reotimizacao) {
@@ -413,16 +387,15 @@ public class Configuracao {
 		return false;
 	}
 
-	public boolean obrigatoriosEmFalta(List<Categoria> obr) throws FaltamComponenteObrigatorioException {
+	public boolean obrigatoriosEmFalta(List<Categoria> obr) {
 		int count = 0;
-		for (Componente c : componentes.values()){
+		for (Componente c : componentes.values()) {
 			for(Categoria cat : obr){
 				if(c.getCategoria().equals(cat))
 					count++;
 			}
 		}
-		if(count == obr.size()) throw new FaltamComponenteObrigatorioException("");
-		return false;
+		return count < obr.size();
 	}
 
 	public int getDesconto(){
@@ -479,14 +452,16 @@ public class Configuracao {
 				for(Componente componente : solucaoTodosComponentes){
 					componentes.put(componente.getId(), componente);
 				}
-				if(comparaPacotes(solucaoPacote)){
-					//Adiciona o pacote se este for melhor
-					pacotes.clear();
-					for (Pacote pacote : solucaoPacote){
-						pacotes.put(pacote.getId(), pacote);
+				if(configuracaoValida(componentes)) {
+					if (comparaPacotes(solucaoPacote)) {
+						//Adiciona o pacote se este for melhor
+						pacotes.clear();
+						for (Pacote pacote : solucaoPacote) {
+							pacotes.put(pacote.getId(), pacote);
+						}
 					}
+					return true; // Encontrou-se a solução ótima
 				}
-				return true; // Encontrou-se a solução ótima
 			} else {
 				int minDiferencaDePreco = 0;
 				Pair<Categoria, Componente> proximoEntrar = null; //Próximo a entrar na solução
@@ -532,6 +507,24 @@ public class Configuracao {
 			}
 		}
 		return pacotesValidos;
+	}
+
+	private boolean configuracaoValida(Map<Integer, Componente> componentes) throws SQLException {
+		HashSet<Integer> dependencias = new HashSet<>();
+		HashSet<Integer> incompatibilidades = new HashSet<>();
+		for (Componente componente : componentes.values()){
+			dependencias.addAll(componente.getDepedendencias());
+			incompatibilidades.addAll(componente.getIncompatibilidades());
+		}
+		for (int componenteId : componentes.keySet()){
+			if(dependencias.contains(componenteId)){
+				dependencias.remove(componenteId);
+			}
+			if(incompatibilidades.contains(componenteId)){
+				return false;
+			}
+		}
+		return dependencias.size() == 0;
 	}
 
 	public List<Componente> getComponentes() {

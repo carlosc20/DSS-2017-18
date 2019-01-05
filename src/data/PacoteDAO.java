@@ -1,6 +1,6 @@
 package data;
 
-import business.gestao.Encomenda;
+import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 
@@ -19,7 +19,7 @@ public class PacoteDAO extends DAO {
 		String designacao = pacote.getDesignacao();
 		int desconto = pacote.getDesconto();
 		Set<Integer> componentes = pacote.getComponentes();
-		PreparedStatement st = cn.prepareStatement("REPLACE INTO Pacote (id, designacao, desconto) VALUES (?, ?, ?)");
+		PreparedStatement st = cn.prepareStatement("INSERT INTO Pacote (id, designacao, desconto) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = id, designacao = designacao, desconto = desconto");
 		st.setInt(1, id);
 		st.setString(2, designacao);
 		st.setInt(3, desconto);
@@ -76,7 +76,7 @@ public class PacoteDAO extends DAO {
 		return result;
 	}
 
-	public List<Pacote> list(Encomenda encomenda) throws SQLException {
+	public List<Pacote> list(EncomendaFinalizada encomenda) throws SQLException {
 		int idEncomenda = encomenda.getId();
 		Connection cn = Connect.connect();
 		List<Pacote> result = new ArrayList<>();
@@ -135,25 +135,25 @@ public class PacoteDAO extends DAO {
 		return super.size("Pacote");
 	}
 
-	public void importCSV(File file) throws SQLException, IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
+	public void addAll(Collection<Pacote> pacotes) throws SQLException {
 		Connection cn = Connect.connect();
 		cn.setAutoCommit(false);
-		String str = br.readLine();
 		try {
-			while (str != null) {
-				System.out.println(str);
-				String[] data = str.substring(1, str.length() - 1).split("\",\"");
-				int id = Integer.parseInt(data[0]);
-				String designacao = data[1];
-				int desconto = Integer.parseInt(data[2]);
-				String[] componentesStrings = data[3].equals("") ? new String[0] : data[3].split(",");
-				HashSet<Integer> componentes = new HashSet<>();
-				for(String componente:componentesStrings){
-					componentes.add(Integer.parseInt(componente));
+			cn.createStatement().execute("DELETE FROM Pacote_Componente");
+			for (Pacote pacote : pacotes){
+				PreparedStatement st = cn.prepareStatement("INSERT INTO Pacote (id, designacao, desconto) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = id, designacao = designacao, desconto = desconto");
+				st.setInt(1, pacote.getId());
+				st.setString(2, pacote.getDesignacao());
+				st.setInt(3, pacote.getDesconto());
+			}
+			for (Pacote pacote : pacotes) {
+				int pacoteId = pacote.getId();
+				for (int componenteId : pacote.getComponentes()) {
+					PreparedStatement st = cn.prepareStatement("INSERT INTO Pacote_Componente (id_pacote, id_componente) VALUES (?, ?)");
+					st.setInt(1, pacoteId);
+					st.setInt(2, componenteId);
+					st.execute();
 				}
-				add(new Pacote(id, designacao, desconto, componentes));
-				str = br.readLine();
 			}
 			cn.commit();
 		} catch (Exception e){

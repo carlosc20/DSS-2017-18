@@ -1,7 +1,7 @@
 package data;
 
 import business.gestao.EncomendaEmProducao;
-import business.gestao.Encomenda;
+import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.*;
@@ -27,7 +27,7 @@ public class ComponenteDAO extends DAO {
 		String categoria = componente.getCategoria().getDesignacao();
 		Set<Integer> dependencias = componente.getDepedendencias();
 		Set<Integer> incompatibilidades = componente.getIncompatibilidades();
-		PreparedStatement st = cn.prepareStatement("REPLACE INTO Componente (id, designacao, preco, stock, categoria) VALUES (?, ?, ?, ?, ?)");
+		PreparedStatement st = cn.prepareStatement("INSERT INTO Componente (id, designacao, preco, stock, categoria) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id = id, designacao = designacao, preco = preco, stock = stock, categoria = categoria");
 		st.setInt(1, id);
 		st.setString(2, designacao);
 		st.setInt(3, preco);
@@ -111,7 +111,7 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public List<Componente> list(Encomenda encomenda) throws SQLException {
+	public List<Componente> list(EncomendaFinalizada encomenda) throws SQLException {
 		int idEncomenda = encomenda.getId();
 		Connection cn = Connect.connect();
 		List<Componente> result = new ArrayList<>();
@@ -296,56 +296,32 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public void importCSV(File file) throws SQLException, IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
+	public void addAll(Collection<Componente> componentes) throws SQLException {
 		Connection cn = Connect.connect();
 		cn.setAutoCommit(false);
-		String str = br.readLine();
 		try {
 			cn.createStatement().execute("DELETE FROM Componente_Dependente");
 			cn.createStatement().execute("DELETE FROM Componente_Incompativel");
-			cn.createStatement().execute("DELETE FROM Componente");
-			HashMap<Integer, HashSet<Integer>> dependenciasComponentes = new HashMap<>();
-			HashMap<Integer, HashSet<Integer>> incompatibilidadesComponentes = new HashMap<>();
-			while (str != null) {
-				System.out.println(str);
-				String[] data = str.substring(1, str.length() - 1).split("\",\"");
-				int id = Integer.parseInt(data[0]);
-				String designacao = data[1];
-				int preco = Integer.parseInt(data[2]);
-				int stock = Integer.parseInt(data[3]);
-				String[] dependenciasStrings = data[4].equals("") ? new String[0] : data[4].split(",");
-				HashSet<Integer> dependencias = new HashSet<>();
-				for(String dependencia:dependenciasStrings){
-					dependencias.add(Integer.parseInt(dependencia));
-				}
-				dependenciasComponentes.put(id, dependencias);
-				String[] incompatibilidadesStrings = data[5].equals("") ? new String[0] : data[5].split(",");
-				HashSet<Integer> incompatibilidades = new HashSet<>();
-				for(String incompatibilidade:incompatibilidadesStrings){
-					incompatibilidades.add(Integer.parseInt(incompatibilidade));
-				}
-				incompatibilidadesComponentes.put(id, incompatibilidades);
-				String categoriaDesignacao = data[6];
-				Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
-				add(new Componente(id, designacao, preco, stock, new HashSet<>(), new HashSet<>(), categoria));
-				str = br.readLine();
+			for (Componente componente : componentes){
+				PreparedStatement st = cn.prepareStatement("INSERT INTO Componente (id, designacao, preco, stock, categoria) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id = id, designacao = designacao, preco = preco, stock = stock, categoria = categoria");
+				st.setInt(1, componente.getId());
+				st.setString(2, componente.getDesignacao());
+				st.setInt(3, componente.getPreco());
+				st.setInt(4, componente.getStock());
+				st.setString(5, componente.getCategoria().getDesignacao());
+				st.execute();
 			}
-
-			for (Map.Entry<Integer, HashSet<Integer>> entry : dependenciasComponentes.entrySet()){
-				int componente = entry.getKey();
-				for (int dependencia : entry.getValue()) {
+			for (Componente componente : componentes){
+				int componenteId = componente.getId();
+				for (int dependencia : componente.getDepedendencias()) {
 					PreparedStatement st = cn.prepareStatement("INSERT INTO Componente_Dependente (id_componente, id_dependente) VALUES (?, ?)");
-					st.setInt(1, componente);
+					st.setInt(1, componenteId);
 					st.setInt(2, dependencia);
 					st.execute();
 				}
-			}
-			for (Map.Entry<Integer, HashSet<Integer>> entry : incompatibilidadesComponentes.entrySet()){
-				int componente = entry.getKey();
-				for (int incompatibilidade : entry.getValue()) {
+				for (int incompatibilidade : componente.getIncompatibilidades()) {
 					PreparedStatement st = cn.prepareStatement("INSERT INTO Componente_Incompativel (id_componente, id_incompativel) VALUES (?, ?)");
-					st.setInt(1, componente);
+					st.setInt(1, componenteId);
 					st.setInt(2, incompatibilidade);
 					st.execute();
 				}
@@ -359,5 +335,4 @@ public class ComponenteDAO extends DAO {
 			Connect.close(cn);
 		}
 	}
-
 }

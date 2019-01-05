@@ -1,7 +1,8 @@
-package business;// import Venda.Encomenda;
-// import Diagrama_de_packages.Business.Encomenda;
+package business;// import Venda.EncomendaFinalizada;
+// import Diagrama_de_packages.Business.EncomendaFinalizada;
 
 import business.gestao.Encomenda;
+import business.gestao.EncomendaFinalizada;
 import business.gestao.EncomendaEmProducao;
 import business.produtos.Componente;
 import business.produtos.Pacote;
@@ -14,10 +15,11 @@ import business.venda.categorias.*;
 import data.*;
 import business.venda.EncomendaAtual;
 import business.venda.categorias.Categoria;
-import javafx.util.Pair;
 
-import javax.swing.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -31,7 +33,7 @@ public class ConfiguraFacil extends Observable {
 	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
 	private PacoteDAO todosPacotes = new PacoteDAO();
-	private EncomendaDAO registoProduzidas = new EncomendaDAO();
+	private EncomendaFinalizadaDAO registoProduzidas = new EncomendaFinalizadaDAO();
 	private UtilizadorDAO utilizadores = new UtilizadorDAO();
 
 
@@ -42,7 +44,7 @@ public class ConfiguraFacil extends Observable {
     private ConfiguraFacil(){}
 
 
-    // -------------------------------- Encomenda Atual ----------------------------------------------------------------
+    // -------------------------------- EncomendaFinalizada Atual ----------------------------------------------------------------
 
     /**
      * Cria uma encomenda com os dados do cliente
@@ -52,7 +54,7 @@ public class ConfiguraFacil extends Observable {
      * @throws Exception
      */
     public void criarEncomenda(String cliente, int nif) throws FaltamComponenteObrigatorioException, Exception { //muda nome
-        int id = new EncomendaDAO().size() + 1;
+        int id = new EncomendaFinalizadaDAO().size() + 1;
         for (Categoria categoria : CategoriaManager.getInstance().getAllCategoriasObrigatorias()){
             if(new ComponenteDAO().list(categoria).isEmpty()){
                 throw new FaltamComponenteObrigatorioException(categoria.getDesignacao());
@@ -225,21 +227,27 @@ public class ConfiguraFacil extends Observable {
      *
      * @return lista de pacotes formados
      */
-    public List<Integer> finalizarEncomenda() throws FaltamDependentesException, Exception { // muda nome, devolve pacotes formados
+    public List<Integer> finalizarEncomenda() throws FaltamDependentesException, FaltamComponenteObrigatorioException, SQLException { // muda nome, devolve pacotes formados
         boolean flag = encomendaAtual.dependentesEmFalta();
+        if(flag){
+            throw new FaltamDependentesException("");
+        }
         flag = encomendaAtual.obrigatoriosEmFalta(new ArrayList<>(CategoriaManager.getInstance().getAllCategoriasObrigatorias()));
+        if(flag){
+            throw new FaltamComponenteObrigatorioException("");
+        }
         //otimos = encomendaAtual.otimizaPacotes()
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
-            if(feita.getFinalizada()) {
-                registoProduzidas.add(feita);
-            } else {
+            if(feita instanceof EncomendaFinalizada) {
+                registoProduzidas.add((EncomendaFinalizada) feita);
+            } else if (feita instanceof EncomendaEmProducao) {
                 filaProducao.add((EncomendaEmProducao) feita);
             }
             return new ArrayList<>(); // TODO: 29/12/2018 pacotes formados
         } catch (SQLException e){
             e.printStackTrace();
-            throw new Exception(); // TODO: 29/12/2018 exceçao fixe
+            throw e; // TODO: 29/12/2018 exceçao fixe
         }
     }
 
@@ -359,10 +367,10 @@ public class ConfiguraFacil extends Observable {
      */
     public Object[][] getRegistoProduzidas() throws Exception { //novo
         try {
-            List<Encomenda> encs = registoProduzidas.list();
+            List<EncomendaFinalizada> encs = registoProduzidas.list();
             Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasRegistoProduzidas.length];
             int i = 0;
-            for (Encomenda e : encs) {
+            for (EncomendaFinalizada e : encs) {
                 data[i][0] = e.getId();
                 data[i][1] = e.getCliente();
                 data[i][2] = e.getNif();
@@ -436,8 +444,31 @@ public class ConfiguraFacil extends Observable {
      * @param file ficheiro de formato CSV que contém as informações de componentes
      */
     public void atualizaComponentes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
-        // TODO: 29/12/2018 passar logica para aqui
-        new ComponenteDAO().importCSV(file);
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String str = br.readLine();
+        ArrayList<Componente> list = new ArrayList<>();
+        while (str != null) {
+            String[] data = str.substring(1, str.length() - 1).split("\",\"");
+            int id = Integer.parseInt(data[0]);
+            String designacao = data[1];
+            int preco = Integer.parseInt(data[2]);
+            int stock = Integer.parseInt(data[3]);
+            String[] dependenciasStrings = data[4].equals("") ? new String[0] : data[4].split(",");
+            HashSet<Integer> dependencias = new HashSet<>();
+            for(String dependencia:dependenciasStrings){
+                dependencias.add(Integer.parseInt(dependencia));
+            }
+            String[] incompatibilidadesStrings = data[5].equals("") ? new String[0] : data[5].split(",");
+            HashSet<Integer> incompatibilidades = new HashSet<>();
+            for(String incompatibilidade:incompatibilidadesStrings){
+                incompatibilidades.add(Integer.parseInt(incompatibilidade));
+            }
+            String categoriaDesignacao = data[6];
+            Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
+            list.add(new Componente(id, designacao, preco, stock, dependencias, incompatibilidades, categoria));
+            str = br.readLine();
+        }
+        new ComponenteDAO().addAll(list);
 
         setChanged();
         notifyObservers(0);
@@ -451,7 +482,22 @@ public class ConfiguraFacil extends Observable {
      */
     public void atualizaPacotes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
         // TODO: 29/12/2018 passar logica para aqui
-        new PacoteDAO().importCSV(file);
+        ArrayList<Pacote> list = new ArrayList<>();
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String str = br.readLine();
+        while (str != null) {
+            String[] data = str.substring(1, str.length() - 1).split("\",\"");
+            int id = Integer.parseInt(data[0]);
+            String designacao = data[1];
+            int desconto = Integer.parseInt(data[2]);
+            String[] componentesStrings = data[3].equals("") ? new String[0] : data[3].split(",");
+            HashSet<Integer> componentes = new HashSet<>();
+            for(String componente:componentesStrings){
+                componentes.add(Integer.parseInt(componente));
+            }
+            list.add(new Pacote(id, designacao, desconto, componentes));
+            str = br.readLine();
+        }
 
         setChanged();
         notifyObservers(1);
