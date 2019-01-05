@@ -13,16 +13,19 @@ import java.util.*;
 
 public class PacoteDAO extends DAO {
 
-	public boolean add(Pacote pacote) throws SQLException {
+	public void put(int idKey, Pacote pacote) throws SQLException {
 		Connection cn = Connect.connect();
 		int id = pacote.getId();
 		String designacao = pacote.getDesignacao();
 		int desconto = pacote.getDesconto();
 		Set<Integer> componentes = pacote.getComponentes();
-		PreparedStatement st = cn.prepareStatement("INSERT INTO Pacote (id, designacao, desconto) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = id, designacao = designacao, desconto = desconto");
+		PreparedStatement st = cn.prepareStatement("INSERT INTO Pacote (id, designacao, desconto) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = ?, designacao = ?, desconto = ?");
 		st.setInt(1, id);
 		st.setString(2, designacao);
 		st.setInt(3, desconto);
+		st.setInt(4, id);
+		st.setString(5, designacao);
+		st.setInt(6, desconto);
 		int numRows = st.executeUpdate();
 		if(numRows != 1) {
 			st = cn.prepareStatement("DELETE FROM Pacote_Componente WHERE id_pacote = ?");
@@ -36,7 +39,6 @@ public class PacoteDAO extends DAO {
 			st.execute();
 		}
 		Connect.close(cn);
-		return numRows == 1;
 	}
 
 	public List<Pacote> list() throws SQLException {
@@ -139,10 +141,13 @@ public class PacoteDAO extends DAO {
 		try {
 			cn.createStatement().execute("DELETE FROM Pacote_Componente");
 			for (Pacote pacote : pacotes){
-				PreparedStatement st = cn.prepareStatement("INSERT INTO Pacote (id, designacao, desconto) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = id, designacao = designacao, desconto = desconto");
+				PreparedStatement st = cn.prepareStatement("INSERT INTO Pacote (id, designacao, desconto) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = ?, designacao = ?, desconto = ?");
 				st.setInt(1, pacote.getId());
 				st.setString(2, pacote.getDesignacao());
 				st.setInt(3, pacote.getDesconto());
+				st.setInt(4, pacote.getId());
+				st.setString(5, pacote.getDesignacao());
+				st.setInt(6, pacote.getDesconto());
 				st.execute();
 			}
 			for (Pacote pacote : pacotes) {

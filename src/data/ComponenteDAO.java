@@ -1,15 +1,11 @@
 package data;
 
-import business.gestao.EncomendaEmProducao;
+import business.gestao.EncomendaFinalizadaEmProducao;
 import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +14,7 @@ import java.util.*;
 
 public class ComponenteDAO extends DAO {
 
-	public boolean add(Componente componente) throws SQLException {
+	public void put(int idKey, Componente componente) throws SQLException {
 		Connection cn = Connect.connect();
 		int id = componente.getId();
 		String designacao = componente.getDesignacao();
@@ -55,7 +51,6 @@ public class ComponenteDAO extends DAO {
 			st.execute();
 		}
 		Connect.close(cn);
-		return numRows == 1;
 	}
 
 	public List<Componente> list() throws SQLException {
@@ -186,7 +181,7 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public List<Componente> listComponentesEmFalta(EncomendaEmProducao encomenda) throws SQLException {
+	public List<Componente> listComponentesEmFalta(EncomendaFinalizadaEmProducao encomenda) throws SQLException {
 		int idEncomenda = encomenda.getId();
 		Connection cn = Connect.connect();
 		List<Componente> result = new ArrayList<>();
@@ -303,12 +298,17 @@ public class ComponenteDAO extends DAO {
 			cn.createStatement().execute("DELETE FROM Componente_Dependente");
 			cn.createStatement().execute("DELETE FROM Componente_Incompativel");
 			for (Componente componente : componentes){
-				PreparedStatement st = cn.prepareStatement("INSERT INTO Componente (id, designacao, preco, stock, categoria) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id = id, designacao = designacao, preco = preco, stock = stock, categoria = categoria");
+				PreparedStatement st = cn.prepareStatement("INSERT INTO Componente (id, designacao, preco, stock, categoria) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id = ?, designacao = ?, preco = ?, stock = ?, categoria = ?");
 				st.setInt(1, componente.getId());
 				st.setString(2, componente.getDesignacao());
 				st.setInt(3, componente.getPreco());
 				st.setInt(4, componente.getStock());
 				st.setString(5, componente.getCategoria().getDesignacao());
+				st.setInt(6, componente.getId());
+				st.setString(7, componente.getDesignacao());
+				st.setInt(8, componente.getPreco());
+				st.setInt(9, componente.getStock());
+				st.setString(10, componente.getCategoria().getDesignacao());
 				st.execute();
 			}
 			for (Componente componente : componentes){

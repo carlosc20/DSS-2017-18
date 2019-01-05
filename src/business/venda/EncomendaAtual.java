@@ -1,6 +1,6 @@
 package business.venda;
 
-import business.gestao.EncomendaEmProducao;
+import business.gestao.EncomendaFinalizadaEmProducao;
 import business.gestao.Encomenda;
 import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
@@ -54,7 +54,7 @@ public class EncomendaAtual extends Encomenda {
 		if(componentesEmFalta.isEmpty()) {
 			return new EncomendaFinalizada(this.getId(), this.getCliente(), this.getNif(), this.getValor(), LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes());
 		} else {
-			return new EncomendaEmProducao(this.getId(), this.getCliente(), this.getNif(), this.getValor(),  LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes(), componentesEmFalta);
+			return new EncomendaFinalizadaEmProducao(this.getId(), this.getCliente(), this.getNif(), this.getValor(),  LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes(), componentesEmFalta);
 		}
 	}
 

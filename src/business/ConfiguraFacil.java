@@ -3,7 +3,7 @@ package business;// import Venda.EncomendaFinalizada;
 
 import business.gestao.Encomenda;
 import business.gestao.EncomendaFinalizada;
-import business.gestao.EncomendaEmProducao;
+import business.gestao.EncomendaFinalizadaEmProducao;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.utilizadores.Administrador;
@@ -19,7 +19,6 @@ import business.venda.categorias.Categoria;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -30,7 +29,7 @@ public class ConfiguraFacil extends Observable {
 	private Utilizador utilizadorAtual;
 	private EncomendaAtual encomendaAtual;
 
-	private EncomendaEmProducaoDAO filaProducao = new EncomendaEmProducaoDAO();
+	private EncomendaFinalizadaEmProducaoDAO filaProducao = new EncomendaFinalizadaEmProducaoDAO();
 	private ComponenteDAO todosComponentes = new ComponenteDAO();
 	private PacoteDAO todosPacotes = new PacoteDAO();
 	private EncomendaFinalizadaDAO registoProduzidas = new EncomendaFinalizadaDAO();
@@ -239,10 +238,10 @@ public class ConfiguraFacil extends Observable {
         List<Integer> otimos = encomendaAtual.otimizaPacotes();
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
-            if (feita instanceof EncomendaEmProducao) {
-                filaProducao.add((EncomendaEmProducao) feita);
+            if (feita instanceof EncomendaFinalizadaEmProducao) {
+                filaProducao.put(feita.getId(),(EncomendaFinalizadaEmProducao) feita);
             } else if(feita instanceof EncomendaFinalizada) {
-                registoProduzidas.add((EncomendaFinalizada) feita);
+                registoProduzidas.put(feita.getId(), (EncomendaFinalizada) feita);
             }
             return otimos; // TODO: 29/12/2018 pacotes formados
         } catch (SQLException e){
@@ -307,6 +306,7 @@ public class ConfiguraFacil extends Observable {
      */
     public Object [][] getComponentesDepConfig() throws Exception {
         Set<Integer> compIds = encomendaAtual.getDependentes();
+        //Set<Integer>
         ArrayList<Componente> componentes = new ArrayList<>(compIds.size());
         for(int id : compIds){
             try {
@@ -406,10 +406,10 @@ public class ConfiguraFacil extends Observable {
      */
     public Object[][] getFilaProducao() throws Exception {
         try {
-            List<EncomendaEmProducao> encs = filaProducao.list();
+            List<EncomendaFinalizadaEmProducao> encs = filaProducao.list();
             Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasFilaProducao.length];
             int i = 0;
-            for (EncomendaEmProducao e : encs) {
+            for (EncomendaFinalizadaEmProducao e : encs) {
                 data[i][0] = e.getId();
                 data[i][1] = e.getCliente();
                 data[i][2] = e.getNif();
@@ -704,7 +704,7 @@ public class ConfiguraFacil extends Observable {
                 default:
                     throw new Exception();  // TODO: 29/12/2018 tipo nao existe
         }
-        utilizadores.add(u);
+        utilizadores.put(u.getNome(), u);
         setChanged();
         notifyObservers();
     }
