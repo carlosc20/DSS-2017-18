@@ -1,7 +1,7 @@
 package business.venda;
 
-import business.gestao.Encomenda;
 import business.gestao.EncomendaEmProducao;
+import business.gestao.Encomenda;
 import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
@@ -11,18 +11,11 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
-public class EncomendaAtual {
-	private int id;
-	private String cliente;
-	private int nif;
-	private int valor;
+public class EncomendaAtual extends Encomenda {
 	private Configuracao configuracao;
 
 	public EncomendaAtual(int id, String cliente, int nif) {
-		this.id = id;
-		this.cliente = cliente;
-		this.nif = nif;
-		this.valor = 0;
+		super(id, cliente, nif, 0);
 		this.configuracao = new Configuracao();
 	}
 
@@ -35,33 +28,33 @@ public class EncomendaAtual {
 
 	public Set<Integer> adicionaComponente(int idComponente) throws SQLException {
 		Set<Integer> pac =  configuracao.adicionarComponente(idComponente);
-		this.valor = configuracao.getValorConfiguracao();
+		this.setValor(configuracao.getValorConfiguracao());
 		return pac;
 	}
 
 	public Set<Integer> removeComponente(int idComponente) throws ComponenteNaoExisteNaConfiguracao, SQLException {
 		Set<Integer> pac = configuracao.removerComponente(idComponente);
-		this.valor = configuracao.getValorConfiguracao();
+		this.setValor(configuracao.getValorConfiguracao());
 		return pac;
 	}
 
 	public Set<Integer> adicionaPacote(int idPacote) throws PacoteGeraConflitosException, SQLException {
 		Set<Integer> pac =  configuracao.adicionarPacote(idPacote);
-		this.valor = configuracao.getValorConfiguracao();
+		this.setValor(configuracao.getValorConfiguracao());
 		return pac;
 	}
 
 	public void removePacote(int idPacote) throws PacoteNaoExisteNaConfiguracaoException, SQLException {
 		configuracao.removerPacote(idPacote);
-		this.valor = configuracao.getValorConfiguracao();
+		this.setValor(configuracao.getValorConfiguracao());
 	}
 
 	public Encomenda finalizarEncomenda() throws SQLException, FaltamDependentesException {
 		Set<Componente> componentesEmFalta = configuracao.atualizaStock();
 		if(componentesEmFalta.isEmpty()) {
-			return new EncomendaFinalizada(id, cliente, nif, valor, LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes());
+			return new EncomendaFinalizada(this.getId(), this.getCliente(), this.getNif(), this.getValor(), LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes());
 		} else {
-			return new EncomendaEmProducao(id, cliente, nif, valor, LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes(), componentesEmFalta);
+			return new EncomendaEmProducao(this.getId(), this.getCliente(), this.getNif(), this.getValor(),  LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes(), componentesEmFalta);
 		}
 	}
 
@@ -84,7 +77,7 @@ public class EncomendaAtual {
 	public boolean dependentesEmFalta() throws FaltamDependentesException {
 		return configuracao.dependentesEmFalta();
 	}
-	public boolean obrigatoriosEmFalta(List<Categoria> obr) {
+	public boolean obrigatoriosEmFalta(List<Categoria> obr) throws FaltamComponenteObrigatorioException {
 		return configuracao.obrigatoriosEmFalta(obr);
 	}
 	public int getDesconto(){
@@ -92,38 +85,6 @@ public class EncomendaAtual {
 	}
 	public List<Pacote> getPacotes(){
 		return configuracao.getPacotes();
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getCliente() {
-		return cliente;
-	}
-
-	public void setCliente(String cliente) {
-		this.cliente = cliente;
-	}
-
-	public int getNif() {
-		return nif;
-	}
-
-	public void setNif(int nif) {
-		this.nif = nif;
-	}
-
-	public int getValor() {
-		return valor;
-	}
-
-	public void setValor(int valor) {
-		this.valor = valor;
 	}
 
 	public Configuracao getConfiguracao() {

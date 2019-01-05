@@ -16,7 +16,10 @@ import data.*;
 import business.venda.EncomendaAtual;
 import business.venda.categorias.Categoria;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -441,8 +444,31 @@ public class ConfiguraFacil extends Observable {
      * @param file ficheiro de formato CSV que contém as informações de componentes
      */
     public void atualizaComponentes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
-        // TODO: 29/12/2018 passar logica para aqui
-        new ComponenteDAO().importCSV(file);
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String str = br.readLine();
+        ArrayList<Componente> list = new ArrayList<>();
+        while (str != null) {
+            String[] data = str.substring(1, str.length() - 1).split("\",\"");
+            int id = Integer.parseInt(data[0]);
+            String designacao = data[1];
+            int preco = Integer.parseInt(data[2]);
+            int stock = Integer.parseInt(data[3]);
+            String[] dependenciasStrings = data[4].equals("") ? new String[0] : data[4].split(",");
+            HashSet<Integer> dependencias = new HashSet<>();
+            for(String dependencia:dependenciasStrings){
+                dependencias.add(Integer.parseInt(dependencia));
+            }
+            String[] incompatibilidadesStrings = data[5].equals("") ? new String[0] : data[5].split(",");
+            HashSet<Integer> incompatibilidades = new HashSet<>();
+            for(String incompatibilidade:incompatibilidadesStrings){
+                incompatibilidades.add(Integer.parseInt(incompatibilidade));
+            }
+            String categoriaDesignacao = data[6];
+            Categoria categoria = CategoriaManager.getInstance().getCategoria(categoriaDesignacao);
+            list.add(new Componente(id, designacao, preco, stock, dependencias, incompatibilidades, categoria));
+            str = br.readLine();
+        }
+        new ComponenteDAO().addAll(list);
 
         setChanged();
         notifyObservers(0);
@@ -456,7 +482,22 @@ public class ConfiguraFacil extends Observable {
      */
     public void atualizaPacotes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
         // TODO: 29/12/2018 passar logica para aqui
-        new PacoteDAO().importCSV(file);
+        ArrayList<Pacote> list = new ArrayList<>();
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String str = br.readLine();
+        while (str != null) {
+            String[] data = str.substring(1, str.length() - 1).split("\",\"");
+            int id = Integer.parseInt(data[0]);
+            String designacao = data[1];
+            int desconto = Integer.parseInt(data[2]);
+            String[] componentesStrings = data[3].equals("") ? new String[0] : data[3].split(",");
+            HashSet<Integer> componentes = new HashSet<>();
+            for(String componente:componentesStrings){
+                componentes.add(Integer.parseInt(componente));
+            }
+            list.add(new Pacote(id, designacao, desconto, componentes));
+            str = br.readLine();
+        }
 
         setChanged();
         notifyObservers(1);
