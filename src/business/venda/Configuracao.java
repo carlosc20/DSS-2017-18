@@ -3,7 +3,6 @@ package business.venda;
 import business.produtos.ComparaPacotesByDesconto;
 import business.produtos.Componente;
 import business.produtos.Pacote;
-import business.produtos.PacoteDormente;
 import business.venda.categorias.Categoria;
 import data.ComponenteDAO;
 import data.PacoteDAO;
@@ -223,25 +222,14 @@ public class Configuracao {
 
 		//tratamentos
 		Set<Integer> pac = tratarIncompatibilidades(componentes);
-		tratarDependenciasPacote(componentes,p);
+		tratarDependencias(componentes);
 
 		for(int id : p.getComponentes()){
 			Componente c = cDAO.get(id);
 			this.componentes.put(id,c);
 		}
-		return pac;
-	}
-	private void tratarDependenciasPacote(Set<Componente> componentes, Pacote p) throws SQLException {
-		HashSet<Integer> idDependentes = new HashSet<>(); //Retem os id's dos componentes dependentes do Set fornecido
-		HashSet aux = new HashSet();					  //Id's dos componentes dependentes de cada um dos componentes do Set fornecido
-
-		for(Componente c : componentes){
-			int id = c.getId();
-			aux = (HashSet) c.getDepedendencias();
-			idDependentes.addAll(aux);
-		}
 		this.pacotes.put(p.getId(),p);
-		this.dependentes.addAll(idDependentes);
+		return pac;
 	}
 
 	private boolean existeConflito(Set<Integer> componentes) {

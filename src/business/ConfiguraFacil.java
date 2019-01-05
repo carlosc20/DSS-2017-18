@@ -307,6 +307,7 @@ public class ConfiguraFacil extends Observable {
      */
     public Object [][] getComponentesDepConfig() throws Exception {
         Set<Integer> compIds = encomendaAtual.getDependentes();
+        //Set<Integer>
         ArrayList<Componente> componentes = new ArrayList<>(compIds.size());
         for(int id : compIds){
             try {
