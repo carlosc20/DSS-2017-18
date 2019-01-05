@@ -1,6 +1,6 @@
 package data;
 
-import business.gestao.EncomendaEmProducao;
+import business.gestao.EncomendaFinalizadaEmProducao;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class EncomendaEmProducaoDAO extends DAO {
+public class EncomendaFinalizadaEmProducaoDAO extends DAO {
 
-    public boolean add(EncomendaEmProducao encomenda) throws SQLException {
+    public boolean add(EncomendaFinalizadaEmProducao encomenda) throws SQLException {
         Connection cn = Connect.connect();
         int id = encomenda.getId();
         String cliente = encomenda.getCliente();
@@ -72,24 +72,24 @@ public class EncomendaEmProducaoDAO extends DAO {
         }
     }
 
-    public List<EncomendaEmProducao> list() throws SQLException {
+    public List<EncomendaFinalizadaEmProducao> list() throws SQLException {
         Connection cn = Connect.connect();
         PreparedStatement st = cn.prepareStatement("SELECT id, cliente, nif, valor, data FROM Encomenda WHERE finalizada = 0");
         ResultSet res = st.executeQuery();
-        List<EncomendaEmProducao> list = new ArrayList<>();
+        List<EncomendaFinalizadaEmProducao> list = new ArrayList<>();
         while (res.next()){
             int id = res.getInt("id");
             String cliente = res.getString("cliente");
             int nif = res.getInt("nif");
             int valor = res.getInt("valor");
             Date data = res.getDate("data");
-            list.add(new EncomendaEmProducao(id, cliente, nif, valor, data.toLocalDate(), null, null, null));
+            list.add(new EncomendaFinalizadaEmProducao(id, cliente, nif, valor, data.toLocalDate(), null, null, null));
         }
         Connect.close(cn);
         return list;
     }
 
-    public EncomendaEmProducao get(int id) throws SQLException {
+    public EncomendaFinalizadaEmProducao get(int id) throws SQLException {
         Connection cn = Connect.connect();
         PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 0 LIMIT 1");
         st.setString(1, "id");
@@ -100,7 +100,7 @@ public class EncomendaEmProducaoDAO extends DAO {
             int valor = res.getInt("valor");
             Date data = res.getDate("data");
             Connect.close(cn);
-            return new EncomendaEmProducao(id, cliente, nif, valor, data.toLocalDate(), null, null, null);
+            return new EncomendaFinalizadaEmProducao(id, cliente, nif, valor, data.toLocalDate(), null, null, null);
         } else {
             Connect.close(cn);
             return null;

@@ -13,7 +13,7 @@ public class EncomendaFinalizadaDAO extends DAO {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println(new EncomendaFinalizadaDAO().list());
-		System.out.println(new EncomendaEmProducaoDAO().list());
+		System.out.println(new EncomendaFinalizadaEmProducaoDAO().list());
 	}
 
 	public boolean add(EncomendaFinalizada encomenda) throws SQLException {

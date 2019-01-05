@@ -1,15 +1,11 @@
 package data;
 
-import business.gestao.EncomendaEmProducao;
+import business.gestao.EncomendaFinalizadaEmProducao;
 import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -186,7 +182,7 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public List<Componente> listComponentesEmFalta(EncomendaEmProducao encomenda) throws SQLException {
+	public List<Componente> listComponentesEmFalta(EncomendaFinalizadaEmProducao encomenda) throws SQLException {
 		int idEncomenda = encomenda.getId();
 		Connection cn = Connect.connect();
 		List<Componente> result = new ArrayList<>();
