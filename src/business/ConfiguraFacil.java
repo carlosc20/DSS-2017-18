@@ -25,8 +25,6 @@ import java.util.*;
 public class ConfiguraFacil extends Observable {
 
     private static ConfiguraFacil instancia = new ConfiguraFacil();
-
-	private Utilizador utilizadorAtual;
 	private EncomendaAtual encomendaAtual;
 
 	private EncomendaFinalizadaEmProducaoDAO filaProducao = new EncomendaFinalizadaEmProducaoDAO();
