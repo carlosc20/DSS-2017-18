@@ -425,20 +425,39 @@ public class Configuracao {
 			componentes.sort(new Comparator<Componente>() {
 				@Override
 				public int compare(Componente c1, Componente c2) {
-					return Integer.compare(c1.getPreco(), c2.getPreco());
+					int dif = Integer.compare(c1.getPreco(), c2.getPreco());
+					try {
+						// Mesmo preço, procura o com menor número de incompatibilidades
+						if (dif == 0) {
+							dif = -Integer.compare(c1.getIncompatibilidades().size(), c2.getIncompatibilidades().size());
+						}
+						// Mesmo número de compatibilidade, procura o com menor número de dependências
+						if(dif == 0) {
+							dif = -Integer.compare(c1.getDepedendencias().size(), c2.getIncompatibilidades().size());
+						}
+					} catch (Exception e) {
+						dif = 0;
+					}
+					return dif;
 				}
 			});
 			//Cada categoria tem a sua lista de componentes
 			componentesCategorias.put(categoria, componentes);
 			//Coloca o componente com maior preço
-			solucaoCategoria.put(categoria, componentes.get(componentes.size() - 1));
+			try {
+				solucaoCategoria.put(categoria, componentes.get(componentes.size() - 1));
+			} catch (Exception e) {
+				return false;
+			}
 		}
 
 		do {
-			Set<Componente> solucaoTodosComponentes = new HashSet<>(getComponentes());
+			Map<Integer, Componente> solucaoTodosComponentes = new HashMap<>(componentes);
 			Collection<Componente> solucaoComponente = solucaoCategoria.values();
-			solucaoTodosComponentes.addAll(solucaoCategoria.values());
-			Set<Pacote> solucaoPacote = calculaOtimos(getPacotesValidos(solucaoTodosComponentes));
+			for (Componente componente : solucaoCategoria.values()) {
+				solucaoTodosComponentes.put(componente.getId(), componente);
+			}
+			Set<Pacote> solucaoPacote = calculaOtimos(getPacotesValidos(solucaoTodosComponentes.values()));
 			// Calcula o preço total da configuração com os novos componentes
 			int precoTotal = 0;
 			for (Componente componente : solucaoComponente) {
@@ -447,46 +466,45 @@ public class Configuracao {
 			for (Pacote pacote : solucaoPacote) {
 				precoTotal -= pacote.getDesconto();
 			}
-			if(precoTotal <= precoMaximoTotal) {
+			System.out.println(solucaoComponente + " " + (precoTotal <= precoMaximoTotal) + " " + configuracaoValida(solucaoTodosComponentes));
+			if(precoTotal <= precoMaximoTotal && configuracaoValida(solucaoTodosComponentes)) {
+				// Encontrou solução ótima
+				// Atualiza os componentes
 				componentes.clear();
-				for(Componente componente : solucaoTodosComponentes){
+				for(Componente componente : solucaoTodosComponentes.values()){
 					componentes.put(componente.getId(), componente);
 				}
-				if(configuracaoValida(componentes)) {
-					if (comparaPacotes(solucaoPacote)) {
-						//Adiciona o pacote se este for melhor
-						pacotes.clear();
-						for (Pacote pacote : solucaoPacote) {
-							pacotes.put(pacote.getId(), pacote);
-						}
-					}
-					return true; // Encontrou-se a solução ótima
+				// Atualiza os pacotes
+				pacotes.clear();
+				for (Pacote pacote : solucaoPacote) {
+					pacotes.put(pacote.getId(), pacote);
 				}
+				return true; // Encontrou-se a solução ótima
+			}
+			int minDiferencaDePreco = 0;
+			Pair<Categoria, Componente> proximoEntrar = null; //Próximo a entrar na solução
+			//Procura o componente com menor diferença de preço em relação ao anterior
+			for(Map.Entry<Categoria, List<Componente>> entry : componentesCategorias.entrySet()){
+				Categoria categoria = entry.getKey();
+				List<Componente> list = entry.getValue();
+				System.out.println(">" + categoria.getDesignacao() + ": " + list);
+				int size = list.size();
+				if(size > 1){ // Tem proximo na categoria
+					Componente atual = list.get(size - 1);
+					Componente proximo = list.get(size - 2);
+					int diferencaDePreco = atual.getPreco() - proximo.getPreco();
+					if(diferencaDePreco <= minDiferencaDePreco) {
+						minDiferencaDePreco = diferencaDePreco;
+						proximoEntrar = new Pair<>(categoria, proximo);
+					}
+				}
+			}
+			if(proximoEntrar == null) {
+				return false; // Não encontrou solução ótima
 			} else {
-				int minDiferencaDePreco = 0;
-				Pair<Categoria, Componente> proximoEntrar = null; //Próximo a entrar na solução
-				//Procura o componente com menor diferença de preço em relação ao anterior
-				for(Map.Entry<Categoria, List<Componente>> entry : componentesCategorias.entrySet()){
-					Categoria categoria = entry.getKey();
-					List<Componente> list = entry.getValue();
-					int size = list.size();
-					if(size >= 1){ // Tem proximo na categoria
-						Componente atual = list.get(size - 1);
-						Componente proximo = list.get(size - 2);
-						int diferencaDePreco = atual.getPreco() - proximo.getPreco();
-						if(diferencaDePreco <= minDiferencaDePreco) {
-							minDiferencaDePreco = diferencaDePreco;
-							proximoEntrar = new Pair<>(categoria, proximo);
-						}
-					}
-				}
-				if(proximoEntrar == null) {
-					return false; // Não encontrou solução ótima
-				} else {
-					List<Componente> list = componentesCategorias.get(proximoEntrar.getKey());
-					list.remove(list.size() - 1); // Remove o último elemento da lista
-					solucaoCategoria.put(proximoEntrar.getKey(), proximoEntrar.getValue());
-				}
+				List<Componente> list = componentesCategorias.get(proximoEntrar.getKey());
+				list.remove(list.size() - 1); // Remove o último elemento da lista
+				solucaoCategoria.put(proximoEntrar.getKey(), proximoEntrar.getValue());
 			}
 		} while (true);
 	}

@@ -62,6 +62,10 @@ public class EncomendaAtual extends Encomenda {
 		return configuracao.configuracaoOtima(precoMaximoCategorias, precoMaximoTotal);
 	}
 
+	public List<Integer> otimizaPacotes() throws SQLException {
+		return configuracao.otimizarPacotes();
+	}
+
 	public List<Componente> getComponentes(){
 		return configuracao.getComponentes();
 	}

@@ -236,7 +236,7 @@ public class ConfiguraFacil extends Observable {
         if(flag){
             throw new FaltamComponenteObrigatorioException("");
         }
-        //otimos = encomendaAtual.otimizaPacotes()
+        List<Integer> otimos = encomendaAtual.otimizaPacotes();
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
             if(feita instanceof EncomendaFinalizada) {
@@ -244,7 +244,7 @@ public class ConfiguraFacil extends Observable {
             } else if (feita instanceof EncomendaEmProducao) {
                 filaProducao.add((EncomendaEmProducao) feita);
             }
-            return new ArrayList<>(); // TODO: 29/12/2018 pacotes formados
+            return otimos; // TODO: 29/12/2018 pacotes formados
         } catch (SQLException e){
             e.printStackTrace();
             throw e; // TODO: 29/12/2018 exceçao fixe
@@ -498,6 +498,8 @@ public class ConfiguraFacil extends Observable {
             list.add(new Pacote(id, designacao, desconto, componentes));
             str = br.readLine();
         }
+
+        new PacoteDAO().addAll(list);
 
         setChanged();
         notifyObservers(1);

@@ -86,4 +86,8 @@ public class Componente {
 	public Categoria getCategoria() {
 		return categoria;
 	}
+
+	public String toString(){
+		return designacao;
+	}
 }
