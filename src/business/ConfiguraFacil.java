@@ -41,7 +41,7 @@ public class ConfiguraFacil extends Observable {
     private ConfiguraFacil(){}
 
 
-    // -------------------------------- EncomendaFinalizada Atual ----------------------------------------------------------------
+    // -------------------------------- EncomendaFinalizada Atual ------------------------------------------------------
 
     /**
      * Cria uma encomenda com os dados do cliente
@@ -50,7 +50,7 @@ public class ConfiguraFacil extends Observable {
      * @param nif       nif do cliente
      * @throws Exception
      */
-    public void criarEncomenda(String cliente, int nif) throws FaltamComponenteObrigatorioException, Exception { //muda nome
+    public void criarEncomenda(String cliente, int nif) throws FaltamComponenteObrigatorioException, Exception {
         int id = new EncomendaFinalizadaDAO().size() + 1;
         for (Categoria categoria : CategoriaManager.getInstance().getAllCategoriasObrigatorias()){
             if(new ComponenteDAO().list(categoria).isEmpty()){
@@ -220,11 +220,9 @@ public class ConfiguraFacil extends Observable {
     }
 
     /**
-     * blabla
-     *
      * @return lista de pacotes formados
      */
-    public List<Integer> finalizarEncomenda() throws FaltamDependentesException, FaltamComponenteObrigatorioException, SQLException { // muda nome, devolve pacotes formados
+    public List<Integer> finalizarEncomenda() throws FaltamDependentesException, FaltamComponenteObrigatorioException, Exception { // muda nome, devolve pacotes formados
         boolean flag = encomendaAtual.dependentesEmFalta();
         if(flag){
             throw new FaltamDependentesException("");
@@ -241,10 +239,10 @@ public class ConfiguraFacil extends Observable {
             } else if(feita instanceof EncomendaFinalizada) {
                 registoProduzidas.add((EncomendaFinalizada) feita);
             }
-            return otimos; // TODO: 29/12/2018 pacotes formados
+            return otimos;
         } catch (SQLException e){
             e.printStackTrace();
-            throw e; // TODO: 29/12/2018 exceçao fixe
+            throw new Exception();
         }
     }
 
@@ -254,18 +252,19 @@ public class ConfiguraFacil extends Observable {
      *
      * @return tabela com uma linha por cada categoria obrigatória
      */
-    public Object[][] getComponentesObgConfig() { //novo
+    public Object[][] getComponentesObgConfig() {
 
         Collection<CategoriaObrigatoria> categ = CategoriaManager.getInstance().getAllCategoriasObrigatorias();
         List<Componente> comp = encomendaAtual.getComponentesObrigatorios();
         Object[][] data = buildCategObrigatorias(new ArrayList<>(categ));
         for(int i = 0; i<categ.size(); i++)
             for(Componente c : comp) {
-                if (c.getCategoria().getDesignacao().equals(data[i][0])) {
-                    data[i][1] = c.getId();
-                    data[i][2] = c.getDesignacao();
-                    data[i][3] = c.getStock();
-                    data[i][4] = c.getPreco()/100.0f;
+                String cat = c.getCategoria().getDesignacao();
+                if (cat.equals(data[i][0])) {
+                    data[i][0] = cat;
+                    data[i][1] = c.getDesignacao();
+                    data[i][2] = c.getPreco()/100.0f;
+                    data[i][3] = c.getId();
                 }
             }
         return data;
@@ -273,12 +272,12 @@ public class ConfiguraFacil extends Observable {
 
 
     private Object[][] buildCategObrigatorias (List<Categoria> categ) {
-        Object[][] data = new Object[categ.size()][5];
+        Object[][] data = new Object[categ.size()][4];
         int i = 0;
         for (Categoria cat : categ) {
             String des = cat.getDesignacao();
             if (cat.getObrigatoria()) {
-                data[i] = new Object[]{des, null, null, null, null};
+                data[i] = new Object[]{des, null, null, null};
                 i++;
             }
         }
@@ -304,13 +303,12 @@ public class ConfiguraFacil extends Observable {
      */
     public Object [][] getComponentesDepConfig() throws Exception {
         Set<Integer> compIds = encomendaAtual.getDependentes();
-        //Set<Integer>
         ArrayList<Componente> componentes = new ArrayList<>(compIds.size());
         for(int id : compIds){
             try {
                 componentes.add(todosComponentes.get(id));
             } catch (SQLException e) {
-                throw new Exception(); // TODO: 29/12/2018 exception fixe
+                throw new Exception();
             }
         }
         return componentesListToMatrix(componentes);
@@ -327,9 +325,10 @@ public class ConfiguraFacil extends Observable {
         Object[][] data = new Object[pac.size()][4];
         int i = 0;
         for (Pacote p : pac) {
-            data[i][1] = p.getDesignacao();
-            data[i][2] = p.getDesconto()/100.0f;
-            data[i][3] = p.getComponentes().toString();
+            data[i][0] = p.getDesignacao();
+            data[i][1] = p.getDesconto()/100.0f;
+            data[i][2] = p.getComponentes().toString();
+            data[i][3] = p.getId();
             i++;
         }
         return data;
@@ -518,7 +517,17 @@ public class ConfiguraFacil extends Observable {
     public Object[][] getComponentes() throws Exception {
         try {
             List<Componente> componentes = todosComponentes.list();
-            return componentesListToMatrix(componentes);
+            Object[][] data = new Object[componentes.size()][colunasComponentes.length];
+            int i = 0;
+            for(Componente c : componentes){
+                data[i][0] = c.getCategoria().getDesignacao();
+                data[i][1] = c.getId();
+                data[i][2] = c.getDesignacao();
+                data[i][3] = c.getStock();
+                data[i][4] = c.getPreco()/100.0f;
+                i++;
+            }
+            return data;
         } catch (SQLException e) {
             throw new Exception(); // TODO: 29/12/2018 exception fixe
         }
@@ -528,7 +537,7 @@ public class ConfiguraFacil extends Observable {
     public static String[] colunasComponentes = new String[] {"Categoria", "Id", "Designação",
                                                                 "Qtd em stock", "Preço(€)"};
 
-
+    public static String[] colunasComponentesId = new String[] {"Categoria", "Designação", "Preço(€)", "Id"};
 
     // TODO: 29/12/2018 separar em obg e opc?
     /**
@@ -723,7 +732,6 @@ public class ConfiguraFacil extends Observable {
         notifyObservers();
     }
 
-    // auxiliar
     /**
      * auxiliar
      *
@@ -731,14 +739,13 @@ public class ConfiguraFacil extends Observable {
      * @return
      */
     private Object[][] componentesListToMatrix(List<Componente> componentes) {
-        Object[][] data = new Object[componentes.size()][colunasComponentes.length];
+        Object[][] data = new Object[componentes.size()][colunasComponentesVendedor.length + 1];
         int i = 0;
         for(Componente c : componentes){
             data[i][0] = c.getCategoria().getDesignacao();
-            data[i][1] = c.getId();
-            data[i][2] = c.getDesignacao();
-            data[i][3] = c.getStock();
-            data[i][4] = c.getPreco()/100.0f;
+            data[i][1] = c.getDesignacao();
+            data[i][2] = c.getPreco()/100.0f;
+            data[i][3] = c.getId();
             i++;
         }
         return data;

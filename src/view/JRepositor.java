@@ -30,9 +30,6 @@ public class JRepositor implements Observer {
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
-    // TODO: ver mais sobre o componente?, ir buscar dados por paginas
-    // https://docs.oracle.com/javase/tutorial/uiswing/examples/components/TableFilterDemoProject/src/components/TableFilterDemo.java
-    // modelC.getValueAt(componentesTable.getSelectedRow(), 1);
 
     public JRepositor() {
 

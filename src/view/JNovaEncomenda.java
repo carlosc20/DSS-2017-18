@@ -104,7 +104,7 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = obrigatoriosTable.getSelectedRow();
-                Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
+                Integer id = (Integer) obrigatoriosTable.getValueAt(row, 3);
                 if(id == null) { // se o componente dessa categoria não está escolhido abre a janela de adicionar
                     String cat = (String) obrigatoriosTable.getValueAt(row, 0);
                     if(mostraAdicionarComponente(cat) == JOptionPane.OK_OPTION) {
@@ -132,7 +132,7 @@ public class JNovaEncomenda implements Observer {
             public void valueChanged(ListSelectionEvent e) {
                 int row = obrigatoriosTable.getSelectedRow();
                 if (!e.getValueIsAdjusting() && row != -1) {
-                    Integer id = (Integer) obrigatoriosTable.getValueAt(row, 1);
+                    Integer id = (Integer) obrigatoriosTable.getValueAt(row, 3);
                     if(id == null) {
                         obrigatorioButton.setText("Adicionar componente");
                     } else {
@@ -186,7 +186,7 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = opcionaisTable.getSelectedRow();
-                Integer id = (Integer) opcionaisTable.getValueAt(row, 1);
+                Integer id = (Integer) opcionaisTable.getValueAt(row, 3);
                 try {
                     Set<Integer> pacotes = facade.removeComponente(id);
                     mostraPacotesDesfeitos(pacotes);
@@ -229,7 +229,7 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = dependenciasTable.getSelectedRow();
-                Integer id = (Integer) dependenciasTable.getValueAt(row, 1);
+                Integer id = (Integer) dependenciasTable.getValueAt(row, 3);
                 adicionaComponente(id);
             }
         });
@@ -386,7 +386,7 @@ public class JNovaEncomenda implements Observer {
                             labelTable.put(0, new JLabel("0"));
                             labelTable.put(precoMax, new JLabel(Integer.toString(precoMax)));
                             for (int i = 0; i < n; i++) {
-                                opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: dizer a qual corresponde
+                                opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0);
                                 opcoes[i].setLabelTable(labelTable);
                                 opcoes[i].setPaintLabels(true);
                             }
@@ -582,7 +582,7 @@ public class JNovaEncomenda implements Observer {
      *  Atualiza o modelo da tabela de componentes obrigatórios, seleciona o primeiro elemento da tabela.
      */
     private void updateObrigatorios() {
-        modelObr.setDataVector(facade.getComponentesObgConfig(), colunasComponentes);
+        modelObr.setDataVector(facade.getComponentesObgConfig(), ConfiguraFacil.colunasComponentesId);
         obrigatoriosTable.setRowSelectionInterval(0, 0);
     }
 
@@ -590,7 +590,7 @@ public class JNovaEncomenda implements Observer {
      *  Atualiza o modelo da tabela de componentes opcionais.
      */
     private void updateOpcionais() {
-        modelOpc.setDataVector(facade.getComponentesOpcConfig(), colunasComponentes);
+        modelOpc.setDataVector(facade.getComponentesOpcConfig(), ConfiguraFacil.colunasComponentesId);
     }
 
     /**
@@ -611,7 +611,7 @@ public class JNovaEncomenda implements Observer {
      */
     private void updateDependencias() {
         try {
-            modelDep.setDataVector(facade.getComponentesDepConfig(), colunasComponentes);
+            modelDep.setDataVector(facade.getComponentesDepConfig(), ConfiguraFacil.colunasComponentesId);
             adicionarDepButton.setEnabled(false);
         } catch (Exception e) {
             e.printStackTrace();
