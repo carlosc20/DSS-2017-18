@@ -201,7 +201,7 @@ public class ConfiguraFacil extends Observable {
         }
     }
 
-    public boolean criarConfiguracaoOtima(Map<String, Integer> precoMaximoCategoria, int precoMaximoTotal) throws SQLException, CategoriaNaoExisteException, FaltamComponenteObrigatorioException { // muda nome
+    public boolean criarConfiguracaoOtima(Map<String, Integer> precoMaximoCategoria, int precoMaximoTotal) throws SQLException, FaltamComponenteObrigatorioException { // muda nome
         HashSet<Categoria> categoriasDaConfiguracao = new HashSet<>();
         for(Componente componente : encomendaAtual.getConfiguracao().getComponentes()){
             categoriasDaConfiguracao.add(componente.getCategoria());
@@ -269,7 +269,7 @@ public class ConfiguraFacil extends Observable {
                     data[i][1] = c.getId();
                     data[i][2] = c.getDesignacao();
                     data[i][3] = c.getStock();
-                    data[i][4] = c.getPreco();
+                    data[i][4] = c.getPreco()/100.0f;
                 }
             }
         return data;
@@ -330,9 +330,8 @@ public class ConfiguraFacil extends Observable {
         Object[][] data = new Object[pac.size()][4];
         int i = 0;
         for (Pacote p : pac) {
-            data[i][0] = p.getId();
             data[i][1] = p.getDesignacao();
-            data[i][2] = p.getDesconto();
+            data[i][2] = p.getDesconto()/100.0f;
             data[i][3] = p.getComponentes().toString();
             i++;
         }
@@ -374,8 +373,12 @@ public class ConfiguraFacil extends Observable {
                 data[i][0] = e.getId();
                 data[i][1] = e.getCliente();
                 data[i][2] = e.getNif();
-                data[i][3] = e.getValor();
-                data[i][4] = e.getComponentes().toString();
+                data[i][3] = e.getValor()/100.0f;
+                List<Integer> comps = new ArrayList<>();
+                for (Componente c : e.getComponentes()) {
+                    comps.add(c.getId());
+                }
+                data[i][4] = comps.toString();
                 data[i][5] = e.getPacotes().toString();
                 i++;
             }
@@ -402,7 +405,7 @@ public class ConfiguraFacil extends Observable {
      *
      *  @return
      */
-    public Object[][] getFilaProducao() throws Exception { //novo
+    public Object[][] getFilaProducao() throws Exception {
         try {
             List<EncomendaEmProducao> encs = filaProducao.list();
             Object[][] data = new Object[encs.size()][ConfiguraFacil.colunasFilaProducao.length];
@@ -411,8 +414,12 @@ public class ConfiguraFacil extends Observable {
                 data[i][0] = e.getId();
                 data[i][1] = e.getCliente();
                 data[i][2] = e.getNif();
-                data[i][3] = e.getValor();
-                data[i][4] = e.getComponentes().toString();
+                data[i][3] = e.getValor()/100.0f;
+                List<Integer> comps = new ArrayList<>();
+                for (Componente c : e.getComponentes()) {
+                    comps.add(c.getId());
+                }
+                data[i][4] = comps.toString();
                 data[i][5] = e.getPacotes().toString();
                 data[i][6] = e.getComponentesEmFalta().toString();
                 i++;
@@ -537,16 +544,14 @@ public class ConfiguraFacil extends Observable {
 
         try {
             List<Componente> componentes = todosComponentes.list(cat);
-            Object[][] componentesTodas = new Object[componentes.size()][5];
+            Object[][] componentesTodas = new Object[componentes.size()][colunasComponentesVendedor.length];
             int i = 0;
             for(Componente c : componentes){
-                int id = c.getId();
                 String designacao = c.getDesignacao();
                 Categoria cate = c.getCategoria();
                 String catDesignacao = cate.getDesignacao();
-                int qnt = c.getStock();
-                int preco = c.getPreco();
-                componentesTodas[i] = new Object[]{catDesignacao,id,designacao,qnt,preco};
+                float preco = c.getPreco()/100.0f;
+                componentesTodas[i] = new Object[]{catDesignacao,designacao,preco};
                 i++;
             }
             return componentesTodas;
@@ -555,7 +560,8 @@ public class ConfiguraFacil extends Observable {
         }
     }
 
-
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes()}. */
+    public static String[] colunasComponentesVendedor = new String[] {"Categoria", "Designação", "Preço(€)"};
 
 
     /**
@@ -572,8 +578,31 @@ public class ConfiguraFacil extends Observable {
             for(Pacote p : pacotes){
                 data[i][0] = p.getId();
                 data[i][1] = p.getDesignacao();
-                data[i][2] = p.getDesconto();
+                data[i][2] = p.getDesconto()/100.0f;
                 data[i][3] = p.getComponentes().toString();
+                i++;
+            }
+            return data;
+        } catch (SQLException e) {
+            throw new Exception();
+        }
+    }
+
+    /**
+     * Devolve uma matriz com informações dos pacotes do sistema.
+     * Cada linha corresponde a um pacote e as colunas a {@link #colunasPacotes}.
+     *
+     * @return matriz com uma linha por pacote
+     */
+    public Object[][] getPacotesVendedor() throws Exception {
+        try {
+            List<Pacote> pacotes = todosPacotes.list();
+            Object[][] data = new Object[pacotes.size()][colunasPacotesVendedor.length];
+            int i = 0;
+            for(Pacote p : pacotes){
+                data[i][0] = p.getDesignacao();
+                data[i][1] = p.getDesconto()/100.0f;
+                data[i][2] = p.getComponentes().toString();
                 i++;
             }
             return data;
@@ -585,6 +614,9 @@ public class ConfiguraFacil extends Observable {
     /** Array com os nomes das colunas da matriz devolvida em {@link #getPacotes()}. */
     public static String[] colunasPacotes = new String[] {"Id", "Designação", "Desconto(€)", "Componentes"};
 
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getPacotesVendedor()}. */
+    public static String[] colunasPacotesVendedor = new String[] {"Designação", "Desconto(€)", "Componentes"};
+
     /**
      * Devolve uma lista de todas as categorias de componentes opcionais.
      *
@@ -594,14 +626,6 @@ public class ConfiguraFacil extends Observable {
         return new ArrayList<>(CategoriaManager.getInstance().getAllCategoriasOpcionaisDesignacao());
     }
 
-    /**
-     * Devolve uma lista de todas as categorias de componentes opcionais.
-     *
-     * @return lista de categorias
-     */
-    public List<String> getCategoriasObrigatorias() {
-        return new ArrayList<>(CategoriaManager.getInstance().getAllCategoriasObrigatoriasDesignacao());
-    }
 
     // -------------------------------- Utilizadores -------------------------------------------------------------------
 
@@ -713,7 +737,7 @@ public class ConfiguraFacil extends Observable {
             data[i][1] = c.getId();
             data[i][2] = c.getDesignacao();
             data[i][3] = c.getStock();
-            data[i][4] = c.getPreco();
+            data[i][4] = c.getPreco()/100.0f;
             i++;
         }
         return data;

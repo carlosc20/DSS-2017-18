@@ -5,9 +5,12 @@ import business.ConfiguraFacil;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -39,7 +42,7 @@ public class JRepositor implements Observer {
         frame = new JFrame("Repositor");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500,600);
+        frame.setSize(1000,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -70,6 +73,14 @@ public class JRepositor implements Observer {
         };
         componentesTable.setModel(modelC);
         updateComponentes();
+
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelC);
+        componentesTable.setRowSorter(sorter);
+
+        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+        sorter.setSortKeys(sortKeys);
 
         atualizarComponentesButton.addActionListener(new ActionListener() {
             /**

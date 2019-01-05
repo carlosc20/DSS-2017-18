@@ -26,7 +26,7 @@
           <component id="16b46" class="javax.swing.JTable" binding="componentesTable">
             <constraints/>
             <properties>
-              <autoCreateRowSorter value="true"/>
+              <autoCreateRowSorter value="false"/>
               <enabled value="true"/>
               <rowSelectionAllowed value="false"/>
             </properties>
@@ -43,7 +43,7 @@
           <component id="1b853" class="javax.swing.JTable" binding="pacotesTable">
             <constraints/>
             <properties>
-              <autoCreateRowSorter value="true"/>
+              <autoCreateRowSorter value="false"/>
               <enabled value="false"/>
               <rowSelectionAllowed value="false"/>
             </properties>

@@ -31,6 +31,7 @@ public class JanelaUtil {
     }
 
     public static int mostrarJanelaLista(JFrame frame, String titulo, JList lista) {
+        lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lista.setSelectedIndex(0);
         return JOptionPane.showConfirmDialog(frame,
                 new JScrollPane(lista),
