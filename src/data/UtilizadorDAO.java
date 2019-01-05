@@ -11,10 +11,6 @@ import java.util.List;
 
 public class UtilizadorDAO extends DAO {
 
-	public static void main(String[] args) throws Exception {
-		System.out.println(new UtilizadorDAO().get("Administrador"));
-	}
-
 	public boolean add(Utilizador utilizador) throws SQLException {
 		Connection cn = Connect.connect();
 		String nome = utilizador.getNome();

@@ -239,10 +239,10 @@ public class ConfiguraFacil extends Observable {
         List<Integer> otimos = encomendaAtual.otimizaPacotes();
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
-            if(feita instanceof EncomendaFinalizada) {
-                registoProduzidas.add((EncomendaFinalizada) feita);
-            } else if (feita instanceof EncomendaEmProducao) {
+            if (feita instanceof EncomendaEmProducao) {
                 filaProducao.add((EncomendaEmProducao) feita);
+            } else if(feita instanceof EncomendaFinalizada) {
+                registoProduzidas.add((EncomendaFinalizada) feita);
             }
             return otimos; // TODO: 29/12/2018 pacotes formados
         } catch (SQLException e){
