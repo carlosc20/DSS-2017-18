@@ -11,11 +11,7 @@ import java.util.List;
 
 public class UtilizadorDAO extends DAO {
 
-	public static void main(String[] args) throws Exception {
-		System.out.println(new UtilizadorDAO().get("Administrador"));
-	}
-
-	public boolean add(Utilizador utilizador) throws SQLException {
+	public void put(String nomeKey, Utilizador utilizador) throws SQLException {
 		Connection cn = Connect.connect();
 		String nome = utilizador.getNome();
 		String password = utilizador.getPassword();
@@ -26,7 +22,6 @@ public class UtilizadorDAO extends DAO {
 		st.setString(3, funcao);
 		int numRows = st.executeUpdate();
 		Connect.close(cn);
-		return numRows == 1;
 	}
 
 	public List<Utilizador> list() throws SQLException, FuncaoNaoExisteExcpetion {

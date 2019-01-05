@@ -39,7 +39,7 @@ public class EncomendaFinalizadaEmProducao extends EncomendaFinalizada {
 	public void fornecerComponentes(List<Componente> componentes) throws SQLException {
 		this.componentesEmFalta = new ComponenteDAO().atualizaStock(componentes);
 		if(this.componentesEmFalta.isEmpty()) {
-			new EncomendaFinalizadaDAO().add(this);
+			new EncomendaFinalizadaDAO().put(this.getId(),this);
 		}
 	}
 

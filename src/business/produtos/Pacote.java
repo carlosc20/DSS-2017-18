@@ -69,4 +69,5 @@ public class Pacote {
 		return desconto;
 	}
 
+	public String toString() { return Integer.toString(id); }
 }

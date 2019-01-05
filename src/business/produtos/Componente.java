@@ -88,6 +88,6 @@ public class Componente {
 	}
 
 	public String toString(){
-		return designacao;
+		return Integer.toString(id);
 	}
 }

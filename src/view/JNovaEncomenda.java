@@ -350,9 +350,9 @@ public class JNovaEncomenda implements Observer {
                     }
                     new JVendedor();
                     frame.dispose();
-                } catch (FaltamDependentesException e1) {
-                    JanelaUtil.mostraJanelaErro(frame,"Existem dependências não adicionadas: "
-                            +  e1.getMessage());
+                } catch (FaltamDependentesException | FaltamComponenteObrigatorioException e1) {
+                    JanelaUtil.mostraJanelaErro(frame, "Existem dependências não adicionadas: "
+                            + e1.getMessage());
                 } catch (Exception e1) {
                     e1.printStackTrace(); // TODO: 29/12/2018 erro
                 }

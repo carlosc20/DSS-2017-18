@@ -10,7 +10,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class EncomendaFinalizada extends Encomenda{
+
+public class EncomendaFinalizada extends Encomenda {
     private LocalDate data;
     private Collection<Componente> componentes;
     private Collection<Pacote> pacotes;

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class EncomendaFinalizadaEmProducaoDAO extends DAO {
 
-    public boolean add(EncomendaFinalizadaEmProducao encomenda) throws SQLException {
+    public void put(int idKey, EncomendaFinalizadaEmProducao encomenda) throws SQLException {
         Connection cn = Connect.connect();
         int id = encomenda.getId();
         String cliente = encomenda.getCliente();
@@ -62,7 +62,6 @@ public class EncomendaFinalizadaEmProducaoDAO extends DAO {
                 st.execute();
             }
             cn.commit();
-            return numRows == 1;
         } catch (Exception e) {
             cn.rollback();
             e.printStackTrace();

@@ -235,9 +235,9 @@ public class ConfiguraFacil extends Observable {
         try {
             Encomenda feita = encomendaAtual.finalizarEncomenda();
             if (feita instanceof EncomendaFinalizadaEmProducao) {
-                filaProducao.add((EncomendaFinalizadaEmProducao) feita);
+                filaProducao.put(feita.getId(),(EncomendaFinalizadaEmProducao) feita);
             } else if(feita instanceof EncomendaFinalizada) {
-                registoProduzidas.add((EncomendaFinalizada) feita);
+                registoProduzidas.put(feita.getId(), (EncomendaFinalizada) feita);
             }
             return otimos;
         } catch (SQLException e){
@@ -472,6 +472,22 @@ public class ConfiguraFacil extends Observable {
             str = br.readLine();
         }
         new ComponenteDAO().addAll(list);
+
+        for(EncomendaFinalizadaEmProducao encomenda : new EncomendaFinalizadaEmProducaoDAO().list()){
+            List<Componente> componentesEmFalta = new ArrayList<>();
+            for(Componente componente : encomenda.getComponentesEmFalta()) {
+                if(componente.getStock() > 0) {
+                    new ComponenteDAO().put(componente.getId(), componente);
+                } else {
+                    componentesEmFalta.add(componente);
+                }
+            }
+            if(componentesEmFalta.size() > 0) {
+                new EncomendaFinalizadaDAO().put(encomenda.getId(), encomenda);
+            } else {
+                new EncomendaFinalizadaEmProducaoDAO().put(encomenda.getId(), encomenda);
+            }
+        }
 
         setChanged();
         notifyObservers(0);
@@ -711,7 +727,7 @@ public class ConfiguraFacil extends Observable {
                 default:
                     throw new Exception();  // TODO: 29/12/2018 tipo nao existe
         }
-        utilizadores.add(u);
+        utilizadores.put(u.getNome(), u);
         setChanged();
         notifyObservers();
     }
