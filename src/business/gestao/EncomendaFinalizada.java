@@ -11,10 +11,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class EncomendaFinalizada extends Encomenda{
-    private int id;
-    private String cliente;
-    private int nif;
-    private int valor;
     private LocalDate data;
     private Collection<Componente> componentes;
     private Collection<Pacote> pacotes;
