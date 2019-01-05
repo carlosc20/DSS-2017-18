@@ -1,7 +1,8 @@
 package business.venda;
 
-import business.gestao.EncomendaEmProducao;
 import business.gestao.Encomenda;
+import business.gestao.EncomendaEmProducao;
+import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.Categoria;
@@ -58,7 +59,7 @@ public class EncomendaAtual {
 	public Encomenda finalizarEncomenda() throws SQLException, FaltamDependentesException {
 		Set<Componente> componentesEmFalta = configuracao.atualizaStock();
 		if(componentesEmFalta.isEmpty()) {
-			return new Encomenda(id, cliente, nif, valor, LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes());
+			return new EncomendaFinalizada(id, cliente, nif, valor, LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes());
 		} else {
 			return new EncomendaEmProducao(id, cliente, nif, valor, LocalDate.now(), configuracao.getComponentes(), configuracao.getPacotes(), componentesEmFalta);
 		}
@@ -83,7 +84,7 @@ public class EncomendaAtual {
 	public boolean dependentesEmFalta() throws FaltamDependentesException {
 		return configuracao.dependentesEmFalta();
 	}
-	public boolean obrigatoriosEmFalta(List<Categoria> obr) throws FaltamComponenteObrigatorioException {
+	public boolean obrigatoriosEmFalta(List<Categoria> obr) {
 		return configuracao.obrigatoriosEmFalta(obr);
 	}
 	public int getDesconto(){

@@ -70,7 +70,6 @@ public class Configuracao {
 		else {
 			formacaoPacote(componente);
 		}
-		otimizarPacotes();
 		return pac;
 	}
 	/*
@@ -245,7 +244,6 @@ public class Configuracao {
 			Componente c = cDAO.get(id);
 			this.componentes.put(id,c);
 		}
-		otimizarPacotes();
 		return pac;
 	}
 	private void tratarDependenciasPacote(Set<Componente> componentes, Pacote p) throws SQLException {
@@ -356,6 +354,7 @@ public class Configuracao {
 	}
 
 	public List<Integer> otimizarPacotes() throws SQLException {
+		System.out.println("A otimizar pacotes");
 		Set<Pacote> otimos = calculaOtimos(getPacotesValidos(componentes.values()));
 		boolean reotimizacao = comparaPacotes(otimos);
 		if(reotimizacao) {
@@ -413,16 +412,15 @@ public class Configuracao {
 		return false;
 	}
 
-	public boolean obrigatoriosEmFalta(List<Categoria> obr) throws FaltamComponenteObrigatorioException {
+	public boolean obrigatoriosEmFalta(List<Categoria> obr) {
 		int count = 0;
-		for (Componente c : componentes.values()){
+		for (Componente c : componentes.values()) {
 			for(Categoria cat : obr){
 				if(c.getCategoria().equals(cat))
 					count++;
 			}
 		}
-		if(count == obr.size()) throw new FaltamComponenteObrigatorioException("");
-		return false;
+		return count < obr.size();
 	}
 
 	public int getDesconto(){
@@ -479,14 +477,16 @@ public class Configuracao {
 				for(Componente componente : solucaoTodosComponentes){
 					componentes.put(componente.getId(), componente);
 				}
-				if(comparaPacotes(solucaoPacote)){
-					//Adiciona o pacote se este for melhor
-					pacotes.clear();
-					for (Pacote pacote : solucaoPacote){
-						pacotes.put(pacote.getId(), pacote);
+				if(configuracaoValida(componentes)) {
+					if (comparaPacotes(solucaoPacote)) {
+						//Adiciona o pacote se este for melhor
+						pacotes.clear();
+						for (Pacote pacote : solucaoPacote) {
+							pacotes.put(pacote.getId(), pacote);
+						}
 					}
+					return true; // Encontrou-se a solução ótima
 				}
-				return true; // Encontrou-se a solução ótima
 			} else {
 				int minDiferencaDePreco = 0;
 				Pair<Categoria, Componente> proximoEntrar = null; //Próximo a entrar na solução
@@ -532,6 +532,24 @@ public class Configuracao {
 			}
 		}
 		return pacotesValidos;
+	}
+
+	private boolean configuracaoValida(Map<Integer, Componente> componentes) throws SQLException {
+		HashSet<Integer> dependencias = new HashSet<>();
+		HashSet<Integer> incompatibilidades = new HashSet<>();
+		for (Componente componente : componentes.values()){
+			dependencias.addAll(componente.getDepedendencias());
+			incompatibilidades.addAll(componente.getIncompatibilidades());
+		}
+		for (int componenteId : componentes.keySet()){
+			if(dependencias.contains(componenteId)){
+				dependencias.remove(componenteId);
+			}
+			if(incompatibilidades.contains(componenteId)){
+				return false;
+			}
+		}
+		return dependencias.size() == 0;
 	}
 
 	public List<Componente> getComponentes() {

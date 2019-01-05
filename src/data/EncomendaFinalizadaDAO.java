@@ -1,6 +1,6 @@
 package data;
 
-import business.gestao.Encomenda;
+import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 
@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class EncomendaDAO extends DAO {
+public class EncomendaFinalizadaDAO extends DAO {
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(new EncomendaDAO().list());
+		System.out.println(new EncomendaFinalizadaDAO().list());
 		System.out.println(new EncomendaEmProducaoDAO().list());
 	}
 
-	public boolean add(Encomenda encomenda) throws SQLException {
+	public boolean add(EncomendaFinalizada encomenda) throws SQLException {
 		Connection cn = Connect.connect();
 		int id = encomenda.getId();
 		String cliente = encomenda.getCliente();
@@ -27,14 +27,12 @@ public class EncomendaDAO extends DAO {
 			Date data = Date.valueOf(encomenda.getData());
 			Collection<Componente> componentes = encomenda.getComponentes();
 			Collection<Pacote> pacotes = encomenda.getPacotes();
-			boolean finalizada = encomenda.getFinalizada();
-			PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, ?)");
+			PreparedStatement st = cn.prepareStatement("REPLACE INTO Encomenda (id, cliente, nif, valor, data, finalizada) VALUES (?, ?, ?, ?, ?, 1)");
 			st.setInt(1, id);
 			st.setString(2, cliente);
 			st.setInt(3, nif);
 			st.setInt(4, valor);
 			st.setDate(5, data);
-			st.setBoolean(6, finalizada);
 			int numRows = st.executeUpdate();
 			if (numRows != 1) {
 				st = cn.prepareStatement("DELETE FROM Encomenda_Componente WHERE id_encomenda = ?");
@@ -69,24 +67,24 @@ public class EncomendaDAO extends DAO {
 		}
 	}
 
-	public List<Encomenda> list() throws SQLException {
+	public List<EncomendaFinalizada> list() throws SQLException {
 		Connection cn = Connect.connect();
 		PreparedStatement st = cn.prepareStatement("SELECT id, cliente, nif, valor, data FROM Encomenda WHERE finalizada = 1");
 		ResultSet res = st.executeQuery();
-		List<Encomenda> list = new ArrayList<>();
+		List<EncomendaFinalizada> list = new ArrayList<>();
 		while (res.next()){
 			int id = res.getInt("id");
 			String cliente = res.getString("cliente");
 			int nif = res.getInt("nif");
 			int valor = res.getInt("valor");
 			Date data = res.getDate("data");
-			list.add(new Encomenda(id, cliente, nif, valor, data.toLocalDate(), null, null));
+			list.add(new EncomendaFinalizada(id, cliente, nif, valor, data.toLocalDate(), null, null));
 		}
 		Connect.close(cn);
 		return list;
 	}
 
-	public Encomenda get(int id) throws SQLException {
+	public EncomendaFinalizada get(int id) throws SQLException {
 		Connection cn = Connect.connect();
 		PreparedStatement st = cn.prepareStatement("SELECT cliente, nif, valor, data FROM Encomenda WHERE id = ? and finalizada = 1 LIMIT 1");
 		st.setString(1, "id");
@@ -97,7 +95,7 @@ public class EncomendaDAO extends DAO {
 			int valor = res.getInt("valor");
 			Date data = res.getDate("data");
 			Connect.close(cn);
-			return new Encomenda(id, cliente, nif, valor, data.toLocalDate(), null, null);
+			return new EncomendaFinalizada(id, cliente, nif, valor, data.toLocalDate(), null, null);
 		} else {
 			Connect.close(cn);
 			return null;

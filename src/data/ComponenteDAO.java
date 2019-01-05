@@ -1,7 +1,7 @@
 package data;
 
 import business.gestao.EncomendaEmProducao;
-import business.gestao.Encomenda;
+import business.gestao.EncomendaFinalizada;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.*;
@@ -111,7 +111,7 @@ public class ComponenteDAO extends DAO {
 		return result;
 	}
 
-	public List<Componente> list(Encomenda encomenda) throws SQLException {
+	public List<Componente> list(EncomendaFinalizada encomenda) throws SQLException {
 		int idEncomenda = encomenda.getId();
 		Connection cn = Connect.connect();
 		List<Componente> result = new ArrayList<>();
