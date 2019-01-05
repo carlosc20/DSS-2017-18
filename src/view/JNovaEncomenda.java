@@ -43,9 +43,9 @@ public class JNovaEncomenda implements Observer {
 
     private JFrame frame;
 
-    private String[] colunasComponentes;
-    private String[] colunasPacotes;
-    private String[] colunasPacotesVendedor;
+    private String[] colunasComponentes = ConfiguraFacil.colunasComponentesVendedor;
+    private String[] colunasPacotes = ConfiguraFacil.colunasPacotes;
+    private String[] colunasPacotesVendedor = ConfiguraFacil.colunasPacotesVendedor;
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
@@ -59,9 +59,6 @@ public class JNovaEncomenda implements Observer {
 
         Observer isto = this;
         facade.addObserver(isto);
-
-        colunasComponentes = ConfiguraFacil.colunasComponentesVendedor;
-        colunasPacotes = ConfiguraFacil.colunasPacotes;
 
         cancelarButton.addActionListener(new ActionListener() {
             /**
@@ -263,7 +260,6 @@ public class JNovaEncomenda implements Observer {
         pacotesTable.setModel(modelPac);
         updatePacotes();
         pacotesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        colunasPacotesVendedor = ConfiguraFacil.colunasPacotesVendedor;
 
         adicionarPacoteButton.addActionListener(new ActionListener() {
             /**
@@ -272,7 +268,8 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    DefaultTableModel model = new DefaultTableModel(facade.getPacotesVendedor(), colunasPacotesVendedor) {
+                    Object[][] data = facade.getPacotesVendedor();
+                    DefaultTableModel model = new DefaultTableModel(data, colunasPacotesVendedor) {
                         @Override
                         public boolean isCellEditable(int row, int column) {
                             return false;
@@ -282,7 +279,7 @@ public class JNovaEncomenda implements Observer {
                     int opcao = JanelaUtil.mostraJanelaTabela(frame, "Escolher pacote", table);
                     if (opcao == JanelaUtil.OK) {
                         int row = table.getSelectedRow();
-                        Integer id = (Integer) table.getValueAt(row, 0);
+                        int id = (int) data[row][3];
                         try {
                             int option = mostrarIncompatibilidades(facade.getIncompatibilidadesPacote(id));
                             if(option == JOptionPane.OK_OPTION) {
@@ -449,26 +446,26 @@ public class JNovaEncomenda implements Observer {
     private int mostraAdicionarComponente(String categoria) {
 
         String[] columnNames = colunasComponentes;
-        Object[][] data = new Object[0][];
         try {
-            data = facade.getComponentes(categoria);
+            Object[][] data = facade.getComponentes(categoria);
+            DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+            JTable table = new JTable(model);
+            int opcao = JanelaUtil.mostraJanelaTabela(frame, "Escolher " + categoria, table);
+            if (opcao == JanelaUtil.OK) {
+                int id = (int) data[table.getSelectedRow()][3];
+                return adicionaComponente(id);
+            }
+            return opcao;
         } catch (Exception e) {
             JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            e.printStackTrace();
+            return 1;
         }
-
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        JTable table = new JTable(model);
-        int opcao = JanelaUtil.mostraJanelaTabela(frame, "Escolher " + categoria, table);
-        if (opcao == JanelaUtil.OK) {
-            int id = (int) model.getValueAt(table.getSelectedRow(), 1);
-            return adicionaComponente(id);
-        }
-        return opcao;
     }
 
 

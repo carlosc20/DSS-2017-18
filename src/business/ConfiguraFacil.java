@@ -259,8 +259,7 @@ public class ConfiguraFacil extends Observable {
      */
     public Object[][] getComponentesObgConfig() { //novo
 
-        Collection<CategoriaObrigatoria> categ = new ArrayList<>();
-        categ = CategoriaManager.getInstance().getAllCategoriasObrigatorias();
+        Collection<CategoriaObrigatoria> categ = CategoriaManager.getInstance().getAllCategoriasObrigatorias();
         List<Componente> comp = encomendaAtual.getComponentesObrigatorios();
         Object[][] data = buildCategObrigatorias(new ArrayList<>(categ));
         for(int i = 0; i<categ.size(); i++)
@@ -325,7 +324,7 @@ public class ConfiguraFacil extends Observable {
      *
      * @return matriz com uma linha por pacote
      */
-    public Object [][] getPacotesConfig() throws Exception {
+    public Object [][] getPacotesConfig() {
         List<Pacote> pac = encomendaAtual.getPacotes();
         Object[][] data = new Object[pac.size()][4];
         int i = 0;
@@ -553,7 +552,8 @@ public class ConfiguraFacil extends Observable {
                 Categoria cate = c.getCategoria();
                 String catDesignacao = cate.getDesignacao();
                 float preco = c.getPreco()/100.0f;
-                componentesTodas[i] = new Object[]{catDesignacao,designacao,preco};
+                int id = c.getId();
+                componentesTodas[i] = new Object[]{catDesignacao,designacao,preco, id};
                 i++;
             }
             return componentesTodas;
@@ -562,7 +562,7 @@ public class ConfiguraFacil extends Observable {
         }
     }
 
-    /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes()}. */
+    /** Array com os nomes das colunas da matriz devolvida em {@link #getComponentes(String categoria)}. */
     public static String[] colunasComponentesVendedor = new String[] {"Categoria", "Designação", "Preço(€)"};
 
 
@@ -599,12 +599,13 @@ public class ConfiguraFacil extends Observable {
     public Object[][] getPacotesVendedor() throws Exception {
         try {
             List<Pacote> pacotes = todosPacotes.list();
-            Object[][] data = new Object[pacotes.size()][colunasPacotesVendedor.length];
+            Object[][] data = new Object[pacotes.size()][colunasPacotesVendedor.length + 1];
             int i = 0;
             for(Pacote p : pacotes){
                 data[i][0] = p.getDesignacao();
                 data[i][1] = p.getDesconto()/100.0f;
                 data[i][2] = p.getComponentes().toString();
+                data[i][3] = p.getId();
                 i++;
             }
             return data;
