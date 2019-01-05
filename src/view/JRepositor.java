@@ -20,12 +20,12 @@ public class JRepositor implements Observer {
     private JButton sairButton;
 
     private JTable componentesTable;
-    private String[] colunasComponentes;
+    private String[] colunasComponentes = ConfiguraFacil.colunasComponentes;
     private DefaultTableModel modelC;
     private JButton atualizarComponentesButton;
 
     private JTable pacotesTable;
-    private String[] colunasPacotes;
+    private String[] colunasPacotes = ConfiguraFacil.colunasPacotes;
     private DefaultTableModel modelP;
     private JButton atualizarPacotesButton;
 
@@ -64,7 +64,6 @@ public class JRepositor implements Observer {
 
         //---------------- Componentes ---------------------------------------------------------------------------------
 
-        colunasComponentes = ConfiguraFacil.colunasComponentes;
         modelC = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -73,14 +72,13 @@ public class JRepositor implements Observer {
         };
         componentesTable.setModel(modelC);
         updateComponentes();
-
-
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelC);
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelC) {
+            @Override
+            public boolean isSortable(int column) {
+                return column == 0;
+            }
+        };
         componentesTable.setRowSorter(sorter);
-
-        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-        sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-        sorter.setSortKeys(sortKeys);
 
         atualizarComponentesButton.addActionListener(new ActionListener() {
             /**
@@ -108,7 +106,6 @@ public class JRepositor implements Observer {
 
         //---------------- Pacotes -------------------------------------------------------------------------------------
 
-        colunasPacotes = ConfiguraFacil.colunasPacotes;
         modelP = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
