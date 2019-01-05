@@ -474,6 +474,22 @@ public class ConfiguraFacil extends Observable {
         }
         new ComponenteDAO().addAll(list);
 
+        for(EncomendaFinalizadaEmProducao encomenda : new EncomendaFinalizadaEmProducaoDAO().list()){
+            List<Componente> componentesEmFalta = new ArrayList<>();
+            for(Componente componente : encomenda.getComponentesEmFalta()) {
+                if(componente.getStock() > 0) {
+                    new ComponenteDAO().put(componente.getId(), componente);
+                } else {
+                    componentesEmFalta.add(componente);
+                }
+            }
+            if(componentesEmFalta.size() > 0) {
+                new EncomendaFinalizadaDAO().put(encomenda.getId(), encomenda);
+            } else {
+                new EncomendaFinalizadaEmProducaoDAO().put(encomenda.getId(), encomenda);
+            }
+        }
+
         setChanged();
         notifyObservers(0);
     }
