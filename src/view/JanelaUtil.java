@@ -6,21 +6,21 @@ public class JanelaUtil {
 
     public static int OK = JOptionPane.OK_OPTION;
 
-    public static void mostrarJanelaErro(JFrame frame, String descricao) {
+    public static void mostraJanelaErro(JFrame frame, String descricao) {
         JOptionPane.showMessageDialog(frame,
                 descricao,
                 "Erro",
                 JOptionPane.ERROR_MESSAGE);
     }
 
-    public static int mostrarJanelaOpcoes(JFrame frame, String titulo, Object[] opcoes) {
+    public static int mostraJanelaOpcoes(JFrame frame, String titulo, Object[] opcoes) {
         return JOptionPane.showConfirmDialog(frame, opcoes,
                 titulo,
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE);
     }
 
-    public static int mostrarJanelaTabela(JFrame frame, String titulo, JTable tabela) {
+    public static int mostraJanelaTabela(JFrame frame, String titulo, JTable tabela) {
         tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabela.setRowSelectionInterval(0, 0);
         return JOptionPane.showConfirmDialog(frame,
@@ -30,7 +30,8 @@ public class JanelaUtil {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
-    public static int mostrarJanelaLista(JFrame frame, String titulo, JList lista) {
+    public static int mostraJanelaLista(JFrame frame, String titulo, JList lista) {
+        lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lista.setSelectedIndex(0);
         return JOptionPane.showConfirmDialog(frame,
                 new JScrollPane(lista),

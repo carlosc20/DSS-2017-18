@@ -7,7 +7,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -79,7 +78,7 @@ public class JAdministrador implements Observer {
                 JTextField nomeF = new JTextField();
                 JTextField passwordF = new JPasswordField();
                 JComboBox<String> tiposF = new JComboBox<>(tiposUtilizador);
-                int opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Criar utilizador",
+                int opcao = JanelaUtil.mostraJanelaOpcoes(frame, "Criar utilizador",
                         new Object[]{
                                 "Nome:", nomeF,
                                 "Password:", passwordF,
@@ -93,7 +92,7 @@ public class JAdministrador implements Observer {
                         facade.criarUtilizador(nome, password, tipo);
                     } catch (Exception e1) {
                         e1.printStackTrace();
-                        JanelaUtil.mostrarJanelaErro(frame, "Não foi possível criar o utilizador.");
+                        JanelaUtil.mostraJanelaErro(frame, "Não foi possível criar o utilizador.");
                     }
                 }
             }
@@ -128,7 +127,7 @@ public class JAdministrador implements Observer {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Utilizadores).");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados (Utilizadores).");
         }
     }
 

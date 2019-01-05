@@ -45,6 +45,7 @@ public class JNovaEncomenda implements Observer {
 
     private String[] colunasComponentes;
     private String[] colunasPacotes;
+    private String[] colunasPacotesVendedor;
 
     private ConfiguraFacil facade = ConfiguraFacil.getInstancia();
 
@@ -59,7 +60,7 @@ public class JNovaEncomenda implements Observer {
         Observer isto = this;
         facade.addObserver(isto);
 
-        colunasComponentes = ConfiguraFacil.colunasComponentes;
+        colunasComponentes = ConfiguraFacil.colunasComponentesVendedor;
         colunasPacotes = ConfiguraFacil.colunasPacotes;
 
         cancelarButton.addActionListener(new ActionListener() {
@@ -154,7 +155,7 @@ public class JNovaEncomenda implements Observer {
                 modelCatOpc.addElement(u);
             }
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados.");
         }
 
         modelOpc = new DefaultTableModel() {
@@ -174,7 +175,7 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JList<String> list = new JList<>(modelCatOpc);
-                int opcao = JanelaUtil.mostrarJanelaLista(frame, "Escolher categoria", list);
+                int opcao = JanelaUtil.mostraJanelaLista(frame, "Escolher categoria", list);
                 if (opcao == JanelaUtil.OK) {
                     mostraAdicionarComponente(list.getSelectedValue());
                 }
@@ -262,6 +263,7 @@ public class JNovaEncomenda implements Observer {
         pacotesTable.setModel(modelPac);
         updatePacotes();
         pacotesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        colunasPacotesVendedor = ConfiguraFacil.colunasPacotesVendedor;
 
         adicionarPacoteButton.addActionListener(new ActionListener() {
             /**
@@ -270,14 +272,14 @@ public class JNovaEncomenda implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    DefaultTableModel model = new DefaultTableModel(facade.getPacotes(), colunasPacotes) {
+                    DefaultTableModel model = new DefaultTableModel(facade.getPacotesVendedor(), colunasPacotesVendedor) {
                         @Override
                         public boolean isCellEditable(int row, int column) {
                             return false;
                         }
                     };
                     JTable table = new JTable(model);
-                    int opcao = JanelaUtil.mostrarJanelaTabela(frame, "Escolher pacote", table);
+                    int opcao = JanelaUtil.mostraJanelaTabela(frame, "Escolher pacote", table);
                     if (opcao == JanelaUtil.OK) {
                         int row = table.getSelectedRow();
                         Integer id = (Integer) table.getValueAt(row, 0);
@@ -291,14 +293,14 @@ public class JNovaEncomenda implements Observer {
                                 mostraPacotesDesfeitos(pacotes);
                             }
                         } catch (PacoteJaExisteNaConfiguracaoException e1) {
-                            JanelaUtil.mostrarJanelaErro(frame, "Pacote já existe na configuração.");
+                            JanelaUtil.mostraJanelaErro(frame, "Pacote já existe na configuração.");
                         } catch (PacoteGeraConflitosException e1) {
-                            JanelaUtil.mostrarJanelaErro(frame,
+                            JanelaUtil.mostraJanelaErro(frame,
                                     "Já existem pacotes formados com componentes desse pacote.");
                         }
                     }
                 } catch (Exception e1) {
-                    JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+                    JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados.");
                 }
             }
         });
@@ -352,7 +354,7 @@ public class JNovaEncomenda implements Observer {
                     new JVendedor();
                     frame.dispose();
                 } catch (FaltamDependentesException e1) {
-                    JanelaUtil.mostrarJanelaErro(frame,"Existem dependências não adicionadas: "
+                    JanelaUtil.mostraJanelaErro(frame,"Existem dependências não adicionadas: "
                             +  e1.getMessage());
                 } catch (Exception e1) {
                     e1.printStackTrace(); // TODO: 29/12/2018 erro
@@ -369,7 +371,6 @@ public class JNovaEncomenda implements Observer {
             public void actionPerformed(ActionEvent e) {
                 JList<String> list = new JList<>(modelCatOpc);
                 list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-                list.setSelectedIndex(0);
                 JTextField precoF = new JTextField();
                 int opcao = JOptionPane.showConfirmDialog(frame,
                         new Object[] {"Componentes opcionais:", new JScrollPane(list), "Preço total máximo:", precoF},
@@ -380,33 +381,41 @@ public class JNovaEncomenda implements Observer {
                     try {
                         int precoMax = Integer.parseInt(precoF.getText());
                         String[] cats = list.getSelectedValuesList().toArray(new String[0]);
+                        Map<String, Integer> catMax = new HashMap<>();
                         int n = cats.length;
-                        JSlider[] opcoes = new JSlider[n];
-                        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-                        labelTable.put( 0, new JLabel("0") );
-                        labelTable.put( precoMax, new JLabel(Integer.toString(precoMax)));
-                        for (int i = 0; i < n; i++) {
-                            opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: dizer a qual corresponde
-                            opcoes[i].setLabelTable(labelTable);
-                            opcoes[i].setPaintLabels(true);
-                        }
-                        opcao = JanelaUtil.mostrarJanelaOpcoes(frame, "Configuração ótima", opcoes);
-                        if (opcao == JanelaUtil.OK) {
-                            Map<String, Integer> catMax = new HashMap<>();
+                        if(n != 0) {
+                            JSlider[] opcoes = new JSlider[n];
+                            Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+                            labelTable.put(0, new JLabel("0"));
+                            labelTable.put(precoMax, new JLabel(Integer.toString(precoMax)));
+                            for (int i = 0; i < n; i++) {
+                                opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0); // TODO: dizer a qual corresponde
+                                opcoes[i].setLabelTable(labelTable);
+                                opcoes[i].setPaintLabels(true);
+                            }
                             for (int i = 0; i < n; i++) {
                                 catMax.put(cats[i], opcoes[i].getValue());
                             }
+                            opcao = JanelaUtil.mostraJanelaOpcoes(frame, "Configuração ótima", opcoes);
+                        }
+                        if (opcao == JanelaUtil.OK) {
                             try {
-                                facade.criarConfiguracaoOtima(catMax, precoMax);
+                                if (facade.criarConfiguracaoOtima(catMax, precoMax)) {
+                                    JanelaUtil.mostraJanelaInformacao(frame,
+                                            "Foi criada uma configuração ótima.");
+                                } else {
+                                    JanelaUtil.mostraJanelaInformacao(frame,
+                                            "Não foi possível criar uma configuração ótima.");
+                                }
                             } catch (FaltamComponenteObrigatorioException e1) {
-                                JanelaUtil.mostrarJanelaErro(frame,
+                                JanelaUtil.mostraJanelaErro(frame,
                                         "Todos os componentes obrigatórios devem estar escolhidos");
                             } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
                         }
                     } catch (NumberFormatException e1) {
-                        JanelaUtil.mostrarJanelaErro(frame, "O preço máximo deve ser um número");
+                        JanelaUtil.mostraJanelaErro(frame, "O preço máximo deve ser um número");
                     }
                 }
             }
@@ -439,12 +448,12 @@ public class JNovaEncomenda implements Observer {
      */
     private int mostraAdicionarComponente(String categoria) {
 
-        String[] columnNames = ConfiguraFacil.colunasComponentes;
+        String[] columnNames = colunasComponentes;
         Object[][] data = new Object[0][];
         try {
             data = facade.getComponentes(categoria);
         } catch (Exception e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados.");
         }
 
         DefaultTableModel model = new DefaultTableModel(data, columnNames) {
@@ -454,7 +463,7 @@ public class JNovaEncomenda implements Observer {
             }
         };
         JTable table = new JTable(model);
-        int opcao = JanelaUtil.mostrarJanelaTabela(frame, "Escolher " + categoria, table);
+        int opcao = JanelaUtil.mostraJanelaTabela(frame, "Escolher " + categoria, table);
         if (opcao == JanelaUtil.OK) {
             int id = (int) model.getValueAt(table.getSelectedRow(), 1);
             return adicionaComponente(id);
@@ -481,9 +490,9 @@ public class JNovaEncomenda implements Observer {
                 mostraPacotesDesfeitos(pacotes);
             }
         } catch (SQLException e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados.");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados.");
         } catch (ComponenteJaExisteNaConfiguracaoException e) {
-            JanelaUtil.mostrarJanelaErro(frame, "Componente já foi adicionado.");
+            JanelaUtil.mostraJanelaErro(frame, "Componente já foi adicionado.");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -592,11 +601,11 @@ public class JNovaEncomenda implements Observer {
      */
     private void updatePacotes() {
         try {
-            modelPac.setDataVector(facade.getPacotesConfig(), colunasPacotes);
+            modelPac.setDataVector(facade.getPacotesConfig(), colunasPacotesVendedor);
             removerPacoteButton.setEnabled(false);
         } catch (Exception e) {
             e.printStackTrace();
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
         }
     }
 
@@ -609,7 +618,7 @@ public class JNovaEncomenda implements Observer {
             adicionarDepButton.setEnabled(false);
         } catch (Exception e) {
             e.printStackTrace();
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Dependencias).");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados (Dependencias).");
         }
     }
 

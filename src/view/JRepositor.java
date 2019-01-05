@@ -5,9 +5,9 @@ import business.ConfiguraFacil;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -17,12 +17,12 @@ public class JRepositor implements Observer {
     private JButton sairButton;
 
     private JTable componentesTable;
-    private String[] colunasComponentes;
+    private String[] colunasComponentes = ConfiguraFacil.colunasComponentes;
     private DefaultTableModel modelC;
     private JButton atualizarComponentesButton;
 
     private JTable pacotesTable;
-    private String[] colunasPacotes;
+    private String[] colunasPacotes = ConfiguraFacil.colunasPacotes;
     private DefaultTableModel modelP;
     private JButton atualizarPacotesButton;
 
@@ -39,7 +39,7 @@ public class JRepositor implements Observer {
         frame = new JFrame("Repositor");
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500,600);
+        frame.setSize(1000,600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -61,7 +61,6 @@ public class JRepositor implements Observer {
 
         //---------------- Componentes ---------------------------------------------------------------------------------
 
-        colunasComponentes = ConfiguraFacil.colunasComponentes;
         modelC = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -70,6 +69,13 @@ public class JRepositor implements Observer {
         };
         componentesTable.setModel(modelC);
         updateComponentes();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelC) {
+            @Override
+            public boolean isSortable(int column) {
+                return column == 0;
+            }
+        };
+        componentesTable.setRowSorter(sorter);
 
         atualizarComponentesButton.addActionListener(new ActionListener() {
             /**
@@ -87,7 +93,7 @@ public class JRepositor implements Observer {
                         JanelaUtil.mostraJanelaInformacao(frame, "Componentes atualizados com sucesso");
                     } catch (Exception e1) {
                         e1.printStackTrace();
-                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
+                        JanelaUtil.mostraJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
@@ -97,7 +103,6 @@ public class JRepositor implements Observer {
 
         //---------------- Pacotes -------------------------------------------------------------------------------------
 
-        colunasPacotes = ConfiguraFacil.colunasPacotes;
         modelP = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -123,7 +128,7 @@ public class JRepositor implements Observer {
                         JanelaUtil.mostraJanelaInformacao(frame, "Pacotes atualizados com sucesso");
                     } catch (Exception e1) {
                         e1.printStackTrace();
-                        JanelaUtil.mostrarJanelaErro(frame, "Erro ao atualizar.");
+                        JanelaUtil.mostraJanelaErro(frame, "Erro ao atualizar.");
                     }
                 }
             }
@@ -139,7 +144,7 @@ public class JRepositor implements Observer {
             modelC.setDataVector(facade.getComponentes(), colunasComponentes);
         } catch (Exception e) {
             e.printStackTrace();
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Componentes).");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados (Componentes).");
         }
     }
 
@@ -151,7 +156,7 @@ public class JRepositor implements Observer {
             modelP.setDataVector(facade.getPacotes(), colunasPacotes);
         } catch (Exception e) {
             e.printStackTrace();
-            JanelaUtil.mostrarJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
+            JanelaUtil.mostraJanelaErro(frame, "Não foi possível aceder à base de dados (Pacotes).");
         }
     }
 
