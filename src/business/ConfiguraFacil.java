@@ -499,8 +499,7 @@ public class ConfiguraFacil extends Observable {
      *
      * @param file ficheiro de formato CSV que contém as informações de pacotes
      */
-    public void atualizaPacotes(File file) throws Exception { // mudou nome, mudou tipo argumento, manda exception
-        // TODO: 29/12/2018 passar logica para aqui
+    public void atualizaPacotes(File file) throws Exception {
         ArrayList<Pacote> list = new ArrayList<>();
         BufferedReader br = new BufferedReader(new FileReader(file));
         String str = br.readLine();
@@ -545,7 +544,7 @@ public class ConfiguraFacil extends Observable {
             }
             return data;
         } catch (SQLException e) {
-            throw new Exception(); // TODO: 29/12/2018 exception fixe
+            throw new Exception();
         }
     }
 
@@ -555,10 +554,7 @@ public class ConfiguraFacil extends Observable {
 
     public static String[] colunasComponentesId = new String[] {"Categoria", "Designação", "Preço(€)", "Id"};
 
-    // TODO: 29/12/2018 separar em obg e opc?
     /**
-     * Faz coisas.
-     *
      * @param categoria categoria dos componentes
      *
      * @return matriz de objetos com todos os Pacotes no formato {id,designacao do pacote}
@@ -581,7 +577,7 @@ public class ConfiguraFacil extends Observable {
             }
             return componentesTodas;
         } catch (SQLException e) {
-            throw new Exception(); // TODO: 29/12/2018 exception fixe
+            throw new Exception();
         }
     }
 
@@ -664,18 +660,13 @@ public class ConfiguraFacil extends Observable {
      * @return tipo do utilizador
      */
     public String autenticar(String nome, String password) throws Exception {
-        // TODO: tirar na versão final
-        if (nome.equals("Administrador")) return "Administrador";
-        if (nome.equals("Vendedor")) return "Vendedor";
-        if (nome.equals("Repositor")) return "Repositor";
-
         Utilizador u = utilizadores.get(nome);
         String pw = u.getPassword();
         if (pw.equals(password)) {
             return u.getFuncao();
         }
 
-        throw new Exception(); // TODO: 29/12/2018 dados incorretos
+        throw new Exception();
     }
 
     /**
@@ -683,7 +674,7 @@ public class ConfiguraFacil extends Observable {
      *
      * @return lista com os nomes dos utilizadores
      */
-    public List<String> getUtilizadores() throws Exception { // TODO: 29/12/2018 devolver pairs?
+    public List<String> getUtilizadores() throws Exception {
         try {
             List<Utilizador> users = utilizadores.list();
             List<String> nomes = new ArrayList<>(users.size());
@@ -725,7 +716,7 @@ public class ConfiguraFacil extends Observable {
                 u = new Repositor(nome, password);
                 break;
                 default:
-                    throw new Exception();  // TODO: 29/12/2018 tipo nao existe
+                    throw new Exception();
         }
         utilizadores.put(u.getNome(), u);
         setChanged();

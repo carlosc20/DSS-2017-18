@@ -354,7 +354,7 @@ public class JNovaEncomenda implements Observer {
                     JanelaUtil.mostraJanelaErro(frame, "Existem dependências não adicionadas: "
                             + e1.getMessage());
                 } catch (Exception e1) {
-                    e1.printStackTrace(); // TODO: 29/12/2018 erro
+                    e1.printStackTrace();
                 }
             }
         });
@@ -386,7 +386,7 @@ public class JNovaEncomenda implements Observer {
                             labelTable.put(0, new JLabel("0"));
                             labelTable.put(precoMax, new JLabel(Integer.toString(precoMax)));
                             for (int i = 0; i < n; i++) {
-                                opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, 0);
+                                opcoes[i] = new JSlider(JSlider.HORIZONTAL, 0, precoMax, precoMax);
                                 opcoes[i].setLabelTable(labelTable);
                                 opcoes[i].setPaintLabels(true);
                             }

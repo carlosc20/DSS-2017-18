@@ -4,6 +4,8 @@ import business.produtos.ComparaPacotesByDesconto;
 import business.produtos.Componente;
 import business.produtos.Pacote;
 import business.venda.categorias.Categoria;
+import business.venda.categorias.Farois;
+import business.venda.categorias.Radio;
 import data.ComponenteDAO;
 import data.PacoteDAO;
 import javafx.util.Pair;
@@ -404,10 +406,14 @@ public class Configuracao {
 			List<Componente> componentesCategoria = new ComponenteDAO().list(categoria); //Lista componentes da categoria
 			//Filtra os componentes com preço dentro do limite
 			List<Componente> componentes = new ArrayList<>(componentesCategoria.size());
+			System.out.println(componentesCategoria);
+			System.out.println(precoMaximoTotal);
 			for (Componente c:componentesCategoria){
 				if(c.getPreco() <= precoMax){
 					componentes.add(c);
+					System.out.println(c);
 				}
+				System.out.println(c);
 			}
 			//Ordena-os por ordem crescente
 			componentes.sort(new Comparator<Componente>() {
@@ -434,8 +440,9 @@ public class Configuracao {
 			//Coloca o componente com maior preço
 			try {
 				solucaoCategoria.put(categoria, componentes.get(componentes.size() - 1));
+				System.out.println();
 			} catch (Exception e) {
-				return false;
+				e.printStackTrace();
 			}
 		}
 
